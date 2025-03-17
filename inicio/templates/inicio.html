@@ -1,0 +1,129 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>inicio</title>
+    <link rel="stylesheet" href="{% static 'inicio.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+    <div class="panelsuperior">
+        <div class="divnavegador">
+            <nav>
+                
+                <a href="/inicio/"><img src="{% static 'casa.png'%}" alt="1">Inicio</a>
+                <a href="/foro/"><img src="{% static 'foro.png'%}" alt=""> Foro</a>
+                <a href="/repaso/"><img src="{% static 'libro.png'%}" alt=""> Repaso</a>
+                <a href="/perfil/"><img src="{% static 'usuario.png'%}" alt=""> Perfil</a>
+
+            </nav>
+            
+        </div>
+        <div class="divetapasPerfil">
+            <div class="panel-perfil">
+                <img class="foto-perfil" src="{% static 'muchacha.png'%}" alt="">
+                <span class="nombre-usuario"> {{ usuario.username }}</span>
+                <div class="medalla">
+                    <img src="{{ medalla.url }}}" alt="">
+                </div>
+                <div class="racha">
+                    <img src="{% static 'fuego.png'%}" alt="">
+                    <span class="dias-racha">{{ puntos }}</span>
+                </div>
+
+            </div>
+            <div class="panel-lecciones">
+                <div class="cards">
+                    <div class="card" onclick="bringToFront(this)" style="background-color: #81b4ff;"> 
+                        <h3>1</h3>
+                        <div class="texto-lecciones">
+                            <strong>Etapa 4</strong>
+                            <p>Casa, escuela, república mexicana</p>
+                            <div class="play-button"></div>
+                        </div>
+                    </div>
+                    <div class="card" onclick="bringToFront(this)" style="background-color: #5199ff;">
+                        <h3>2</h3>
+                        <div class="texto-lecciones">
+                            <strong>Etapa 3</strong>
+                            <p>Alimentos, animales</p>
+                            <div class="play-button"></div>
+                        </div>
+                    </div>
+                    <div class="card" onclick="bringToFront(this)" style="background-color: #2678ff;">
+                        <h3>3</h3>
+                        <div class="texto-lecciones">
+                            <strong>Etapa 2</strong>
+                            <p>Matemáticas, antónimos </p> de adjetivos calificativos</p>
+                            <div class="play-button"></div>
+                        </div>
+                    </div>
+                    <div class="card" onclick="bringToFront(this)" style="background-color: #0056d2;">
+                        <h3>4</h3>
+                        <div class="texto-lecciones">
+                            <strong>Etapa 1</strong>
+                            <p>Abecedario, calendario, colores, cuerpo humano</p>
+                            <div class="play-button"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="divpuntos">
+            <div class="panel-puntos">
+                <div class="texto-puntos"><img src="{% static 'gema.png'%}" alt=""><p>Siguiente etapa: <span>2</span></p></div>
+                <div class="contenedor-grafica">
+                    <canvas id="dona-grafica" ></canvas>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="panelinferior">
+        <div class="divnotificaciones">
+            <div class="panelNotificaciones">
+                <div><p>Tus notificaciones</p></div>
+                <ul>
+                    <li class="notificacion-item">
+                        <p><strong class="usuario-notificacion">pollitoEnFuga11</strong>
+                        Ha respondido a tu duda</p>
+                    </li>
+                    <li class="notificacion-item">
+                        <p><strong class="usuario-notificacion">indianaJones62</strong>
+                        Le dio me gusta a tu publicacion</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="divcalentamiento">
+            <a class="boton-calentamiento" href="/calentamiento/">Calentamiento</a>
+        </div>
+        <div class="divdesafios">
+            <div class="panel-desafios">
+                <strong>Nombre desafio</strong>
+                <span>Descripcion de mi desafio </br> shalala impus lorem</span>
+                <a href="desafio.html">A jugar</a>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'inicio.js' %}"></script>
+    {% if messages %}
+    <script>
+        
+            Swal.fire({
+                icon: 'success',
+                title: 'Bienvenido',
+                text: "{{ message }}",
+            });
+        
+    </script>
+    {% endif %}
+</body>
+</html>

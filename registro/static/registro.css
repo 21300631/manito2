@@ -1,0 +1,141 @@
+*{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+    background-image: url("fondop.png");
+    background-size: cover;
+}
+
+.panel{
+    display: flex;
+    width: 840px;
+    height: 560px;
+
+    margin-top: 84px;
+    margin-left: 320px;
+}
+
+.formulario{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 420px;
+    height: 560px;
+    background-color: #F5F5F5;
+    border-radius: 40px 0px 0px 40px;
+
+}
+
+p{
+    margin: 0;
+    margin: 0px 0px 20px;
+
+    text-align: center;
+}
+
+.formulario p:first-of-type{
+    font-size: 40px;
+    font-family: 'Arial';
+    font-weight: bold;
+    margin: 50px 0px 30px;
+}
+
+.form2{
+    display: flex;
+    justify-content: space-between;
+    width: 240px;
+}
+
+.form2 input{
+    width: 50px;
+}
+
+.form2 input:first-of-type{
+    width: 150px;
+}
+
+.form3{
+    display: flex;
+    justify-content: space-between;
+    width: 260px;
+}
+
+.form3 input{
+    width: 110px;
+}
+
+form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.inicio{
+    width: 180px;
+    height: 50px;
+    background-color: #23F0C7;
+    margin-top: 30px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+}
+
+.requisitos{
+    width: 180px;
+    height: 10px;
+    font-size: 10px;
+    color: gray;
+}
+
+input{
+    background-color: #D9D9D9;
+    border-radius: 20px;
+    margin: 10px 0px 10px;
+    font-size: 15px;
+    height: 30px;
+    width: 227px;
+    padding-left: 10px;
+    border: none;
+}
+
+.bienvenida{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 420px;
+    height: 560px;
+    background-color: #7A306C;
+    border-radius: 0px 40px 40px 0px;
+}
+
+.bienvenida p{
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.bienvenida p:first-of-type{
+    font-size: 40px;
+    font-family: 'Arial';
+    font-weight: bold;
+}
+
+
+.registro{
+    width: 180px;
+    height: 50px;
+    background-color: #23F0C7;
+    margin-top: 30px;
+    border-radius: 10px;
+}
+
+a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: black;
+    text-align: center;
+    font-weight: bold;
+}
