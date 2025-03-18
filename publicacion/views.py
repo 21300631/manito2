@@ -1,39 +1,50 @@
 from django.shortcuts import render, redirect
 from .models import Publicacion
 from django.views.decorators.csrf import csrf_exempt
-from django.core.files.storage import default_storage
 from registro.models import Profile
 from django.http import HttpResponse
 
+MAX_IMAGE_SIZE = 500 * 1024  # 500 KB
+MAX_VIDEO_SIZE = 10 * 1024 * 1024  # 10 MB
 
-# Create your views here.
 def pagina(request):
-    return render(request, 'publicacionNueva.html')
+    edad = request.user.profile.edad
+    return render(request, 'publicacionNueva.html', {'edad':edad})
 
 @csrf_exempt  
 def nueva_publicacion(request):
     if request.method == "POST":
-        print(request.POST)  # Muestra los datos en la consola
         titulo = request.POST.get("titulo")
         contenido = request.POST.get("contenido")
-        imagen = request.FILES.get("imagen")
+        media = request.FILES.get("media")  # Puede ser imagen o video
         hashtags = request.POST.get("hashtags")
 
-        usuario = request.user  # Obtener el usuario logueado
-        profile = Profile.objects.get(user=usuario)  # Obtener el perfil asociado al usuario
+        usuario = request.user  
+        profile = Profile.objects.get(user=usuario)  
+        anios = profile.edad
         
+        context = {
+            'titulo': titulo,
+            'contenido': contenido,
+            'hashtags': hashtags,
+            'edad': anios
+        }
+
+        # Validar campos obligatorios
+        if not (titulo and contenido and hashtags):
+            context['error'] = 'Faltan campos obligatorios'
+            return render(request, 'publicacionNueva.html', context)
+
+     
+       
+        # Guardar la publicación
         nueva_publicacion = Publicacion.objects.create(
             titulo=titulo,
             contenido=contenido,
-            imagen=imagen,
+            imagen=media,  # en tu modelo sigue funcionando aunque el nombre sea imagen
             hashtags=hashtags,
             usuario=profile
         )
         return redirect('/publicacion/')
+    
     return HttpResponse("Método no permitido", status=405)
-
-
-
-        
-
-

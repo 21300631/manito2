@@ -10,6 +10,8 @@ class Publicacion(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     imagen = models.ImageField(storage=ImageStorage(), upload_to='posts/', blank=True, null=True)
     usuario = models.ForeignKey(Profile, on_delete=models.SET_DEFAULT, default='usuario_eliminado')
+    reportes = models.IntegerField(default=0)  # Valor por defecto
+    likes = models.IntegerField(default=0)  # Valor por defecto
     
     def __str__(self):
         return self.titulo

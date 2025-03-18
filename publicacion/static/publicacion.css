@@ -1,7 +1,10 @@
 *{
     margin: 0;
     padding: 0;
-    display: flex;}
+}
+.todo{
+    display: flex;
+}
 
 .panelIzquierdo{
     display: flex;
@@ -122,6 +125,12 @@ nav a{
     border: none;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
+
+}
+
+.contenido textarea{
+    margin-left: 40px;
+
 }
 .contenido{
     display: inline;
@@ -131,6 +140,8 @@ nav a{
     margin-top: 10px;
     right: 0;
     width: 200px;
+    margin-left: 40px;
+
 }
 
 .hashtags{

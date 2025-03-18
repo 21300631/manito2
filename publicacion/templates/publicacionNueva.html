@@ -5,45 +5,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-    <link rel="stylesheet" href="{% static 'publicacion.css'%}">
+    <title>Publicacion</title>
+    <link rel="stylesheet" href="{% static 'publicacion.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body>
-    <div class="panelIzquierdo">
-        <div class="navegador">
-            <nav>
-                <a href="/inicio/"><img src="{% static 'casa.png'%}" alt="1"></a>
-                <a href="/foro/"><img src="{% static 'foro.png'%}" alt=""></a>
-                <a href="/repaso/"><img src="{% static 'libro.png'%}" alt=""></a>
-                <a href="/perfil/"><img src="{% static 'usuario.png'%}" alt=""></a> 
-            </nav>        
-        </div>
-        <div class="volver">
-            Volver
-        </div>
-    </div>
-    <div class="panelDerecho">
-        <form action="/publicacion/new/ " method="POST" enctype="multipart/form-data"> 
-            {% csrf_token %}
-
-            <div class="panel-publicacion">
-                <p>Tema nuevo</p>
-                <div class="titulo">
-                    <input type="text" name="titulo" placeholder="Inserta aqui tu titulo.">
-                </div>
-                <div class="contenido">
-                    <textarea name="contenido" id="" cols="30" rows="10" placeholder="Descripción de tu tema o duda."></textarea>
-                    <input type="file" name="imagen" id="">
-                </div>
-                <div class="hashtags">
-                    <textarea name="hashtags" id="" cols="30" rows="10" placeholder="Agrega algunos hastags para que les sea más fácil a otros usuarios encontrar tu discusión."></textarea>
-                </div>
-                <div class="botones">
-                    <button>Publicar</button>
-                    <button>Cancelar</button>
-                </div> 
+<body> 
+    <div class="todo">
+        <div class="panelIzquierdo">
+            <div class="navegador">
+                <nav>
+                    <a href="/inicio/"><img src="{% static 'casa.png'%}" alt="1"></a>
+                    <a href="/foro/"><img src="{% static 'foro.png'%}" alt=""></a>
+                    <a href="/repaso/"><img src="{% static 'libro.png'%}" alt=""></a>
+                    <a href="/perfil/"><img src="{% static 'usuario.png'%}" alt=""></a> 
+                </nav>        
             </div>
-        </form>    
+            <div class="volver">
+                Volver
+            </div>
+        </div>
+        <div class="panelDerecho">
+            <form action="/publicacion/new/ " method="POST" enctype="multipart/form-data"> 
+                {% csrf_token %}
+
+                <div class="panel-publicacion">
+                    <p>Tema nuevo</p>
+                    <div class="titulo">
+                        <input type="text" name="titulo" placeholder="Inserta aqui tu titulo." value="{{ titulo }}">
+                    </div>
+                    <div class="contenido">
+                        <textarea name="contenido" id=""  rows="10" placeholder="Descripción de tu tema o duda."  value="{{ contenido }}"></textarea>
+                        <input type="file" name="media" id="media" accept="image/*,video/*">
+
+                    </div>
+                    <div class="hashtags">
+                        <textarea name="hashtags" id="" rows="3" placeholder="Agrega algunos hastags para que les sea más fácil a otros usuarios encontrar tu discusión. Ejemplo: #manito #hogar #escuela" value="{{ hashtags }}"></textarea>
+                    </div>
+                    <div class="botones">
+                        <button id="submit-btn">Publicar</button>
+                        <button>Cancelar</button>
+                    </div> 
+                </div>
+            </form>    
+            <input type="hidden" id="user-edad" value="{{ edad }}">
+
+        </div>
     </div>
+    {% if error %}
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "{{ error }}",
+        });
+    </script>
+    {% endif %}
+    <script src="{% static 'publicacion.js' %}"></script>
+
 </body>
 </html>
