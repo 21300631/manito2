@@ -29,12 +29,13 @@
                 <div class="item-container">
                     <div class="banners">
                         <div class="ejercicio">Abrir y cerrar manos</div> <!--Tiene un retraso de 10 segundos solo el primero-->
-                        <div class="ejercicio">Girar muñecas hacia afuera</div>
-                        <div class="ejercicio">Girar muñecas hacia adentro</div>
-                        <div class="ejercicio">Sacudir manos</div>
-                        <div class="ejercicio">Tocar cada dedo con el pulgar</div>
+                        <div class="ejercicio">Girar muñecas</div>
+                        <div class="ejercicio">Girar manos hacia afuera</div>
+                        <div class="ejercicio">Girar manos hacia adentro</div>
                         <div class="ejercicio">Juntar yemas de los dedos</div>
                         <div class="ejercicio">Abrir y cerrar manos levantando dedo por dedo</div>
+                        <div class="ejercicio">Sacudir manos</div>
+
             
                     </div>
                 </div>
@@ -44,7 +45,11 @@
     <div class="derecha">
         <div class="panel-calentamiento">
             <div class="imagen-espacio">
-                <video src="regina.mp4"></video>
+                <video id="ejercicioVideo" autoplay muted playsinline webkit-playsinline>
+                    Tu navegador no soporta videos HTML5
+                </video>
+                <!-- Mensaje de carga -->
+                <div class="video-loading">Cargando ejercicio...</div>
             </div>
             
         </div>

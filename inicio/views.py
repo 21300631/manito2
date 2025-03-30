@@ -17,23 +17,3 @@ def inicioSesion(request):
             'puntos': perfil.puntos,
     }
     return render(request, 'inicio.html', contexto)	
-
-# from django.shortcuts import render
-# from django.contrib.auth.decorators import login_required
-# from registro.models import Profile
-# from django.contrib.auth.models import User
-
-
-
-# def inicioSesion(request):
-#     if request.user.is_authenticated:
-#         perfil = Profile.objects.get(usuario=request.user)
-#         contexto = {
-#             'nombre_usuario': request.user.fitst_name,
-#             'medalla': perfil.medalla,
-#             'dias_racha': perfil.dias_racha,
-#         }
-#     else:
-#         contexto = {}
-#     return render(request, 'inicio.html')	
-

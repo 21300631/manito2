@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from registro.models import Profile
 from inicio.models import Medalla
+
 def formulario(request):
     return render(request, 'registro.html')
 

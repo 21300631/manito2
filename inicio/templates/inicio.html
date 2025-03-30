@@ -28,12 +28,17 @@
             <div class="panel-perfil">
                 <img class="foto-perfil" src="{% static 'muchacha.png'%}" alt="">
                 <span class="nombre-usuario"> {{ usuario.username }}</span>
+                <!-- Medalla (solo muestra si existe) -->
+                {% if perfil.medalla %}
                 <div class="medalla">
-                    <img src="{{ medalla.url }}}" alt="">
+                    <img src="{{ perfil.medalla.imagen.url }}" alt="Medalla {{ perfil.medalla.nombre }}">
+                    <span class="tooltip">{{ perfil.medalla.nombre }}</span>
                 </div>
+                {% endif %}
+
                 <div class="racha">
                     <img src="{% static 'fuego.png'%}" alt="">
-                    <span class="dias-racha">{{ puntos }}</span>
+                    <span class="dias-racha">{{ perfil.racha }}</span>
                 </div>
 
             </div>

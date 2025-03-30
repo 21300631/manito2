@@ -1,0 +1,71 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'etapa2.css' %}">
+</head>
+<body>
+    <div class="todo">
+        <div class="panel-izquierdo">
+            <div class="navegador">
+                <nav>
+                    <a href="/inicio/"><img src="{% static 'casa.png'%}" alt="1"></a>
+                    <a href="/foro/"><img src="{% static 'foro.png'%}" alt="2"></a>
+                    <a href="/repaso/"><img src="{% static 'libro.png'%}" alt="3"></a>
+                    <a href="/perfil/"><img src="{% static 'usuario.png'%}" alt="4"></a> 
+                </nav>        
+            </div>
+        </div>
+        <div class="panel-derecho">
+            <div class="etapa">
+                <span class="titulo">Etapa 2</span>
+                <span class="descripcion">En esta etapa aprenderas las categorias matemáticas y atónimos de adjetivos calificativos.</span>
+
+            </div>
+            <div class="lecciones">
+                <div class="item1">
+                    <div class="nivel">Nivel1</div>
+                </div>
+                <div class="item2">
+                    <div class="nivel">Nivel2</div>                    
+                </div>
+                <div class="item3">
+                    <div class="leccionA l1">L1</div>
+                    <div class="leccionA l2">L2</div>
+                    <div class="leccionA l3">L3</div>
+                    <div class="leccionA l4">L4</div>
+                    <div class="leccionA l5">L5</div>
+                    <div class="leccionA l6">L6</div>
+                    <div class="leccionA l7">L7</div>
+                </div>
+                <div class="item4">
+                    <div class="leccionA l8">L6</div>
+                    <div class="leccionA l9">L5</div>
+                    <div class="leccionA l10">L4</div>
+                    <div class="leccionA l11">L3</div>
+                    <div class="leccionA l12">L2</div>
+                    <div class="leccionA l13">L1</div>
+                </div>
+                <div class="item5">
+                    <div class="leccionB r1">r1</div>
+                </div>
+                <div class="item6">
+                    <div class="leccionA l14">l7</div>
+
+                </div>
+                <div class="item7">
+                    <div class="leccionB r2">r2</div>
+                </div>
+                
+
+            </div>
+        </div>
+    </div>
+   
+    
+</body>
+</html>
