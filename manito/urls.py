@@ -28,6 +28,11 @@ urlpatterns = [
     path('publicacion/', include('publicacion.urls')),
     path('ejercicio/', include('ejercicio.urls')),
     path('repaso/', include('repaso.urls')),
-    path('lecciones/', include('lecciones.urls'))
+    path('lecciones/', include('lecciones.urls')),
+    path('foro/', include('foro.urls'))
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Solo en desarrollo (DEBUG=True)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

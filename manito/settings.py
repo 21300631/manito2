@@ -140,8 +140,9 @@ USE_TZ = True
 
 # Configurar archivos estáticos y plantillas
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# settings.py
+MEDIA_URL = '/media/'  # URL pública para medios
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Ruta absoluta al directorio media/
 STATIC_URL = 'static/'
 
 # Default primary key field type

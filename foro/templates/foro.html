@@ -1,0 +1,100 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicacion</title>
+    <link rel="stylesheet" href="{% static 'foro.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body> 
+    <div class="todo">
+        <div class="panelIzquierdo">
+            <div class="navegador">
+                <nav>
+                    <a href="/inicio/"><img src="{% static 'casa.png'%}" alt="1"></a>
+                    <a href="/foro/"><img src="{% static 'foro.png'%}" alt=""></a>
+                    <a href="/repaso/"><img src="{% static 'libro.png'%}" alt=""></a>
+                    <a href="/perfil/"><img src="{% static 'usuario.png'%}" alt=""></a> 
+                </nav>        
+            </div>
+            <a href="/publicacion/" class="nuevoPost">
+                Crear nuevo Post
+            </a>
+            
+        </div>
+        <div class="panelDerecho">
+            <div class="panelBusqueda">
+
+            </div>
+            <div class="panelPublicaciones">
+                {% for publicacion in publicaciones %}
+                <div class="publicacion">
+                    <div class="detalles">
+                        <h3>Tema: {{ publicacion.titulo }}</h3>
+                        <p>Iniciado por: {{ publicacion.usuario }}</p>
+                        <p>Descripción: {{ publicacion.contenido }}</p>
+                        {% if publicacion.imagen %}
+                        <img src="{{ publicacion.imagen.url}}" alt="">
+                        {% endif %}
+                        <div class="like-reporte">
+                            <form action="{% url 'dar_like' publicacion.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-like">Like</button>
+                                <label for="btn-like">{{ publicacion.likes.count }}</label>
+                            </form>
+                    
+                            <form action="{% url 'reportar' publicacion.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-report">Reportar</button>
+                                <label for="btn-report"> {{ publicacion.reportes.count }}</label>
+                            </form>
+                        </div>
+                       
+                        <form action="{% url 'agregar_comentario' publicacion.id %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <textarea class="inputComentario" name="contenido" rows="2" placeholder="Escribe un comentario..."></textarea>
+                            <div class="archivo-boton">
+                                <input type="file" name="archivo">
+                                <button class="comentar" type="submit">Comentar</button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                    
+
+                    <!-- Sección de comentarios -->
+                    <div class="comentarios">
+                        <h4>Comentarios:</h4>
+                        {% for comentario in publicacion.comentarios.all %}
+                        <div class="comentario">
+                            <p><strong>{{ comentario.usuario }}</strong>: {{ comentario.contenido }}</p>
+                            {% if comentario.archivo %}
+                            <p>Archivo adjunto: <a href="{{ comentario.archivo.url }}" target="_blank">Ver archivo</a></p>
+                            {% endif %}
+                            <p><small>{{ comentario.fecha_creacion }}</small></p>
+                        </div>
+                        {% empty %}
+                        <p>No hay comentarios aún.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% empty %}
+                <p>No hay publicaciones aún.</p>
+
+                </div>
+
+
+                
+                {% endfor %}
+
+            </div>
+
+        </div>
+        
+    </div>
+    
+</body>
+</html>

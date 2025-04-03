@@ -26,26 +26,26 @@
         </div>
         <div class="divetapasPerfil">
             <div class="panel-perfil">
-                <img class="foto-perfil" src="{% static 'muchacha.png'%}" alt="">
+                <img class="foto-perfil" src="{{ imagen.url }}" alt="">
                 <span class="nombre-usuario"> {{ usuario.username }}</span>
                 <!-- Medalla (solo muestra si existe) -->
                 {% if perfil.medalla %}
                 <div class="medalla">
-                    <img src="{{ perfil.medalla.imagen.url }}" alt="Medalla {{ perfil.medalla.nombre }}">
-                    <span class="tooltip">{{ perfil.medalla.nombre }}</span>
+                    <img src="{{ medalla.imagen.url }}" alt="Medalla {{ medalla.nombre }}">
+                    <span class="tooltip">{{ medalla.nombre }}</span>
                 </div>
                 {% endif %}
 
                 <div class="racha">
                     <img src="{% static 'fuego.png'%}" alt="">
-                    <span class="dias-racha">{{ perfil.racha }}</span>
+                    <span class="dias-racha">{{ racha }}</span>
                 </div>
 
             </div>
             <div class="panel-lecciones">
                 <div class="cards">
                     <div class="card" onclick="bringToFront(this)" style="background-color: #81b4ff;"> 
-                        <h3>1</h3>
+                        <h3>4</h3>
                         <div class="texto-lecciones">
                             <strong>Etapa 4</strong>
                             <p>Casa, escuela, república mexicana</p>
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     <div class="card" onclick="bringToFront(this)" style="background-color: #5199ff;">
-                        <h3>2</h3>
+                        <h3>3</h3>
                         <div class="texto-lecciones">
                             <strong>Etapa 3</strong>
                             <p>Alimentos, animales</p>
@@ -61,7 +61,7 @@
                         </div>
                     </div>
                     <div class="card" onclick="bringToFront(this)" style="background-color: #2678ff;">
-                        <h3>3</h3>
+                        <h3>2</h3>
                         <div class="texto-lecciones">
                             <strong>Etapa 2</strong>
                             <p>Matemáticas, antónimos </p> de adjetivos calificativos</p>
@@ -69,7 +69,7 @@
                         </div>
                     </div>
                     <div class="card" onclick="bringToFront(this)" style="background-color: #0056d2;">
-                        <h3>4</h3>
+                        <h3>1</h3>
                         <div class="texto-lecciones">
                             <strong>Etapa 1</strong>
                             <p>Abecedario, calendario, colores, cuerpo humano</p>

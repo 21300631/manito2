@@ -12,8 +12,15 @@ def inicioSesion(request):
         medalla = None  # Si el usuario no tiene perfil, medalla será None
     contexto = {
             'usuario': usuario,
+            'imagen': perfil.imagen,
             'medalla': perfil.medalla,
             'racha': perfil.racha,
             'puntos': perfil.puntos,
     }
+    
+    print(perfil.imagen.url)  # ¿Devuelve una ruta válida?
+    print(perfil.racha)      # ¿Tiene un valor numérico?
+    print(perfil.medalla)    # ¿Existe la medalla?
     return render(request, 'inicio.html', contexto)	
+
+
