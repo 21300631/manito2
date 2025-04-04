@@ -57,7 +57,7 @@ nav a{
 
 .panel-derecho{
     width: 100%;
-    height: 1000px;
+    height: 2000px;
 }
 
 .etapa{
@@ -95,7 +95,9 @@ nav a{
     margin-top: 60px;
 
     grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: 50px 120px 50px 120px 50px 120px 50px 120px 50px 120px 50px 120px;
+    grid-template-rows: 50px 120px 50px 120px 50px 120px
+     50px 120px 50px 120px 50px 120px 50px 120px
+      50px 120px 50px 120px 50px 120px; 
     gap: 20px;
 }
 
@@ -117,98 +119,108 @@ nav a{
 
 .item2 {
     position: relative;
-    grid-column:5/ span 2;
+    grid-column:3/ span 2;
     grid-row: 9;
 }
 
+
+
 /* fondos */
 
-.item3{
+.back-L{
     display: flex;
     align-items: center;
     justify-content: space-around;
-    grid-column: 1/8;
-    grid-row: 2;
     background-color: #7EB5EB;
     height: 120px;
     border-radius: 60px;
+}
+
+.back-r{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background-color: #FECBCC;
+    height: 120px;
+    border-radius: 60px;
+}
+
+.item3{
+    
+    grid-column: 1/8;
+    grid-row: 2;
+    
 }
 
 .item4{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
     grid-column: 1/8;
     grid-row: 4;
-    background-color: #7EB5EB;
-    height: 120px;
-    border-radius: 60px;
 }
 
 .item5{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
     grid-column: 1;
     grid-row: 6;
-    background-color: #FECBCC;
-    height: 120px;
-    border-radius: 60px;
 }
 
 .item6{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
     grid-column: 2/8;
     grid-row: 6;
-    background-color: #7EB5EB;
-    height: 120px;
-    border-radius: 60px;
 }
 .item7{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
     grid-column: 1/8;
     grid-row: 8;
-    background-color: #7EB5EB;
-    height: 120px;
-    border-radius: 60px;
 }
 
 .item8{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
     grid-column: 1;
     grid-row: 10;
-    background-color: #7EB5EB;
-    height: 120px;
-    border-radius: 60px;
 }
 
 .item9{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
     grid-column: 2;
     grid-row: 10;
-    background-color: #FECBCC;
-    height: 120px;
-    border-radius: 60px;
 }
 
-.item8{
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+.item10{
     grid-column: 3/8;
     grid-row: 10;
-    background-color: #7EB5EB;
-    height: 120px;
-    border-radius: 60px;
 }
+
+.item11{
+    grid-column: 1/8;
+    grid-row: 12;
+}
+
+.item12{
+    grid-column: 1/3;
+    grid-row: 14;
+}
+
+.item13{
+    grid-column: 3;
+    grid-row: 14;
+}
+
+.item14{
+    grid-column: 4/8;
+    grid-row: 14;
+}
+
+.item15{
+    grid-column: 1/8;
+    grid-row: 16;
+}
+
+.item16{
+    grid-column: 1/3;
+    grid-row: 18;
+}
+
+.item17{
+    grid-column: 3;
+    grid-row: 18;
+}
+
 
 
 /* lecciones */

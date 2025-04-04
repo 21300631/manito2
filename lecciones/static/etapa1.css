@@ -259,7 +259,7 @@ nav a{
     display: flex;
     justify-content: space-around;
     align-items: center;
-    grid-column: 1/7;
+    grid-column: 2/8;
     grid-row: 12;
     background-color: #7EB5EB;
     height: 120px;
@@ -270,7 +270,7 @@ nav a{
     display: flex;
     justify-content: space-around;
     align-items: center;
-    grid-column: 7;
+    grid-column: 1;
     grid-row: 12;
     background-color: #FECBCC;
     height: 120px;
