@@ -29,7 +29,8 @@ urlpatterns = [
     path('ejercicio/', include('ejercicio.urls')),
     path('repaso/', include('repaso.urls')),
     path('lecciones/', include('lecciones.urls')),
-    path('foro/', include('foro.urls'))
+    path('foro/', include('foro.urls')),
+    path('perfil/', include('perfil.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

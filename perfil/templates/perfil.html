@@ -1,0 +1,106 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>inicio</title>
+    <link rel="stylesheet" href="{% static 'perfil.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+    <div class="panelIzquierdo">
+        <div class="arriba">
+            <div class="divnavegador">
+                <nav>
+                    
+                    <a href="/inicio/"><img src="{% static 'casa.png'%}" alt="1">Inicio</a>
+                    <a href="/foro/"><img src="{% static 'foro.png'%}" alt=""> Foro</a>
+                    <a href="/repaso/"><img src="{% static 'libro.png'%}" alt=""> Repaso</a>
+                    <a href="/perfil/"><img src="{% static 'usuario.png'%}" alt=""> Perfil</a>
+    
+                </nav>            
+            </div>
+            <div class="fotoPerfil">
+                <img class="foto-perfil" src="{{ imagen.url }}" alt="Foto de perfil" id="preview-imagen">
+                <form method="post" enctype="multipart/form-data" action="{% url 'cambiar_foto_perfil' %}" class="foto-form">
+                    {% csrf_token %}
+                    <label for="id_nueva_imagen" class="cambiar-foto-btn">
+                        <i class="fas fa-camera"></i> Cambiar foto
+                        <input type="file" id="id_nueva_imagen" name="nueva_imagen" accept="image/*">
+                    </label>
+                    <button type="submit" class="guardar-cambios-btn">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </form>
+                
+            </div>
+        </div>
+        
+        <div class="divnotificaciones">
+            <div class="panelNotificaciones">
+                <div><p>Tus notificaciones</p></div>
+                <ul>
+                    <li class="notificacion-item">
+                        <p><strong class="usuario-notificacion">pollitoEnFuga11</strong>
+                        Ha respondido a tu duda</p>
+                    </li>
+                    <li class="notificacion-item">
+                        <p><strong class="usuario-notificacion">indianaJones62</strong>
+                        Le dio me gusta a tu publicacion</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="panelDerecho">
+        <!-- <div class="divPerfil">
+            <div class="panel-perfil">
+                <img class="foto-perfil" src="{{ imagen.url }}" alt="">
+                <span class="nombre-usuario"> {{ usuario.username }}</span>
+                {% if perfil.medalla %}
+                <div class="medalla">
+                    <img src="{{ medalla.imagen.url }}" alt="Medalla {{ medalla.nombre }}">
+                    <span class="tooltip">{{ medalla.nombre }}</span>
+                </div>
+                {% endif %}
+
+                <div class="racha">
+                    <img src="{% static 'fuego.png'%}" alt="">
+                    <span class="dias-racha">{{ racha }}</span>
+                </div>
+
+            </div>           
+        </div>
+        <div class="divpuntos">
+            <div class="panel-puntos">
+                <div class="texto-puntos"><img src="{% static 'gema.png'%}" alt=""><p>Siguiente etapa: <span>2</span></p></div>
+                
+            </div>
+            
+        </div> -->
+        
+       
+    </div>
+    <script>
+        document.getElementById('id_nueva_imagen').addEventListener('change', function(e) {
+            // Mostrar el botón de guardar
+            document.querySelector('.guardar-cambios-btn').classList.add('visible');
+            
+            // Mostrar vista previa de la imagen seleccionada
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('preview-imagen').src = event.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+        </script>
+</body>
+</html>
