@@ -70,9 +70,10 @@ def registro_usuario(request):
         )
         nuevo_usuario.save()
 
+
         # Creamos nuevo perfil de usuario 
         medalla = Medalla.objects.get(imagen='medallas/circulo.png')
-        nuevo_perfil = Profile(user=nuevo_usuario, edad=edad, racha=0, imagen='usuarios/default.jpg', puntos=0, medalla=medalla)
+        nuevo_perfil = Profile(user=nuevo_usuario, edad=edad, racha=0, imagen='usuario/default.jpg', puntos=0, medalla=medalla)
         nuevo_perfil.save()
 
         # profile = Profile.objects.create(
@@ -86,13 +87,10 @@ def registro_usuario(request):
         # )
 
         # Asignar insignia de bienvenida
-        try:
-            insignia_bienvenido = Insignia.objects.get(imagen='insignias/bienvenido.png')
-            nuevo_logro = Logro(usuario=nuevo_usuario, insignia=insignia_bienvenido)
-            nuevo_logro.save()
-        except Insignia.DoesNotExist:
-            print("⚠ La insignia de bienvenida no existe")
-
+        insignia_bienvenido = Insignia.objects.get(imagen='insignias/bienvenidos.png')
+        nuevo_logro = Logro(usuario=nuevo_perfil, insignia=insignia_bienvenido)
+        nuevo_logro.save()
+       
         # Iniciar sesión automáticamente después del registro
         login(request, nuevo_usuario)
 

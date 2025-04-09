@@ -11,8 +11,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
-<body>
-    <div class="panelsuperior">
+<body class="{{ theme }}" data-theme="{{ theme }}">
+
+    <!-- <div class="panelsuperior">
         <div class="divnavegador">
             <nav>
                 
@@ -28,7 +29,6 @@
             <div class="panel-perfil">
                 <img class="foto-perfil" src="{{ imagen.url }}" alt="">
                 <span class="nombre-usuario"> {{ usuario.username }}</span>
-                <!-- Medalla (solo muestra si existe) -->
                 {% if perfil.medalla %}
                 <div class="medalla">
                     <img src="{{ medalla.imagen.url }}" alt="Medalla {{ medalla.nombre }}">
@@ -40,7 +40,6 @@
                     <img src="{% static 'fuego.png'%}" alt="">
                     <span class="dias-racha">{{ racha }}</span>
                 </div>
-
             </div>
             <div class="panel-lecciones">
                 <div class="cards">
@@ -49,7 +48,9 @@
                         <div class="texto-lecciones">
                             <strong>Etapa 4</strong>
                             <p>Casa, escuela, república mexicana</p>
-                            <div class="play-button"></div>
+                            <a href="/lecciones/etapa4/">
+                                <div class="play-button"></div>
+                            </a>
                         </div>
                     </div>
                     <div class="card" onclick="bringToFront(this)" style="background-color: #5199ff;">
@@ -57,7 +58,9 @@
                         <div class="texto-lecciones">
                             <strong>Etapa 3</strong>
                             <p>Alimentos, animales</p>
-                            <div class="play-button"></div>
+                            <a href="/lecciones/etapa3/">
+                                <div class="play-button"></div>
+                            </a>
                         </div>
                     </div>
                     <div class="card" onclick="bringToFront(this)" style="background-color: #2678ff;">
@@ -65,7 +68,9 @@
                         <div class="texto-lecciones">
                             <strong>Etapa 2</strong>
                             <p>Matemáticas, antónimos </p> de adjetivos calificativos</p>
-                            <div class="play-button"></div>
+                            <a href="/lecciones/etapa2/">
+                                <div class="play-button"></div>
+                            </a>
                         </div>
                     </div>
                     <div class="card" onclick="bringToFront(this)" style="background-color: #0056d2;">
@@ -73,7 +78,9 @@
                         <div class="texto-lecciones">
                             <strong>Etapa 1</strong>
                             <p>Abecedario, calendario, colores, cuerpo humano</p>
-                            <div class="play-button"></div>
+                            <a href="/lecciones/etapa1">
+                                <div class="play-button"></div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -129,6 +136,80 @@
             });
         
     </script>
-    {% endif %}
+    {% endif %} -->
+
+    <div class="grid-container">
+        <div class="item1">
+            <nav>
+                <a href="/inicio/"><img src="{% static 'casa.png'%}" alt="Inicio"><span>Inicio</span></a>
+                <a href="/foro/"><img src="{% static 'foro.png'%}" alt="Foro"><span>Foro</span></a>
+                <a href="/repaso/"><img src="{% static 'libro.png'%}" alt="Repaso"><span>Repaso</span></a>
+                <a href="/perfil/"><img src="{% static 'usuario.png'%}" alt="Perfil"><span>Perfil</span></a>
+            </nav>
+        </div>
+        <div class="item2">
+            <div class="panel-perfil">
+                <img class="foto-perfil" src="{{ imagen.url }}" alt="Foto de perfil">
+                <span class="nombre-usuario">{{ usuario.username }}</span>
+                <div class="medalla">
+                    <img src="{{ medalla.imagen.url }}" alt="Medalla {{ medalla.nombre }}">
+                    <span class="tooltip">{{ medalla.nombre }}</span>
+                </div>
+                <div class="racha">
+                    <img src="{% static 'fuego.png'%}" alt="Racha">
+                    <span class="dias-racha">{{ racha }}</span>
+                </div>
+            </div>
+            <div class="panel-lecciones">
+                <div class="cards">
+                    <div class="card" onclick="bringToFront(this)" style="background-color: #81b4ff;"> 
+                        <h3>4</h3>
+                        <div class="texto-lecciones">
+                            <strong>Etapa 4</strong>
+                            <p>Casa, escuela, república mexicana</p>
+                            <a href="/lecciones/etapa4/">
+                                <div class="play-button"></div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card" onclick="bringToFront(this)" style="background-color: #5199ff;">
+                        <h3>3</h3>
+                        <div class="texto-lecciones">
+                            <strong>Etapa 3</strong>
+                            <p>Alimentos, animales</p>
+                            <a href="/lecciones/etapa3/">
+                                <div class="play-button"></div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card" onclick="bringToFront(this)" style="background-color: #2678ff;">
+                        <h3>2</h3>
+                        <div class="texto-lecciones">
+                            <strong>Etapa 2</strong>
+                            <p>Matemáticas, adjetivos calificativos</p>
+                            <a href="/lecciones/etapa2/">
+                                <div class="play-button"></div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card" onclick="bringToFront(this)" style="background-color: #0056d2;">
+                        <h3>1</h3>
+                        <div class="texto-lecciones">
+                            <strong>Etapa 1</strong>
+                            <p>Abecedario, calendario, colores, cuerpo humano</p>
+                            <a href="/lecciones/etapa1">
+                                <div class="play-button"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item3"></div>
+        <div class="item4"></div>
+        <div class="item5"></div>
+        <div class="item6"></div>
+
+    </div>
 </body>
 </html>

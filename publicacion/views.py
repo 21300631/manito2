@@ -48,3 +48,8 @@ def nueva_publicacion(request):
         return redirect('/publicacion/')
     
     return HttpResponse("Método no permitido", status=405)
+
+
+def vista_alguna(request):
+    perfil = Profile.objects.get(user=request.user)
+    return render(request, 'publicacion.html', {'theme': perfil.theme})

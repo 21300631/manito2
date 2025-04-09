@@ -2,6 +2,16 @@
     margin: 0;
     padding: 0;
 }
+
+body.light {
+    background-color: #BCDCFB;
+}
+
+body.dark {
+    background-color: #1a1a1a;
+    color: white;
+}
+
 .todo{
     background-color: #BCDCFB;
 }

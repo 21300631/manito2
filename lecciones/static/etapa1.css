@@ -11,7 +11,15 @@
     width: 110px;
 
 }
+body.light {
+    background-color: white;
+    color: black;
+}
 
+body.dark {
+    background-color: #1a1a1a;
+    color: white;
+}
 
 nav{
     display: flex;

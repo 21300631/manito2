@@ -6,6 +6,16 @@
     background-color: #BCDCFB;
 }
 
+body.light {
+    background-color: #BCDCFB;
+}
+
+body.dark {
+    background-color: #1a1a1a;
+    color: white;
+}
+
+
 .instruccion{
     display: flex;
     align-items: center;

@@ -18,6 +18,15 @@
     width: 110px;
 
 }
+body.light {
+    background-color: white;
+}
+
+body.dark {
+    background-color: #121212;
+    color: white;
+}
+
 
 
 nav{

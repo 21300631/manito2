@@ -4,6 +4,7 @@ from django.views.generic import ListView
 from publicacion.models import Publicacion, Comentario
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from registro.models import Profile
 # from .forms import ComentarioForm
 
 
@@ -51,3 +52,7 @@ def agregar_comentario(request, publicacion_id):
             )
 
     return redirect("foro")  # Redirigir al foro después de comentar
+
+def vista_alguna(request):
+    perfil = Profile.objects.get(user=request.user)
+    return render(request, 'foro.html', {'theme': perfil.theme})

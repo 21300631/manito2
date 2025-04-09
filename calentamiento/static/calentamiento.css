@@ -3,6 +3,16 @@
     margin: 0;
 }
 
+body.light {
+    background-color: white;
+    color: black;
+}
+
+body.dark {
+    background-color: #1a1a1a;
+    color: white;
+}
+
 .izquierda{
     width: 350px;
     height: 695px;

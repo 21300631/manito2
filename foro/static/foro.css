@@ -3,6 +3,16 @@
     padding: 0;
     font-family: Arial, Helvetica, sans-serif
 }
+
+body.light {
+    background-color: white;
+    color: black;
+}
+
+body.dark {
+    background-color: #1a1a1a;
+    color: white;
+}
 .todo{
     display: flex;
 }
@@ -19,6 +29,19 @@
     width: 110px;
 
 }
+
+body.light {
+    background-color: white;
+    color: black;
+}
+
+body.dark {
+    background-color: #121212;
+    color: white;
+}
+
+
+
 
 
 nav{
