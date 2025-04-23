@@ -1,6 +1,5 @@
 from django.urls import path
 from .views import etapa1, etapa2, etapa3, etapa4
-# 
 
 urlpatterns = [
     path('etapa1/', etapa1),

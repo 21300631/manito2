@@ -40,17 +40,15 @@
                         <img src="{{ publicacion.imagen.url}}" alt="">
                         {% endif %}
                         <div class="like-reporte">
-                            <form action="{% url 'dar_like' publicacion.id %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-like">Like</button>
-                                <label for="btn-like">{{ publicacion.likes.count }}</label>
-                            </form>
+                            <button class="btn btn-like" onclick="darLike({{ publicacion.id }})" id="btn-like-{{ publicacion.id }}">
+                                Like
+                            </button>
+                            <label id="like-count-{{ publicacion.id }}">{{ publicacion.likes.count }}</label>
                     
-                            <form action="{% url 'reportar' publicacion.id %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-report">Reportar</button>
-                                <label for="btn-report"> {{ publicacion.reportes.count }}</label>
-                            </form>
+                            <button class="btn btn-report" onclick="reportar({{ publicacion.id }})" id="btn-reportar-{{ publicacion.id }}">
+                                Reportar
+                            </button>
+                            <label id="report-count-{{ publicacion.id }}">{{ publicacion.reportes.count }}</label>
                         </div>
                        
                         <form action="{% url 'agregar_comentario' publicacion.id %}" method="POST" enctype="multipart/form-data">
@@ -95,6 +93,76 @@
         </div>
         
     </div>
-    
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Verifica si esta cookie empieza con el nombre que buscamos
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        function darLike(publicacionId) {
+            fetch(`{% url 'dar_like' 0 %}`.replace("0", publicacionId), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Actualizar el contador
+                const label = document.getElementById(`like-count-${publicacionId}`);
+                label.innerText = data.total_likes;
+        
+                // Opcional: cambiar estilo si ya le dio like
+                const button = document.getElementById(`btn-like-${publicacionId}`);
+                // if (data.liked) {
+                //     button.style.backgroundColor = '#3C91E6'; // Cambia el color del botón si le dio like
+                // } else {
+                //     button.style.backgroundColor = '';
+                // }
+            })
+            .catch(error => console.error('Error al dar like:', error));
+        }
+        function reportar(publicacionId) {
+            fetch(`{% url 'reportar' 0 %}`.replace("0", publicacionId), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.eliminada) {
+                    // Eliminar la publicación del DOM si fue eliminada
+                    const publicacionElement = document.getElementById(`publicacion-${publicacionId}`);
+                    if (publicacionElement) {
+                        publicacionElement.remove();
+                    }
+                } else {
+                    // Actualizar el contador de reportes
+                    const label = document.getElementById(`report-count-${publicacionId}`);
+                    if (label) {
+                        label.innerText = data.total_reportes;
+                    }
+                }
+            })
+            .catch(error => console.error('Error al reportar:', error));
+        }
+    </script>
+        
 </body>
 </html>

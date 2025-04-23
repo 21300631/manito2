@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorama</title>
+    <link rel="stylesheet" href="{% static 'desafios.css'%}">
+
+</head>
+<body class="{{ theme }}" data-theme="{{ theme }}">
+    <div class="instruccion">
+        <span>
+            Realiza la mayor cantidad de gestos que se muestran 
+            antes de que se acabe el tiempo
+        </span>
+    </div>
+    <div class="contenido memo">
+        <div class="tarjetas m">
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            
+        </div>
+    </div>
+    <div class="extras mem">
+        <div class="reloj relojM"><span>3:40</span></div>
+        <a class="cancelarM" href="/inicio/">Cancelar</a>
+    </div>
+
+</body>
+</html>

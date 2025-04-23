@@ -463,6 +463,7 @@ nav a{
         width: 30%; 
         height: 100%;
         font-size: clamp(16px, 4vw, 18px); 
+        margin-left: 20%;
     }
 
     

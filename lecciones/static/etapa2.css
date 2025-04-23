@@ -6,6 +6,9 @@
     height: 1500px;
 }
 
+a{
+    text-decoration: none;
+}
 .navegador{
 
     width: 110px;
@@ -173,11 +176,11 @@ nav a{
     grid-row: 6;
 }
 .item7{
-    grid-column: 7;
+    grid-column: 6/8;
     grid-row: 8;
 }
 .item8{
-    grid-column: 6;
+    grid-column: 5;
     grid-row: 8;
 }
 

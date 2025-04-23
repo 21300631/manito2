@@ -22,7 +22,7 @@ body.dark {
     height: 97px;
     width: 100%;
 }
-.instruccion p{
+.instruccion span{
     text-align: center;
     color: #fff;
     font-family:  Arial;
@@ -93,3 +93,28 @@ body.dark {
     color: #fff;
     font-size: 18px;
 }
+
+
+.ejercicio{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+    height: 70vh;
+    justify-items: center;
+    align-items: center;
+}
+
+.card{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3C91E6;
+    border-radius: 10px;
+    width: 80%;
+    height: 50%;
+}
+
+.card:hover{
+    background-color: #0673e0;
+    cursor: pointer;
+}   

@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio1</title>
+    <link rel="stylesheet" href="{% static 'e01.css'%}">
+</head>
+<body class="{{ theme }}" data-theme="{{ theme }}">
+    <div class="todo">
+        <div class="instruccion">
+            <span>{{ texto_instruccion }}</span>
+        </div>
+        <div class="contenido">
+            <div class="panel-barra">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+            <div class="panel2">
+                <div class="ejercicio">
+                    {% for opcion in opciones %}
+                        <form method="post" action="{% url 'verificar_seleccion' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="opcion_id" value="{{ opcion.id }}">
+                            <button type="submit" class="card">
+                                {% if opcion.gesto.url.endswith:".mp4" %}
+                                    <video src="{{ opcion.gesto.url }}" controls width="200"></video>
+                                {% else %}
+                                    <img src="{{ opcion.gesto.url }}" alt="Gesto de {{ opcion.palabra }}" width="200">
+                                {% endif %}
+                            </button>
+                        </form>
+                    {% endfor %}
+                </div>
+                
+                <div class="panel-btn">
+                    <button class="btn-salir">Salir</button>
+                    <form method="post" action="{% url 'siguiente_ejercicio' %}">
+                        {% csrf_token %}
+                        <button type="submit">Siguiente</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'ejercicio.js' %}"></script>
+
+</body>
+</html>

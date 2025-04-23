@@ -11,6 +11,9 @@
     width: 110px;
 
 }
+a{
+    text-decoration: none;
+}
 
 body.light {
     background-color: white;

@@ -11,7 +11,7 @@ body.light {
 
 body.dark {
     background-color: #1a1a1a;
-    color: white;
+    color: black;
 }
 .todo{
     display: flex;
@@ -30,15 +30,6 @@ body.dark {
 
 }
 
-body.light {
-    background-color: white;
-    color: black;
-}
-
-body.dark {
-    background-color: #121212;
-    color: white;
-}
 
 
 
@@ -143,6 +134,15 @@ nav a{
     transition: 0.3s ease-in-out;
     margin-left: 20px;
     margin-top: 10px;
+}
+
+.like-reporte {
+
+    font-size: 14px;
+}
+
+.like-reporte label{
+    padding: 1em;
 }
 
 .btn-like {

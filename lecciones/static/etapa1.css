@@ -57,6 +57,10 @@ nav a{
     margin-left: 110px;
 }
 
+a{
+    text-decoration: none;
+    color: #ffffff;
+}
 
 .panel-izquierdo{
     width: 300px;

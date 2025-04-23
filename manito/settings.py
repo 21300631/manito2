@@ -165,3 +165,6 @@ AWS_DEFAULT_ACL = None
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
+
+MANITO_BUCKET = 'manito-bucket1'
+MANITO_BUCKET_DOMAIN = f'https://{MANITO_BUCKET}.s3.amazonaws.com'

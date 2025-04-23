@@ -17,6 +17,7 @@ class Profile(models.Model):
     puntos = models.IntegerField(default=0)
     medalla = models.ForeignKey('inicio.Medalla', on_delete=models.SET_NULL, null=True, blank=True)
     theme = models.CharField(max_length=10, default="light")  # 'light' o 'dark'
+    leccion = models.IntegerField(default=1)  # ID de la lección actual
 
     @property
     def medalla_actual(self):

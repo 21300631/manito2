@@ -1,5 +1,4 @@
-from django.shortcuts import render
-from registro.models import Profile
+from django.shortcuts import render, redirect
 
 # Create your views here.
 
@@ -15,6 +14,6 @@ def etapa3(request):
 def etapa4(request):
     return render(request, 'etapa4.html')
 
-def vista_alguna(request):
-    perfil = Profile.objects.get(user=request.user)
-    return render(request, 'etapa1.html', {'theme': perfil.theme})
+# def vista_alguna(request):
+#     perfil = Profile.objects.get(user=request.user)
+#     return render(request, 'etapa1.html', {'theme': perfil.theme})

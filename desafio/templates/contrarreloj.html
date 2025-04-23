@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrarreloj</title>
+    <link rel="stylesheet" href="{% static 'desafios.css'%}">
+</head>
+<body class="{{ theme }}" data-theme="{{ theme }}">
+    <div class="instruccion">
+        <span>
+            Realiza la mayor cantidad de gestos que se muestran 
+            antes de que se acabe el tiempo
+        </span>
+    </div>
+    <div class="contenido">
+        <div class="panel-referencia">         
+        </div>
+        <div class="panel-usuario">
+            
+        </div>
+    </div>
+    <div class="extras">
+        <div class="reloj"><span>3:40</span></div>
+        <div class="mensaje"><span>Genial</span></div>
+        <a href="/inicio/">Cancelar</a>
+    </div>
+
+</body>
+</html>

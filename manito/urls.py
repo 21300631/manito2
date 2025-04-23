@@ -31,6 +31,8 @@ urlpatterns = [
     path('lecciones/', include('lecciones.urls')),
     path('foro/', include('foro.urls')),
     path('perfil/', include('perfil.urls')),
+    path('loteria/', include('loteria.urls')),
+    path('desafio/', include('desafio.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

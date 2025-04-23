@@ -5,6 +5,7 @@ from publicacion.models import Publicacion, Comentario
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from registro.models import Profile
+from django.http import JsonResponse
 # from .forms import ComentarioForm
 
 
@@ -14,26 +15,51 @@ def foro(request):
     
     return render(request, "foro.html", {"publicaciones": publicaciones})
 
+# @login_required
+# def dar_like(request, publicacion_id):
+#     publicacion = get_object_or_404(Publicacion, id=publicacion_id)
+#     if request.user.profile in publicacion.likes.all():
+#         publicacion.likes.remove(request.user.profile)  # Si ya le dio like, lo quita
+#     else:
+#         publicacion.likes.add(request.user.profile)  # Agrega el like
+#     return redirect('foro')
+
 @login_required
 def dar_like(request, publicacion_id):
-    publicacion = get_object_or_404(Publicacion, id=publicacion_id)
-    if request.user in publicacion.likes.all():
-        publicacion.likes.remove(request.user.profile)  # Si ya le dio like, lo quita
-    else:
-        publicacion.likes.add(request.user.profile)  # Agrega el like
-    return redirect('foro')
+    if request.method == "POST":
+        publicacion = get_object_or_404(Publicacion, id=publicacion_id)
+        profile = request.user.profile
+        liked = False
+
+        if profile in publicacion.likes.all():
+            publicacion.likes.remove(profile)
+        else:
+            publicacion.likes.add(profile)
+            liked = True
+
+        return JsonResponse({
+            'total_likes': publicacion.likes.count(),
+            'liked': liked
+        })
+
 
 @login_required
 def reportar(request, publicacion_id):
     publicacion = get_object_or_404(Publicacion, id=publicacion_id)
-    if request.user not in publicacion.reportes.all():
-        publicacion.reportes.add(request.user.profile)  # Agrega el reporte si no lo ha hecho antes
-    if publicacion.reportes.count >= 20 :
-        publicacion.delete
-        print(publicacion_id)
-        print("Se elimino")
-        
-    return redirect('foro')
+    user_profile = request.user.profile
+
+    eliminada = False
+    if user_profile not in publicacion.reportes.all():
+        publicacion.reportes.add(user_profile)
+
+    if publicacion.reportes.count() >= 20:
+        publicacion.delete()
+        eliminada = True
+
+    return JsonResponse({
+        'total_reportes': publicacion.reportes.count() if not eliminada else 0,
+        'eliminada': eliminada
+    })
 
 @login_required
 def agregar_comentario(request, publicacion_id):
