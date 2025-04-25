@@ -7,8 +7,7 @@
     <title>Ejercicio1</title>
     <link rel="stylesheet" href="{% static 'e02.css'%}">
 </head>
-<body class="{{ theme }}" data-theme="{{ theme }}">
-
+<body class="{{ theme }}" data-theme="{{ theme }}" data-url-verificacion="{% url 'verificar_seleccion2' %}" data-url-siguiente="{% url 'siguiente_ejercicio' %}">
     <div class="todo">
         <div class="instruccion">
             <span>{{ texto_instruccion }}</span>
@@ -29,7 +28,7 @@
                     {% for opcion in opciones %}
                         <div class="card" data-id="{{ opcion.id }}">
                             {% if opcion.es_video %}
-                                <video src="{{ opcion.url }}" controls width="200"></video>
+                                <video src="{{ opcion.url }}" autoplay width="200"></video>
                             {% else %}
                                 <img src="{{ opcion.url }}" alt="Gesto de {{ opcion.palabra }}" width="200">
                             {% endif %}
@@ -46,7 +45,7 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'ejercicio.js' %}"></script>
-
+    <script src="{% static 'progress.js' %}"></script>
+    <script type="module" src="{% static 'seleccion2.js' %}"></script>
 </body>
 </html>

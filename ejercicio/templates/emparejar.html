@@ -7,7 +7,7 @@
     <title>Ejercicio1</title>
     <link rel="stylesheet" href="{% static 'e03.css'%}">
 </head>
-<body class="{{ theme }}" data-theme="{{ theme }}">
+<body class="{{ theme }}" data-theme="{{ theme }}" data-url-verificacion="{% url 'verificar_emparejar' %}" data-url-siguiente="{% url 'siguiente_ejercicio' %}">
 
     <div class="todo">
         <div class="instruccion">
@@ -22,22 +22,23 @@
             <div class="panel2">
                 <div class="palabras">
                     {% for palabra in palabras %}
-                        <div class="palabra">{{ palabra.palabra }}</div>
+                        <div data-id="{{ palabra.id }}" class="palabra">{{ palabra.palabra }}</div>
                     {% endfor %}
                 </div>
                 <div class="gestos">
                     {% for gesto in gestos %}
-                    <div class="gesto">
+                    <div class="gesto" data-id="{{ gesto.objeto.id }}">
                         {% if gesto.es_video %}
-                            <video src="{{ gesto.url }}" controls width="200"></video>
+                            <video src="{{ gesto.url }}"  alt="Gesto {{ palabra_correcta}}" autoplay  width="200"></video>
                         {% else %}
-                            <img src="{{ gesto.url }}" alt="Gesto" width="80%" padding="10%" margin="0">
+                            <img src="{{ gesto.url }}" alt="Gesto {{ gesto.objeto.palabra}}" width="80%" padding="10%" margin="0">
                         {% endif %}
                     </div>
                 {% endfor %}
                 </div>
                 <div class="panel-btn">
                     <button class="btn-salir">Salir</button>
+                    <button id="btn-verificar" disabled>Verificar</button>
                     <form method="post" action="{% url 'siguiente_ejercicio' %}">
                         {% csrf_token %}
                         <button type="submit">Siguiente</button>
@@ -46,6 +47,7 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'ejercicio.js' %}"></script>
+    <script src="{% static 'progress.js' %}"></script>
+    <script src="{% static 'emparejar.js' %}"></script>
 </body>
 </html>

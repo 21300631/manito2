@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{% static 'e06.css'%}">
 </head>
 <body class="{{ theme }}" data-theme="{{ theme }}">
-
     <div class="todo">
         <div class="instruccion">
             <span>{{ texto_instruccion }}</span>
@@ -23,11 +22,10 @@
                 <div class="ejercicio">
                     <div class="gesto">
                         {% if video %}
-                            <video src="{{ archivo }}" controls width="200"></video>
+                            <video src="{{ archivo }}" alt="Gesto {{ palabra_correcta }}" autoplay width="200"></video>
                         {% else %}
-                            <img src="{{ archivo }}" alt="Gesto" width="80%" padding="10%" margin="0">
+                            <img src="{{ archivo }}" alt="Gesto {{ palabra_correcta }}" width="80%" style="padding: 10%; margin: 0;">
                         {% endif %}
-
                     </div>
                     <div class="gesto g-usuario"></div>
                 </div>
@@ -35,13 +33,18 @@
                     <button class="btn-salir">Salir</button>
                     <form method="post" action="{% url 'siguiente_ejercicio' %}">
                         {% csrf_token %}
-                        <button type="submit">Siguiente</button>
+                        <button type="submit" disabled>Siguiente</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <script src="{% static 'ejercicio.js' %}"></script>
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
+    <script src="{% static 'progress.js' %}"></script>
+    <script src="{% static 'gesto.js' %}"></script>
 </body>
 </html>

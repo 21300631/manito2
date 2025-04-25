@@ -7,7 +7,7 @@
     <title>Ejercicio1</title>
     <link rel="stylesheet" href="{% static 'e05.css'%}">
 </head>
-<body class="{{ theme }}" data-theme="{{ theme }}">
+<body class="{{ theme }}" data-theme="{{ theme }}" data-url-siguiente="{% url 'siguiente_ejercicio' %}">
 
     <div class="todo">
         <div class="instruccion">
@@ -23,26 +23,33 @@
                 <div class="ejercicio">
                     <div class="gesto">
                         {% if es_video %}
-                            <video src="{{ gesto_url }}" controls width="250"></video>
+                            <video src="{{ gesto_url }}" autoplay width="250" alt="Gesto de {{ palabra_correcta }}"></video>
                         {% else %}
-                            <img src="{{ gesto_url }}" alt="Gesto a interpretar" width="80%" padding="10%" margin="0">
+                            <img src="{{ gesto_url }}" alt="Gesto de {{ palabra_correcta }}" width="80%" padding="10%" margin="0">
                         {% endif %}
                     </div>
                     <div class="texto">
-                        <input type="text" class="input" placeholder="Escribe la palabra aquí">
+                        <form method="post" action="{% url 'verificar_escribir' %}">
+                            {% csrf_token %}
+                            <input type="text" name="respuesta_usuario" class="input" placeholder="Escribe la palabra aquí" required>
+                            <button type="submit">Verificar</button>
+                        </form>
                     </div>
                 </div>
                 <div class="panel-btn">
+                    <div id="resultadoEscribir" class="resultado"></div>
                     <button class="btn-salir">Salir</button>
                     <form method="post" action="{% url 'siguiente_ejercicio' %}">
                         {% csrf_token %}
-                        <button type="submit">Siguiente</button>
+                        <button class="btn-siguiente" type="submit">Siguiente</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <script src="{% static 'ejercicio.js' %}"></script>
+
+    <script src="{% static 'progress.js' %}"></script>
+    <script src="{% static 'escribir.js' %}"></script>
 
 </body>
 </html>

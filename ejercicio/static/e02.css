@@ -140,3 +140,26 @@ body.dark {
     background-color: #0673e0;
     cursor: pointer;
 }   
+.card.correcto {
+    border: 3px solid limegreen;
+    animation: pop 0.3s ease;
+}
+
+.card.incorrecto {
+    border: 3px solid red;
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}

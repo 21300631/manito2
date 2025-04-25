@@ -7,7 +7,7 @@
     <title>Ejercicio1</title>
     <link rel="stylesheet" href="{% static 'e01.css'%}">
 </head>
-<body class="{{ theme }}" data-theme="{{ theme }}">
+<body class="{{ theme }}" data-theme="{{ theme }}" data-url-verificacion="{% url 'verificar_seleccion' %}" data-url-siguiente="{% url 'siguiente_ejercicio' %}">
     <div class="todo">
         <div class="instruccion">
             <span>{{ texto_instruccion }}</span>
@@ -21,17 +21,13 @@
             <div class="panel2">
                 <div class="ejercicio">
                     {% for opcion in opciones %}
-                        <form method="post" action="{% url 'verificar_seleccion' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="opcion_id" value="{{ opcion.id }}">
-                            <button type="submit" class="card">
-                                {% if opcion.gesto.url.endswith:".mp4" %}
-                                    <video src="{{ opcion.gesto.url }}" controls width="200"></video>
-                                {% else %}
-                                    <img src="{{ opcion.gesto.url }}" alt="Gesto de {{ opcion.palabra }}" width="200">
-                                {% endif %}
-                            </button>
-                        </form>
+                        <button type="button" class="card opcion-btn" data-id="{{ opcion.id }}">
+                            {% if opcion.es_video %}
+                                <video src="{{ opcion.url }}" autoplay width="200"></video>
+                            {% else %}
+                                <img src="{{ opcion.url }}" alt="Gesto de {{ opcion.palabra }}" width="200">
+                            {% endif %}
+                        </button>
                     {% endfor %}
                 </div>
                 
@@ -46,7 +42,8 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'ejercicio.js' %}"></script>
+    <script src="{% static 'progress.js' %}"></script>
+    <script src="{% static 'seleccion.js' %}"></script>
 
 </body>
 </html>
