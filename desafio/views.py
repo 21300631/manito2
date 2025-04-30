@@ -7,14 +7,6 @@ from manito.settings import MANITO_BUCKET_DOMAIN
 
 # Create your views here.
 
-def contrarreloj(request):
-    return render(request, 'contrarreloj.html')
-
-def memorama(request):
-    return render(request, 'memorama.html')
-
-def relacion(request):
-    return render(request, 'relacion.html')
 
 def generarMemorama(request):
     usuario = request.user
@@ -53,3 +45,62 @@ def generarMemorama(request):
 
     return render(request, 'memorama.html')
     
+
+def generarContrarreloj(request):
+    usuario = request.user
+    perfil = Profile.objects.get(user=usuario)
+
+    palabras_usuario_ids = PalabraUsuario.objects.filter(usuario_id=perfil).values_list('palabra_id', flat=True)
+
+    palabras_originales = list(Palabra.objects.filter(id__in=palabras_usuario_ids))
+
+    random.shuffle(palabras_originales)
+
+    palabras_filtradas = [
+        p for p in palabras_originales
+        if not str(p.gesto).lower().endswith('.mp4')
+    ]
+
+    imagenes = [p.gesto for p in palabras_filtradas]
+
+    print("Username:", usuario.username)
+    print("Profile ID:", perfil.user_id)
+    print("Palabras (filtradas):", [p.palabra for p in palabras_filtradas])
+    print("Gestos URLs (imágenes):", imagenes)
+
+    context = {
+        'palabras': palabras_filtradas, # Pasar la lista filtrada
+        'imagenes': imagenes
+    }
+    return render(request, 'contrarreloj.html', context)
+
+def generarRelacion(request):
+    usuario = request.user
+    perfil = Profile.objects.get(user=usuario)
+
+    palabras_usuario_ids = PalabraUsuario.objects.filter(usuario_id=perfil).values_list('palabra_id', flat=True)
+
+    palabras_originales = list(Palabra.objects.filter(id__in=palabras_usuario_ids))
+
+    random.shuffle(palabras_originales)
+
+    palabras_filtradas = [
+        p for p in palabras_originales
+        if not str(p.gesto).lower().endswith('.mp4')
+    ]
+
+    palabras_filtradas = palabras_filtradas[:6]  # Limitar a 6 palabras
+
+    imagenes = [p.gesto for p in palabras_filtradas]
+
+    print("Relación")
+    print("Username:", usuario.username)
+    print("Profile ID:", perfil.user_id)
+    print("Palabras (filtradas):", [p.palabra for p in palabras_filtradas])
+    print("Gestos URLs (imágenes):", imagenes)
+
+    context = {
+        'palabras': palabras_filtradas, # Pasar la lista filtrada
+        'imagenes': imagenes
+    }
+    return render(request, 'relacion.html', context)

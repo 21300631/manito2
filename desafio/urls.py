@@ -1,8 +1,8 @@
-from .views import contrarreloj, generarMemorama, relacion
+from .views import generarContrarreloj, generarMemorama, generarRelacion
 from django.urls import path
 
 urlpatterns = [
-    path('contrarreloj/', contrarreloj, name='contrarreloj'),
+    path('contrarreloj/', generarContrarreloj, name='contrarreloj'),
     path('memorama/', generarMemorama, name='memorama'),
-    path('relacion/', relacion, name='relacion'),
+    path('relacion/', generarRelacion, name='relacion'),
 ]
