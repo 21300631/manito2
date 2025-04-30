@@ -1,14 +1,11 @@
 from manito.settings import MANITO_BUCKET_DOMAIN
-import re
 from django.utils.safestring import mark_safe
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
 from django.shortcuts import render, redirect
-from .models import Palabra
-import random
 from registro.models import Profile
 from .models import PalabraUsuario
+from .models import Palabra
+import random
+import re
 
 
 def ejercicio_emparejar(request):
