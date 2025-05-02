@@ -1,0 +1,54 @@
+
+
+.juego-container {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 5% 15%;
+    width: 100%;
+    height: 60vh;
+}
+
+.fila{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    width: 100%;
+    gap: 1%;
+}
+
+.item{
+    border-radius: 10%;
+}
+
+.item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.item.seleccionado {
+    border-color: #4CAF50;
+    background-color: #e8f5e9;
+}
+
+.item.error {
+    border-color: #f44336;
+    background-color: #ffebee;
+    animation: shake 0.5s;
+}
+
+.item.acertado {
+    opacity: 0;
+    transform: scale(0);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.item img {
+    max-width: 120px;
+    max-height: 120px;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}

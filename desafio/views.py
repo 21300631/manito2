@@ -73,34 +73,34 @@ def generarContrarreloj(request):
         'imagenes': imagenes
     }
     return render(request, 'contrarreloj.html', context)
-
 def generarRelacion(request):
     usuario = request.user
     perfil = Profile.objects.get(user=usuario)
 
     palabras_usuario_ids = PalabraUsuario.objects.filter(usuario_id=perfil).values_list('palabra_id', flat=True)
-
     palabras_originales = list(Palabra.objects.filter(id__in=palabras_usuario_ids))
-
-    random.shuffle(palabras_originales)
-
+    
+    # Filtrar palabras sin video y mezclar
     palabras_filtradas = [
         p for p in palabras_originales
         if not str(p.gesto).lower().endswith('.mp4')
     ]
-
-    palabras_filtradas = palabras_filtradas[:6]  # Limitar a 6 palabras
-
-    imagenes = [p.gesto for p in palabras_filtradas]
-
-    print("Relación")
-    print("Username:", usuario.username)
-    print("Profile ID:", perfil.user_id)
-    print("Palabras (filtradas):", [p.palabra for p in palabras_filtradas])
-    print("Gestos URLs (imágenes):", imagenes)
-
+    random.shuffle(palabras_filtradas)
+    
+    # Tomar 10 palabras (5 pares correctos + 5 para mezclar)
+    palabras_seleccionadas = palabras_filtradas[:10]
+    
+    # Preparar datos
+    pares_correctos = [{
+        'palabra': {'id': p.id, 'palabra': p.palabra},
+        'imagen': {'id': p.id, 'url': p.gesto, 'palabra': p.palabra}
+    } for p in palabras_seleccionadas]
+    
+    # Mezclar los pares pero manteniendo algunas relaciones correctas
+    random.shuffle(pares_correctos)
+    
     context = {
-        'palabras': palabras_filtradas, # Pasar la lista filtrada
-        'imagenes': imagenes
+        'pares_correctos': pares_correctos[:5],  # 5 pares para mostrar inicialmente
+        'pares_reserva': pares_correctos[5:10]     # 5 pares de reserva
     }
     return render(request, 'relacion.html', context)
