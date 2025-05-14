@@ -26,20 +26,18 @@
 }
 
 .item.seleccionado {
-    border-color: #4CAF50;
-    background-color: #e8f5e9;
+    box-shadow: 0 0 0 3px #4CAF50;
+    transform: scale(1.05);
 }
 
 .item.error {
-    border-color: #f44336;
-    background-color: #ffebee;
-    animation: shake 0.5s;
+    box-shadow: 0 0 0 3px #F44336;
 }
 
 .item.acertado {
     opacity: 0;
-    transform: scale(0);
-    transition: opacity 0.3s, transform 0.3s;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
 }
 
 .item img {
@@ -52,3 +50,4 @@
     20%, 60% { transform: translateX(-5px); }
     40%, 80% { transform: translateX(5px); }
 }
+

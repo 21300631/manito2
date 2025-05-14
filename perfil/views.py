@@ -7,6 +7,11 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import Logro, Insignia
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+from login.views import login_usuario
+from inicio.models import Notificacion
 # Create your views here.
 @login_required
 def perfil(request):
@@ -14,6 +19,8 @@ def perfil(request):
     perfil = Profile.objects.get(user=usuario)  # Obtiene el perfil del usuario
     logros = Logro.objects.filter(usuario=perfil)
     insignias = [logro.insignia for logro in logros]  # Extrae las insignias
+    notificaciones = Notificacion.objects.filter(receptor=request.user).order_by('-fecha')[:10]
+
     try:
         medalla = perfil.medalla  # Obtiene la medalla del usuario
     except Profile.DoesNotExist:
@@ -25,6 +32,7 @@ def perfil(request):
             'insignias': insignias,
             'racha': perfil.racha,
             'puntos': perfil.puntos,
+            'notificaciones': notificaciones,
     }
     print(perfil.imagen.url)
 
@@ -123,3 +131,9 @@ def obtener_tema(request):
         theme = request.user.profile.theme  # Ajusta según tu modelo
         return JsonResponse({'theme': theme})
     return JsonResponse({'theme': 'light'})  # Default para usuarios no autenticados
+
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return redirect('login_usuario')  # Redirige a la página de inicio de sesión después de cerrar sesión
+    return render(request, 'login.html')  # Renderiza una plantilla de confirmación si es necesario

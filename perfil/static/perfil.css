@@ -188,6 +188,25 @@ nav a{
 }
 
 
+/* Opcional: estilo del scrollbar */
+.panelNotificaciones ul::-webkit-scrollbar {
+    width: 8px;
+}
+
+.panelNotificaciones ul::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.panelNotificaciones ul::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.panelNotificaciones ul::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 
 .panelDerecho{
     width: 60%;
@@ -452,4 +471,32 @@ input:checked + .slider:before {
     margin-top: 5px;
     font-size: 14px;
     color: #333;
+}
+
+
+.cerrar-sesion-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    padding: 10px;
+    background-color: #FECBCC;
+    color: #EF767A;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-top: 20px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.cerrar-sesion-btn img {
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+}
+
+.cerrar-sesion-btn:hover {
+    background-color: #EF767A;
+    color: white;
+    transform: scale(1.05);
 }

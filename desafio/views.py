@@ -7,44 +7,48 @@ from manito.settings import MANITO_BUCKET_DOMAIN
 
 # Create your views here.
 
-
 def generarMemorama(request):
     usuario = request.user
-    perfil = Profile.objects.get(user = usuario)
+    perfil = Profile.objects.get(user=usuario)
 
-    palabras_ids = list(
-        PalabraUsuario.objects.filter(usuario_id = perfil).order_by('?')[:6]
-    )
+    # A veces da menos pares entonces tenemos que llamarlo despues de verificar si es video o imagen
 
-    palabras = list()
+    palabras_usuario = PalabraUsuario.objects.filter(usuario_id=perfil)[:6]
 
-    for p in palabras_ids:
-        palabra_obj = Palabra.objects.get(id = p.palabra.id)
-        palabras.append(palabra_obj)
+    # random.shuffle(palabras_usuario)
 
-    # for p in palabras_ids:
-    #     palabra_obj = PalabraUsuario.objects.get(id = p.id)
-    #     palabras.append(palabra_obj)
+    pares = []
+    for p in palabras_usuario:
+        palabra = p.palabra
+        gesto = palabra.gesto
+        es_video = str(gesto).lower().endswith('.mp4')
 
-    random.shuffle(palabras)
+        if not es_video:
+            pares.append({
+                'tipo': 'imagen',
+                'contenido': f"{MANITO_BUCKET_DOMAIN}/{gesto}",
+                'es_video': False,
+                'id': palabra.id,
+                'texto': palabra.palabra  # para el alt
+            })
 
-    opciones_gestos_con_url = []
-    for gesto_obj in palabras:
-        es_video = str(gesto_obj.gesto).lower().endswith('.mp4')
-        opciones_gestos_con_url.append({
-            'objeto': gesto_obj,
-            'url': f"{MANITO_BUCKET_DOMAIN}/{gesto_obj.gesto}",
-            'es_video': es_video
-        })
+            pares.append({
+                'tipo': 'palabra',
+                'contenido': palabra.palabra,
+                'es_video': False,
+                'id': palabra.id
+            })
 
-    print("Username:", usuario.username)
 
-    print("Profile ID: ", perfil.user_id)
-    print("Palabras:", [p.palabra for p in palabras])
-    print("Gestos URLs:", opciones_gestos_con_url)
-
-    return render(request, 'memorama.html')
+    random.shuffle(pares)
     
+    
+    for i in range(len(pares)):
+        print("Elemento {}: {}".format(i, pares[i]))
+
+    return render(request, 'memorama.html', {
+        'cartas': pares
+    })
 
 def generarContrarreloj(request):
     usuario = request.user
@@ -73,18 +77,22 @@ def generarContrarreloj(request):
         'imagenes': imagenes
     }
     return render(request, 'contrarreloj.html', context)
+
+
 def generarRelacion(request):
     usuario = request.user
     perfil = Profile.objects.get(user=usuario)
 
     palabras_usuario_ids = PalabraUsuario.objects.filter(usuario_id=perfil).values_list('palabra_id', flat=True)
     palabras_originales = list(Palabra.objects.filter(id__in=palabras_usuario_ids))
+
+    random.shuffle(palabras_originales)
     
     # Filtrar palabras sin video y mezclar
     palabras_filtradas = [
         p for p in palabras_originales
         if not str(p.gesto).lower().endswith('.mp4')
-    ]
+    ][:20]
     random.shuffle(palabras_filtradas)
     
     # Tomar 10 palabras (5 pares correctos + 5 para mezclar)
@@ -100,7 +108,7 @@ def generarRelacion(request):
     random.shuffle(pares_correctos)
     
     context = {
-        'pares_correctos': pares_correctos[:5],  # 5 pares para mostrar inicialmente
-        'pares_reserva': pares_correctos[5:10]     # 5 pares de reserva
+        'pares_correctos': pares_correctos[:15],  # 5 pares para mostrar inicialmente
+        'pares_reserva': pares_correctos[15:]     # 5 pares de reserva
     }
     return render(request, 'relacion.html', context)

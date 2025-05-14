@@ -76,6 +76,11 @@
                         </button>
                     </div>
                 </form>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Cerrar sesión</button>
+                </form>
+
                 {% if perfil.medalla %}
                 <div class="medalla">
                     <img src="{{ medalla.imagen.url }}" alt="Medalla {{ medalla.nombre }}">

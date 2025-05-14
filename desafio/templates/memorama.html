@@ -7,36 +7,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memorama</title>
     <link rel="stylesheet" href="{% static 'desafios.css'%}">
+    <link rel="stylesheet" href="{% static 'memorama.css'%}">
 
 </head>
 <body class="{{ theme }}" data-theme="{{ theme }}">
     <div class="instruccion">
         <span>
-            Realiza la mayor cantidad de gestos que se muestran 
-            antes de que se acabe el tiempo
+            Memorama
         </span>
     </div>
     <div class="contenido memo">
         <div class="tarjetas m">
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            
+            {% for carta in cartas %}
+              <div class="item" data-id="{{ carta.id }}" data-tipo="{{ carta.tipo }}">
+                  <div class="front"></div>
+                  <div class="back">
+                    {% if carta.tipo == "imagen" %}
+                      {% if carta.es_video %}
+                        <video src="{{ carta.contenido }}" autoplay loop muted></video>
+                      {% else %}
+                        <img src="{{ carta.contenido }}" alt="{{ carta.texto}}">
+                      {% endif %}
+                    {% else %}
+                      <span>{{ carta.contenido }}</span>
+                    {% endif %}
+                  </div>
+              </div>
+            {% endfor %}
         </div>
+          
     </div>
     <div class="extras mem">
-        <div class="reloj relojM"><span>3:40</span></div>
         <a class="cancelarM" href="/inicio/">Cancelar</a>
     </div>
-
+    <script src="{% static 'memorama.js'%}"></script>
 </body>
 </html>

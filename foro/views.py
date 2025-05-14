@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from registro.models import Profile
 from django.http import JsonResponse
+from inicio.models import Notificacion
 # from .forms import ComentarioForm
 
 
@@ -36,6 +37,13 @@ def dar_like(request, publicacion_id):
         else:
             publicacion.likes.add(profile)
             liked = True
+            if profile != publicacion.usuario.user:  # para no notificar si se da like a sí mismo
+                Notificacion.objects.create(
+                    emisor=request.user,
+                    receptor=publicacion.usuario.user,
+                    tipo='like',
+                    publicacion=publicacion
+                )
 
         return JsonResponse({
             'total_likes': publicacion.likes.count(),
@@ -51,6 +59,14 @@ def reportar(request, publicacion_id):
     eliminada = False
     if user_profile not in publicacion.reportes.all():
         publicacion.reportes.add(user_profile)
+        if user_profile != publicacion.usuario.user:
+            Notificacion.objects.create(
+                emisor=request.user,
+                receptor=publicacion.usuario.user,
+                tipo='reporte',
+                publicacion=publicacion
+            )
+
 
     if publicacion.reportes.count() >= 20:
         publicacion.delete()
@@ -76,6 +92,14 @@ def agregar_comentario(request, publicacion_id):
                 contenido=contenido,
                 archivo=archivo
             )
+            if request.user.profile != publicacion.usuario.user:
+                Notificacion.objects.create(
+                    emisor=request.user,
+                    receptor=publicacion.usuario.user,
+                    tipo='comentario',
+                    publicacion=publicacion
+                )
+
 
     return redirect("foro")  # Redirigir al foro después de comentar
 

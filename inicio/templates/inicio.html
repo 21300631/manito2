@@ -104,17 +104,26 @@
                 <div class="panelNotificaciones">
                     <div><p>Tus notificaciones</p></div>
                     <ul>
-                        <li class="notificacion-item">
-                            <p><strong class="usuario-notificacion">pollitoEnFuga11</strong>
-                            Ha respondido a tu duda</p>
-                        </li>
-                        <li class="notificacion-item">
-                            <p><strong class="usuario-notificacion">indianaJones62</strong>
-                            Le dio me gusta a tu publicacion</p>
-                        </li>
+                        {% for noti in notificaciones %}
+                            <li class="notificacion-item">
+                                <p>
+                                    <strong class="usuario-notificacion">{{ noti.emisor.username }}</strong>
+                                    {% if noti.tipo == 'like' %}
+                                        le dio me gusta a tu publicación.
+                                    {% elif noti.tipo == 'comentario' %}
+                                        respondió a tu publicación.
+                                    {% elif noti.tipo == 'reporte' %}
+                                        reportó tu publicación.
+                                    {% endif %}
+                                </p>
+                            </li>
+                        {% empty %}
+                            <li><p>No tienes notificaciones nuevas.</p></li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
+                
         </div>
         <div class="item6">
             <div class="divdesafios">

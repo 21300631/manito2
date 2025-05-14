@@ -224,9 +224,11 @@ def ejercicio_gesto(request):
         'archivo': archivo_url,
         'video': palabra.gesto.lower().endswith('.mp4'),  # Si es un video, puedes usarlo directamente
         'theme': request.session.get('theme', 'light'),
+        'palabra_correcta': palabra.palabra,  # por si lo necesitas validar
     }
 
     print("Url:", archivo_url)
+    print("Palabra:", palabra.palabra)
 
     return render(request, 'gesto.html', contexto)
 
