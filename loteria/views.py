@@ -1,23 +1,50 @@
 from django.shortcuts import render
 from registro.models import Profile
-from ejercicio.models import PalabraUsuario, Palabra
+from ejercicio.models import Palabra, Categoria, PalabraUsuario
+import json
+import random
 
-# Create your views here.
+from django.conf import settings
 
 def loteria(request):
+    print("\n=== Vista de Lotería (Repaso) ===")
     usuario = request.user
-    perfil = Profile.objects.get(user=usuario)
-    leccion_actual = perfil.leccion
-    referencia = Palabra.objects.get(leccion=leccion_actual)
-    categoria_actual = referencia.categoria_id
+    perfil = Profile.objects.get(user_id=usuario.id)
+    
+    # Obtener la categoría actual
+    categoria_actual = Palabra.objects.filter(
+        leccion_id=perfil.leccion
+    ).first().categoria
+    
+    # Obtener 12 palabras aleatorias practicadas
+    palabras_repaso = Palabra.objects.filter(
+        categoria=categoria_actual,
+        palabras_usuario__usuario=perfil,
+        leccion_id__lt=perfil.leccion
+    ).distinct().order_by('?')[:12]
+    
+    # Preparar datos de gestos con URLs completas
+    gestos = []
+    for palabra in palabras_repaso:
+        gesto_url = palabra.gesto
+        if not palabra.gesto.startswith(('http://', 'https://')):
+            gesto_url = f"{settings.MANITO_BUCKET_DOMAIN}/{palabra.gesto}"
+        
+        gestos.append({
+            'id': palabra.id,
+            'palabra': palabra.palabra,
+            'gesto': gesto_url,
+            'es_video': palabra.gesto.lower().endswith('.mp4')
+        })
+    
+    random.shuffle(gestos)
 
-    # Ejemplo con dos filtros (lección anterior Y otro criterio)
-    palabras_originales = list(Palabra.objects.filter(
-        leccion_id__lt=leccion_actual,
-        categotria_id=categoria_actual  # tu segundo filtro aquí
-    ))
+    context = {
+        'palabras_repaso': palabras_repaso,
+        'gestos_json': json.dumps(gestos),  # Ahora funcionará correctamente
+        'categoria_repaso': categoria_actual,
+        'bucket_domain': settings.MANITO_BUCKET_DOMAIN
+    }
+    print("Gestos JSON:", json.dumps(gestos))  # Verifica que se serializa correctamente
 
-    for p in palabras_originales:
-        print("palabras: ", p.palabra)
-
-    return render(request, 'loteria.html')
+    return render(request, 'loteria.html', context)

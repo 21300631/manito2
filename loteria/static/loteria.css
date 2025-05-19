@@ -13,6 +13,7 @@ body.dark{
 
 .mensaje{
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: #EF767A;
@@ -80,11 +81,76 @@ a{
 
 }
 
+.item{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 .item:hover{
     background-color: #D6A7A8;
     cursor: pointer;
     transition: 0.3s;
 }
+
+#feedback-message {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.correcto {
+    background-color: #ff6267 !important;
+    color: white !important;
+}
+
+.incorrecto {
+    background-color:#935557 !important;
+    color: white !important;
+}
+
+#puntuacion {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Añade esto a tu loteria.css */
+.item[style*="pointer-events: none"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.item.correcto {
+    background-color: #ff6267 !important;
+    color: white !important;
+    pointer-events: none; /* Deshabilita clics */
+    opacity: 0.7; /* Hacemos un poco transparente */
+}
+
+.item.correcto:hover {
+    background-color: #ff6267 !important; /* Mantiene el color al hacer hover */
+    cursor: default; /* Cambia el cursor a normal */
+}
+
+.item.incorrecto {
+    animation: pulseIncorrecto 0.5s;
+}
+
+@keyframes pulseCorrecto {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulseIncorrecto {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
 
 @media (max-width: 768px) {
     .elementos{
