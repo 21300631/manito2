@@ -260,3 +260,64 @@ nav a{
 }
 
 
+
+
+/* Estados de lecciones - Etapa 3 */
+.leccionA.completada {
+    background-color: #4CAF50 !important;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+.leccionA.en-progreso {
+    background-color: #FFC107 !important;
+    color: #000000 !important;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+.leccionA.bloqueada {
+    background-color: #9E9E9E !important;
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.leccionB.completada {
+    background-color: #4CAF50 !important;
+}
+
+.leccionB.en-progreso {
+    background-color: #FFC107 !important;
+    color: #000000 !important;
+}
+
+.leccionB.bloqueada {
+    background-color: #9E9E9E !important;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* Animación para lección en progreso */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Ajustes para tema oscuro */
+body.dark .leccionA.completada {
+    background-color: #2E7D32 !important;
+}
+
+body.dark .leccionA.en-progreso {
+    background-color: #FF8F00 !important;
+}
+
+body.dark .leccionB.completada {
+    background-color: #2E7D32 !important;
+}
+
+body.dark .leccionB.en-progreso {
+    background-color: #FF8F00 !important;
+}

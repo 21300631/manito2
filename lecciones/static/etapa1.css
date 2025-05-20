@@ -523,3 +523,48 @@ a{
     color: #ffffff;
 
 }
+
+
+/* Estados de lecciones */
+.leccionA.completada {
+    background-color: #167BDD !important; /* Verde */
+    box-shadow: 0 0 10px #4878a9;
+}
+
+.leccionA.en-progreso {
+    background-color: #FFC107 !important; /* Amarillo/naranja */
+    color: #000000 !important;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+.leccionA.bloqueada {
+    background-color: #9E9E9E !important; /* Gris */
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Animación para la lección en progreso */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Estilos para lecciones de repaso (B) */
+.leccionB.completada {
+    background-color: #EF767A !important;
+}
+
+.leccionB.en-progreso {
+    background-color: #FFC107 !important;
+    color: #000000 !important;
+}
+
+.leccionB.bloqueada {
+    background-color: #9E9E9E !important;
+    pointer-events: none;
+    cursor: not-allowed;
+}

@@ -500,3 +500,33 @@ input:checked + .slider:before {
     color: white;
     transform: scale(1.05);
 }
+
+
+.panelNotificaciones ul {
+    list-style-type: none;
+    font-family: Arial, Helvetica, sans-serif;
+    max-height: 150px; /* Ajusta este valor según necesites */
+    overflow-y: auto; /* Habilita el scroll vertical */
+    width: 100%; /* Asegura que ocupe todo el ancho */
+    padding: 0; /* Elimina el padding por defecto */
+    margin: 0; /* Elimina el margen por defecto */
+}
+
+/* Opcional: estilo del scrollbar */
+.panelNotificaciones ul::-webkit-scrollbar {
+    width: 8px;
+}
+
+.panelNotificaciones ul::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.panelNotificaciones ul::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.panelNotificaciones ul::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

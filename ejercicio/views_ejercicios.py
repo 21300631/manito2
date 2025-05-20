@@ -7,13 +7,18 @@ from .models import Palabra
 import random
 import re
 
-
 def ejercicio_emparejar(request):
     print("Ejercicio Selección")
-    ejercicio_actual = request.session['ejercicios'][request.session.get('progreso', 0)]
+    ejercicios = request.session.get('ejercicios', [])
+    index = request.session.get('ejercicio_actual', 0)
+    
+    if index >= len(ejercicios):
+        return redirect('mostrar_ejercicio')
 
-    palabra_id = ejercicio_actual['palabra']
+    ejercicio_actual = ejercicios[index]
+    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
     palabra_obj = Palabra.objects.get(id=palabra_id)
+
     user = request.user
     perfil = Profile.objects.get(user=user)
 
@@ -23,12 +28,11 @@ def ejercicio_emparejar(request):
             Palabra.objects.filter(leccion=1).exclude(id=palabra_obj.id).order_by('?')[:2]
         )
     else:
-        palabras_usuario  = list(
-            PalabraUsuario.objects.exclude(id=palabra_obj.id).order_by('?')[:2]
-        )
+        # Obtener las relaciones PalabraUsuario y luego las palabras asociadas
+        relaciones_usuario = PalabraUsuario.objects.filter(usuario=perfil).exclude(palabra=palabra_obj)
+        palabras_usuario = [relacion.palabra for relacion in relaciones_usuario.order_by('?')[:2]]
 
     opciones = palabras_usuario + [palabra_obj]
-
     random.shuffle(opciones)
 
     opciones_gestos_con_url = []
@@ -44,7 +48,7 @@ def ejercicio_emparejar(request):
         'theme': request.session.get('theme', 'claro'),
         'texto_instruccion': f"Empareja las palabras con su respectivo gesto",
         'palabras': opciones,
-        'gestos': opciones_gestos_con_url,  # Usamos la nueva lista con URLs
+        'gestos': opciones_gestos_con_url,
         'palabra_correcta': palabra_obj.palabra,
         'gesto_correcto': f"{MANITO_BUCKET_DOMAIN}/{palabra_obj.gesto}",
     }
@@ -55,9 +59,14 @@ def ejercicio_emparejar(request):
 
 def ejercicio_seleccion(request):
     print("Ejercicio Selección")
-    ejercicio_actual = request.session['ejercicios'][request.session.get('progreso', 0)]
+    ejercicios = request.session.get('ejercicios', [])
+    index = request.session.get('ejercicio_actual', 0)
+    
+    if index >= len(ejercicios):
+        return redirect('mostrar_ejercicio')
 
-    palabra_id = ejercicio_actual['palabra']
+    ejercicio_actual = ejercicios[index]
+    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
     palabra_obj = Palabra.objects.get(id=palabra_id)
 
     # Distractores (otras palabras)
@@ -92,9 +101,14 @@ def ejercicio_seleccion(request):
 
 def ejercicio_seleccion2(request):
     print("Ejercicio Selección 2")
-    ejercicio_actual = request.session['ejercicios'][request.session.get('progreso', 0)]
+    ejercicios = request.session.get('ejercicios', [])
+    index = request.session.get('ejercicio_actual', 0)
+    
+    if index >= len(ejercicios):
+        return redirect('mostrar_ejercicio')
 
-    palabra_id = ejercicio_actual['palabra']
+    ejercicio_actual = ejercicios[index]
+    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
     palabra_obj = Palabra.objects.get(id=palabra_id)
 
     # Obtener ejemplos como lista
@@ -144,11 +158,17 @@ def ejercicio_seleccion2(request):
 
 def ejercicio_completar(request):
     print("Ejercicio Completar")
-    ejercicio_actual = request.session['ejercicios'][request.session.get('progreso', 0)]
+    ejercicios = request.session.get('ejercicios', [])
+    index = request.session.get('ejercicio_actual', 0)
+    
+    if index >= len(ejercicios):
+        return redirect('mostrar_ejercicio')
 
-    palabra_id = ejercicio_actual['palabra']
+    ejercicio_actual = ejercicios[index]
+    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
     palabra_obj = Palabra.objects.get(id=palabra_id)
-
+    
+    
     # Frase con espacio en blanco
     frase_completar = palabra_obj.frase
 
@@ -186,10 +206,17 @@ def ejercicio_completar(request):
 
 def ejercicio_escribir(request):
     print("Ejercicio Escribir")
-    ejercicio_actual = request.session['ejercicios'][request.session.get('progreso', 0)]
+    ejercicios = request.session.get('ejercicios', [])
+    index = request.session.get('ejercicio_actual', 0)
     
-    palabra_id = ejercicio_actual['palabra']
+    if index >= len(ejercicios):
+        return redirect('mostrar_ejercicio')
+
+    ejercicio_actual = ejercicios[index]
+    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
     palabra_obj = Palabra.objects.get(id=palabra_id)
+
+    
 
     archivo_url = f"{MANITO_BUCKET_DOMAIN}/{palabra_obj.gesto}"
     es_video = palabra_obj.gesto.lower().endswith('.mp4')
@@ -206,25 +233,30 @@ def ejercicio_escribir(request):
     return render(request, 'escribir.html', context)
 
 
+
+
 def ejercicio_gesto(request):
     print("Ejercicio Gesto")
-    ejercicio = request.session.get('ejercicio_actual')
-
-    if not ejercicio:
+    ejercicios = request.session.get('ejercicios', [])
+    index = request.session.get('ejercicio_actual', 0)
+    
+    if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
 
-    palabra_id = ejercicio
+    ejercicio_actual = ejercicios[index]
+    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
     palabra = Palabra.objects.get(id=palabra_id)
 
-    # Suponiendo que estás guardando el archivo en S3 con ruta pública
+
+
     archivo_url = f"{MANITO_BUCKET_DOMAIN}/{palabra.gesto}"
 
     contexto = {
         'texto_instruccion': f"Realiza el gesto correspondiente a la palabra: {palabra.palabra}",
         'archivo': archivo_url,
-        'video': palabra.gesto.lower().endswith('.mp4'),  # Si es un video, puedes usarlo directamente
+        'video': palabra.gesto.lower().endswith('.mp4'),
         'theme': request.session.get('theme', 'light'),
-        'palabra_correcta': palabra.palabra,  # por si lo necesitas validar
+        'palabra_correcta': palabra.palabra,
     }
 
     print("Url:", archivo_url)

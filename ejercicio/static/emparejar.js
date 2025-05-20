@@ -79,7 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': getCSRFToken(),
             },
-            body: JSON.stringify({ pares: paresSeleccionados })
+            body: JSON.stringify({ 
+                pares: paresSeleccionados.map(p => ({
+                    palabra_id: parseInt(p.palabra_id),
+                    gesto_id: parseInt(p.gesto_id)
+                }))
+            })
         })
         .then(res => res.json())
         .then(data => {
@@ -88,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const claseResultado = todosCorrectos ? 'correcto' : 'incorrecto';
 
                 document.querySelectorAll('.palabra.emparejada, .gesto.emparejada').forEach(el => {
-                    el.classList.add(claseResultado);
+                    el.classList.add(claseResultado); 
                 });
 
                 if (todosCorrectos) {

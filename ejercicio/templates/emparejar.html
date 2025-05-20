@@ -26,16 +26,16 @@
                     {% endfor %}
                 </div>
                 <div class="gestos">
-                    {% for gesto in gestos %}
-                    <div class="gesto" data-id="{{ gesto.objeto.id }}">
-                        {% if gesto.es_video %}
-                            <video src="{{ gesto.url }}"  alt="Gesto {{ palabra_correcta}}" autoplay  width="200"></video>
-                        {% else %}
-                            <img src="{{ gesto.url }}" alt="Gesto {{ gesto.objeto.palabra}}" width="80%" padding="10%" margin="0">
-                        {% endif %}
-                    </div>
-                {% endfor %}
+            {% for gesto in gestos %}
+                <div class="gesto" data-id="{{ gesto.objeto.id }}">
+                    {% if gesto.es_video %}
+                        <video src="{{ gesto.url }}" alt="Gesto {{ palabra_correcta}}" autoplay loop width="80%"></video>
+                    {% else %}
+                        <img src="{{ gesto.url }}" alt="Gesto {{ gesto.objeto.palabra}}" width="80%" padding="10%" margin="0">
+                    {% endif %}
                 </div>
+                {% endfor %}
+            </div>
                 <div class="panel-btn">
                     <button class="btn-salir">Salir</button>
                     <button id="btn-verificar" disabled>Verificar</button>

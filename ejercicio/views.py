@@ -24,44 +24,52 @@ def eje5(request):
 def eje6(request):
     return render(request, 'gesto.html')
 
-
 def generarLeccion(request):
+    import random
+    from django.http import HttpResponseForbidden
+    from django.shortcuts import redirect
+
     # datos del usuario
     usuario = request.user
     perfil = Profile.objects.get(user=usuario)
+    leccion = int(request.GET.get('leccion_id', 0))
 
-    leccion = int(request.GET.get('leccion_id', 0))  # o POST si decides
+   
 
-    # Validación: no puede entrar a lecciones mayores a su progreso
+    # Validación
     if leccion > perfil.leccion:
         return HttpResponseForbidden("No tienes acceso a esta lección todavía.")
-    # Obtiene la lección actual
+    
+    # Obtener objetos relevantes
     leccion_obj = Leccion.objects.get(id=leccion)
+    palabras_nuevas = list(leccion_obj.palabras.all()[:3])  # Aseguramos que sea lista
 
-    # Toma 3 palabras de esa lección
-    palabras_nuevas = leccion_obj.palabras.all()[:3]
+    
 
-    #obtener palabras
+    # Obtener palabras de repaso
+    relaciones_repaso = list(PalabraUsuario.objects.filter(usuario=perfil))
+    palabras_repaso = []
 
+    if len(relaciones_repaso) < 7:
+        # No hay suficientes palabras para repaso: se rellenan con palabras nuevas
+        palabras_repaso = palabras_nuevas.copy()
 
-    if(PalabraUsuario.objects.filter(usuario=perfil).count() < 7):
-        # si no hay suficientes de repaso, utiliza las mismas de la leccion para rellenar
-        palabras_repaso = list(palabras_nuevas)
-
+        # Añadir más palabras hasta tener 7
         while len(palabras_repaso) < 7:
             palabra_aleatoria = random.choice(palabras_nuevas)
             palabras_repaso.append(palabra_aleatoria)
-    else: # si hay suficientes palabras de repaso, selecciona 7 aleatorias
-        palabras_repaso = PalabraUsuario.objects.filter(usuario=perfil)
-        palabras_repaso_aleatorias = random.sample(list(palabras_repaso), 7) if len(palabras_repaso) >= 7 else list(palabras_repaso)
-    
-    # instrucciones
+    else:
+        # Hay suficientes: seleccionamos 7 aleatorias de las ya practicadas
+        todas_palabras_repaso = [rel.palabra for rel in relaciones_repaso]
+        palabras_repaso = random.sample(todas_palabras_repaso, 7)
+
     # Instrucciones
-    instrucciones_repaso = Instruccion.objects.exclude(tipo='gesto')
+    instrucciones_repaso = list(Instruccion.objects.exclude(tipo='gesto'))
+    instruccion_gesto = Instruccion.objects.get(tipo='gesto')
+    
     ejercicios = []
 
-    # Palabras nuevas (tipo gesto)
-    instruccion_gesto = Instruccion.objects.get(tipo='gesto')
+    # Primero: 3 ejercicios de gesto con palabras nuevas (en orden fijo)
     for palabra in palabras_nuevas:
         ejercicios.append({
             'palabra': palabra,
@@ -69,21 +77,16 @@ def generarLeccion(request):
             'texto_instruccion': instruccion_gesto.generar_texto(palabra.palabra)
         })
 
-    # Palabras de repaso (otras instrucciones)
+    # Luego: 7 ejercicios de repaso con instrucciones aleatorias
     for palabra in palabras_repaso:
         instruccion_aleatoria = random.choice(instrucciones_repaso)
         ejercicios.append({
-            'palabra': palabra if hasattr(palabra, 'palabra') else palabra,
+            'palabra': palabra,
             'instruccion': instruccion_aleatoria,
-            'texto_instruccion': instruccion_aleatoria.generar_texto(
-                palabra.palabra if hasattr(palabra, 'palabra') else palabra
-            )
+            'texto_instruccion': instruccion_aleatoria.generar_texto(palabra.palabra)
         })
 
-    # Mezclar los ejercicios
-    random.shuffle(ejercicios)
-
-    # Guardar en la sesión
+    # Guardar en sesión, sin mezclar (orden fijo: gesto -> repaso)
     request.session['ejercicios'] = [
         {
             'palabra': ejercicio['palabra'].id,
@@ -91,7 +94,7 @@ def generarLeccion(request):
             'texto': ejercicio['texto_instruccion']
         } for ejercicio in ejercicios
     ]
-    request.session['ejercicio_actual'] = 0  # Comienza en el primero
+    request.session['ejercicio_actual'] = 0
 
     print("Ejercicios guardados en la sesión:", request.session['ejercicios'])
 
@@ -107,6 +110,7 @@ def mostrar_ejercicio(request):
     actual = ejercicios[index]
     instruccion_tipo = actual['instruccion']
 
+    # Redirigir según el tipo de ejercicio
     if instruccion_tipo == 'emparejar':
         return redirect('ejercicio_emparejar')
     elif instruccion_tipo == 'seleccion':

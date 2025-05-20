@@ -33,7 +33,7 @@
                         <input type="file" id="id_nueva_imagen" name="nueva_imagen" accept="image/*">
                     </label>
                     <button type="submit" class="guardar-cambios-btn">
-                        <i class="fas fa-save"></i> Guardar
+                        <i class="fas fa-square"></i> Guardar
                     </button>
                 </form>
                 
@@ -44,14 +44,22 @@
             <div class="panelNotificaciones">
                 <div><p>Tus notificaciones</p></div>
                 <ul>
-                    <li class="notificacion-item">
-                        <p><strong class="usuario-notificacion">pollitoEnFuga11</strong>
-                        Ha respondido a tu duda</p>
-                    </li>
-                    <li class="notificacion-item">
-                        <p><strong class="usuario-notificacion">indianaJones62</strong>
-                        Le dio me gusta a tu publicacion</p>
-                    </li>
+                    {% for noti in notificaciones %}
+                        <li class="notificacion-item">
+                            <p>
+                                <strong class="usuario-notificacion">{{ noti.emisor.username }}</strong>
+                                {% if noti.tipo == 'like' %}
+                                    le dio me gusta a tu publicación.
+                                {% elif noti.tipo == 'comentario' %}
+                                    respondió a tu publicación.
+                                {% elif noti.tipo == 'reporte' %}
+                                    reportó tu publicación.
+                                {% endif %}
+                            </p>
+                        </li>
+                    {% empty %}
+                        <li><p>No tienes notificaciones nuevas.</p></li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
@@ -78,7 +86,10 @@
                 </form>
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
-                    <button type="submit">Cerrar sesión</button>
+                    <button style="margin-left: 10%;" type="submit" class="btn-guardar-nombre">
+                        <i class="fa-solid fa-square-xmark"></i>
+                        Cerrar sesión
+                    </button>
                 </form>
 
                 {% if perfil.medalla %}
