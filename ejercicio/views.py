@@ -5,25 +5,6 @@ import random
 from django.http import HttpResponseForbidden, HttpResponse
 
 
-# Create your views here.
-def eje1(request):
-    return render(request, 'seleccion.html')
-
-def eje2(request):
-    return render(request, 'seleccion2.html')
-
-def eje3(request):
-    return render(request, 'emparejar.html')
-
-def eje4(request):
-    return render(request, 'completar.html')
-
-def eje5(request):
-    return render(request, 'escribir.html')
-
-def eje6(request):
-    return render(request, 'gesto.html')
-
 def generarLeccion(request):
     import random
     from django.http import HttpResponseForbidden
@@ -101,30 +82,43 @@ def generarLeccion(request):
     return redirect('mostrar_ejercicio')
 
 def mostrar_ejercicio(request):
-    ejercicios = request.session.get('ejercicios', [])
+    # Verificar que exista la sesión de ejercicios
+    if 'ejercicios' not in request.session:
+        return redirect('alguna_vista_de_error')  # o handle this case appropriately
+    
+    ejercicios = request.session['ejercicios']
     index = request.session.get('ejercicio_actual', 0)
-
+    
+    print(f"Mostrando ejercicio {index + 1} de {len(ejercicios)}")  # Debug
+    
     if index >= len(ejercicios):
+        print("Todos los ejercicios completados")  # Debug
         return render(request, "finalizado.html")
 
-    actual = ejercicios[index]
-    instruccion_tipo = actual['instruccion']
-
-    # Redirigir según el tipo de ejercicio
-    if instruccion_tipo == 'emparejar':
-        return redirect('ejercicio_emparejar')
-    elif instruccion_tipo == 'seleccion':
-        return redirect('ejercicio_seleccion')
-    elif instruccion_tipo == 'escribir':
-        return redirect('ejercicio_escribir')
-    elif instruccion_tipo == 'gesto':
-        return redirect('ejercicio_gesto')
-    elif instruccion_tipo == 'seleccion2':
-        return redirect('ejercicio_seleccion2')
-    elif instruccion_tipo == 'completar':
-        return redirect('ejercicio_completar')
-    else:
-        return HttpResponse("Tipo de instrucción no reconocido")
+    try:
+        actual = ejercicios[index]
+        instruccion_tipo = actual['instruccion']
+        
+        print(f"Redirigiendo a ejercicio de tipo: {instruccion_tipo}")  # Debug
+        
+        # Diccionario de redirecciones
+        redirecciones = {
+            'emparejar': 'ejercicio_emparejar',
+            'seleccion': 'ejercicio_seleccion',
+            'escribir': 'ejercicio_escribir',
+            'gesto': 'ejercicio_gesto',
+            'seleccion2': 'ejercicio_seleccion2',
+            'completar': 'ejercicio_completar'
+        }
+        
+        if instruccion_tipo not in redirecciones:
+            return HttpResponse("Tipo de instrucción no reconocido", status=400)
+            
+        return redirect(redirecciones[instruccion_tipo])
+        
+    except Exception as e:
+        print(f"Error al mostrar ejercicio: {str(e)}")  # Debug
+        return HttpResponse(f"Error: {str(e)}", status=500)
 
 
 def siguiente_ejercicio(request):

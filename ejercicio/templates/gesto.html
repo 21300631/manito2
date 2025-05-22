@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,13 +28,17 @@
                             <img src="{{ archivo }}" alt="Gesto {{ palabra_correcta }}" width="80%" style="padding: 10%; margin: 0;">
                         {% endif %}
                     </div>
-                    <div class="gesto g-usuario"></div>
+                    <div class="gesto g-usuario">
+                        <!-- Canvas para mostrar la cámara y los landmarks -->
+                        <canvas id="outputCanvas" width="600" height="500" style="width: 100%; height: auto;"></canvas>
+                        <video id="inputVideo" style="display: none;"></video>
+                    </div>
                 </div>
                 <div class="panel-btn">
                     <button class="btn-salir">Salir</button>
                     <form method="post" action="{% url 'siguiente_ejercicio' %}">
                         {% csrf_token %}
-                        <button type="submit" >Siguiente</button>
+                        <button type="submit" id="nextBtn" disabled>Siguiente</button>
                     </form>
                 </div>
             </div>
@@ -45,6 +50,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
     <script src="{% static 'progress.js' %}"></script>
+    <script>
+        const LANDMARKS_JSON_URL = "{% static '' %}" + "{{ json_url }}";
+        // Variable global para almacenar los landmarks de referencia
+        let referenceLandmarks = null;
+        
+        // Cargar los landmarks de referencia desde el JSON
+        fetch("{% static 'landmarks/' %}{{ palabra_correcta }}.json")
+            .then(response => response.json())
+            .then(data => {
+                referenceLandmarks = data;
+                console.log("Landmarks de referencia cargados:", referenceLandmarks);
+            })
+            .catch(error => {
+                console.error("Error cargando landmarks de referencia:", error);
+            });
+    </script>
     <script src="{% static 'gesto.js' %}"></script>
 </body>
 </html>

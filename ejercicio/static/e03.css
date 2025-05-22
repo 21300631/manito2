@@ -1,260 +1,287 @@
-*{
-    margin: 0;
-    padding: 0;
-}
-.todo{
+/* Estilos generales */
+.todo.emparejar {
     background-color: #BCDCFB;
-}
-body.light {
-    background-color: #BCDCFB;
-}
-
-body.dark {
-    background-color: #1a1a1a;
-    color: white;
-}
-
-.instruccion{
+    min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #3C91E6;
-    height: 97px;
-    width: 100%;
+    flex-direction: column;
 }
-.instruccion span{
+
+body.dark .todo.emparejar {
+    background-color: #1a1a1a;
+}
+
+/* Barra de instrucción */
+.instruccion.emparejar {
+    background-color: #3C91E6;
+    padding: 15px 0;
     text-align: center;
+}
+
+.instruccion.emparejar span {
     color: #fff;
-    font-family:  Arial;
+    font-family: Arial, sans-serif;
     font-weight: bold;
     font-size: 24px;
+    display: inline-block;
+    max-width: 80%;
 }
 
-.contenido{
+/* Contenedor principal */
+.contenido.emparejar {
     display: flex;
-    height: 641px;
+    height: calc(100vh - 97px - 140px); /* Ajuste para instrucción y botones */
     width: 100%;
 }
 
-.panel-barra{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 150px;
-    height: 100%;
+/* Panel de barra de progreso */
+.panel-barra.emparejar {
+    width: 100px;
+    padding: 20px 0;
 }
 
-.progress-container {
-    height: 550px; /* Altura del contenedor */
-    width: 50px; /* Ancho del contenedor */
+.progress-container.emparejar {
+    height: 70%;
+    width: 40px;
     background-color: #61A8EC;
-    border-radius: 40px;
+    border-radius: 20px;
+    margin: 0 auto;
+    position: relative;
     overflow: hidden;
-    margin: 20px 0;
-    position: relative;
 }
 
-.progress-bar{
+.progress-bar.emparejar {
     width: 100%;
-    height: 0%; /* La altura se ajustará dinámicamente */
+    height: 0%;
     background-color: #3C91E6;
-    transition: height 0.5s ease-in-out;
-    position: absolute;
-    bottom: 0; /* La barra crece desde abajo */
-}
-
-
-.panel2{
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.panel-btn{
-    display: flex;
-    align-items: center;
+    transition: height 0.5s ease;
     position: absolute;
     bottom: 0;
-    height: 140px;
-    width: 100%;
 }
 
-
-.btn-salir{
-    position: absolute;
-    right: 0;
-    margin-right: 100px;
-    width: 140px;
-    height: 70px;
-    background-color: #61A8EC;
-    border-radius: 10px;
-    border: none;
-    font-weight: bold;
-    color: #fff;
-    font-size: 18px;
-}
-
-
-
-/* cosas individuales de cada ejercicio  */
-.palabras{
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    width: 100%;
-    height: 10vh;
-    align-items: center;
-    justify-items: center;
-}
-
-.palabra{
+/* Área de juego */
+.area-juego.emparejar {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    height: 50%;
-    padding: 3%;
-    font-size: 24px;
-    font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
-    color: #fff;
-    border-radius: 10px;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 20px;
 }
 
-.palabra:hover{
-    background-color: #61A8EC;
+/* Contenedores de palabras y gestos */
+.contenedor-palabras, .contenedor-gestos {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+body.dark .contenedor-palabras,
+body.dark .contenedor-gestos {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Elementos interactivos */
+.palabra.emparejar, .gesto.emparejar {
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
     cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    user-select: none;
 }
 
-.gestos{
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    width: 100%;
-    height: 60vh;
-    align-items: center;
-    justify-items: center;
-}
-
-.gesto{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.palabra.emparejar {
     background-color: #3C91E6;
-    border-radius: 10px;
-    width: 80%;
-    height: 50%;
-}
-
-.gesto:hover{
-    background-color: #61A8EC;
-    cursor: pointer;
-}
-
-.palabra.seleccionada, .gesto.seleccionado {
-    border-color: #4CAF50;
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
-}
-
-
-
-#btn-verificar {
-    background-color: #007BFF;
     color: white;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-#btn-verificar:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-#btn-verificar:hover:not(:disabled) {
-    background-color: #0056b3;
+    min-width: 120px;
 }
 
-.correcto {
-    background-color: #d4edda !important;
-    border: 3px solid #28a745 !important;
-    color: #155724;
-    font-weight: bold;
+.gesto.emparejar {
+    background-color: #3C91E6;
+    min-width: 180px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.incorrecto {
-    background-color: #f8d7da !important;
-    border: 3px solid #dc3545 !important;
-    color: #721c24;
-    font-weight: bold;
+body.dark .palabra.emparejar,
+body.dark .gesto.emparejar {
+    background-color: #2c3e50;
 }
 
-.pareado-1 {
-    background-color: #a0d8f1; /* azul suave */
-    border: 2px solid #4ca3dd;
-    transition: background-color 0.3s, border 0.3s;
+/* Estados interactivos */
+.palabra.emparejar:hover, .gesto.emparejar:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.pareado-2 {
-    background-color: #c3e6cb; /* verde suave */
-    border: 2px solid #66bb6a;
-    transition: background-color 0.3s, border 0.3s;
+.palabra.emparejar.seleccionada, .gesto.emparejar.seleccionada {
+    background-color: #61A8EC;
+    border: 3px solid #FFD700;
+    transform: scale(1.05);
 }
 
-.pareado-3 {
-    background-color: #ffe0b2; /* naranja suave */
-    border: 2px solid #ffb74d;
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.pareado-4 {
-    background-color: #a0d8f1; /* azul suave */
-    border: 2px solid #4ca3dd;
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.pareado-5 {
-    background-color: #c3e6cb; /* verde suave */
-    border: 2px solid #66bb6a;
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.pareado-6 {
-    background-color: #ffe0b2; /* naranja suave */
-    border: 2px solid #ffb74d;
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.emparejada {
-    opacity: 0.6;
+/* Emparejamiento */
+.palabra.emparejar.emparejada, .gesto.emparejar.emparejada {
+    opacity: 0.7;
     pointer-events: none;
 }
 
-
-#resultadoEmparejamiento {
-    margin: 15px 0;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
+/* Colores para pares emparejados */
+.palabra.emparejar.pareado-1, .gesto.emparejar.pareado-1 {
+    background-color: #FF9AA2;
+    border: 2px solid #FF6B6B;
 }
 
-.btn-verificar {
+.palabra.emparejar.pareado-2, .gesto.emparejar.pareado-2 {
+    background-color: #FFB7B2;
+    border: 2px solid #FF8E8E;
+}
+
+.palabra.emparejar.pareado-3, .gesto.emparejar.pareado-3 {
+    background-color: #FFDAC1;
+    border: 2px solid #FFB347;
+}
+
+/* Resultados */
+.palabra.emparejar.correcto, .gesto.emparejar.correcto {
+    background-color: #77DD77;
+    border: 3px solid #4CAF50;
+    animation: pulseCorrecto 1s;
+}
+
+.palabra.emparejar.incorrecto, .gesto.emparejar.incorrecto {
+    background-color: #FF6961;
+    border: 3px solid #F44336;
+    animation: shake 0.5s;
+}
+
+/* Botones */
+.panel-btn.emparejar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 30px;
+}
+
+.btn-verificar.emparejar {
     background-color: #4CAF50;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 30px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 16px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-.btn-verificar:hover {
+.btn-verificar.emparejar:hover {
     background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
-.palabra.seleccionada, .gesto.seleccionada {
-    background-color: #d0e7f1; /* Fondo azul claro */
-    border: 2px solid #007bff; /* Borde azul */
+.btn-verificar.emparejar:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
+.btn-salir.emparejar {
+    background-color: #f44336;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
 
+.btn-salir.emparejar:hover {
+    background-color: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Animaciones */
+@keyframes pulseCorrecto {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* Mensajes */
+.mensaje-emparejar {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+.mensaje-emparejar.mostrar {
+    opacity: 1;
+}
+
+.mensaje-emparejar.exito {
+    background-color: #4CAF50;
+}
+
+.mensaje-emparejar.error {
+    background-color: #f44336;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contenido.emparejar {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .panel-barra.emparejar {
+        width: 100%;
+        height: 50px;
+    }
+    
+    .progress-container.emparejar {
+        height: 40px;
+        width: 80%;
+    }
+    
+    .palabra.emparejar, .gesto.emparejar {
+        padding: 10px 15px;
+        font-size: 16px;
+    }
+    
+    .instruccion.emparejar span {
+        font-size: 18px;
+    }
+}

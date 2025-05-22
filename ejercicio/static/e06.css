@@ -146,6 +146,34 @@ body.dark {
     pointer-events: none; /* para que no bloquee el video */
 }
 
+.g-usuario {
+    position: relative;
+    min-height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#nextBtn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#nextBtn:not(:disabled) {
+    background-color: #4CAF50;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 #webcam {
     transform: scaleX(-1); /* Esto invierte el video horizontalmente */
 }

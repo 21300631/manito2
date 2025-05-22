@@ -1,24 +1,23 @@
-# views.py
-from django.http import HttpResponse
-from utils.s3_helper import download_image_from_s3
-from utils.hand_processor import process_hand_image
-from .models import Palabra
-import os
+import json
+from pathlib import Path
+from django.http import JsonResponse
+from django.conf import settings
 
-def analizar_gesto_referencia(request, palabra_id):
+def gesto_referencia(request, palabra_id):
     try:
-        palabra = Palabra.objects.get(id=palabra_id)
-        if palabra.gesto.lower().endswith('.mp4'):
-            return HttpResponse("El gesto es un video, no se puede procesar como imagen.")
-
-        filename = os.path.basename(palabra.gesto)
-        local_path = f'/tmp/{filename}'
-        s3_key = palabra.gesto
-        bucket_name = 'manito-bucket'  # Asegúrate de que este sea el nombre real
-        download_image_from_s3(bucket_name, s3_key, local_path)
-        process_hand_image(local_path)
-
-        return HttpResponse(f"Se imprimieron en consola las coordenadas del gesto para: {palabra.palabra}")
-    
-    except Palabra.DoesNotExist:
-        return HttpResponse("Palabra no encontrada.", status=404)
+        # Ruta al archivo JSON (ajusta según tu estructura)
+        json_path = Path(settings.BASE_DIR) / 'static' / 'json' / f'letra_{palabra_id}.json'
+        
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            
+        return JsonResponse({
+            'landmarks': data['landmarks'],
+            'palabra': palabra_id,
+            'modo_prueba': False
+        })
+        
+    except FileNotFoundError:
+        return JsonResponse({'error': 'Archivo de gesto no encontrado'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

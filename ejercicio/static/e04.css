@@ -162,3 +162,73 @@ body.dark {
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
+
+/* nuevo */
+
+/* Estilos para los mensajes y efectos */
+.mensaje-flotante {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 25px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    z-index: 1000;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    animation: fadeIn 0.3s;
+}
+
+.mensaje-flotante.exito {
+    background-color: #4CAF50;
+}
+
+.mensaje-flotante.error {
+    background-color: #f44336;
+}
+
+.gesto {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.gesto.correcto {
+    box-shadow: 0 0 0 3px #4CAF50;
+}
+
+.gesto.incorrecto {
+    box-shadow: 0 0 0 3px #f44336;
+    filter: grayscale(70%);
+}
+
+.gesto.respuesta-correcta {
+    box-shadow: 0 0 0 3px gold;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; top: 10px; }
+    to { opacity: 1; top: 20px; }
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}
+
+.barra-progreso {
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    margin: 20px 0;
+    transition: width 0.5s ease;
+}
+
+.barra-progreso .relleno {
+    height: 100%;
+    border-radius: 10px;
+    background-color: #4CAF50;
+    width: 0%;
+}

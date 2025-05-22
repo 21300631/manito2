@@ -1,54 +1,82 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('form');
-    const input = document.querySelector('input[name="respuesta_usuario"]');
-    const resultadoDiv = document.getElementById('resultadoEscribir');
-    const urlSiguiente = document.body.dataset.urlSiguiente;
+    const form = document.querySelector('.form-escribir');
+    const input = document.querySelector('.input-escribir');
+    const mensajeDiv = document.createElement('div');
+    mensajeDiv.className = 'mensaje-escribir';
+    form.appendChild(mensajeDiv);
+    
+    const urlVerificacion = '/verificar_escribir/'; // Ajusta según tu URL
+    const csrftoken = getCookie('csrftoken');
 
-    // const siguienteBtn = document.getElementById('siguienteBtn');
-
-    form.addEventListener('submit', function (e) {
-        e.preventDefault(); // Prevenir recarga de página
-
-        const formData = new FormData();
-        formData.append('respuesta_usuario', input.value);
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            resultadoDiv.textContent = data.mensaje;
-            resultadoDiv.style.color = data.correcto ? 'green' : 'red';
-        
-            if (data.correcto) {
-                aumentarBarraProgreso(10); // Si usas barra
+        // Deshabilitar el formulario durante la verificación
+        input.disabled = true;
+        mensajeDiv.textContent = 'Verificando...';
+        mensajeDiv.className = 'mensaje-escribir verificando';
+
+        try {
+            const response = await fetch(urlVerificacion, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrftoken
+                },
+                body: `respuesta_usuario=${encodeURIComponent(input.value.trim())}`
+            });
+
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
+            
+            const data = await response.json();
+            
+            if (data.error) throw new Error(data.error);
+
+            if (data.completado) {
+                mostrarMensaje('¡Lección completada!', true);
                 setTimeout(() => {
-                    window.location.href = urlSiguiente;
-                }, 800);
+                    window.location.href = '/finalizado/';
+                }, 1500);
+                return;
             }
-        });
-        
-        
+
+            if (data.correcto) {
+                mostrarMensaje(data.mensaje || '¡Correcto!', true);
+                aumentarBarraProgreso(10);
+                
+                setTimeout(() => {
+                    window.location.href = '/mostrar_ejercicio/';
+                }, 1500);
+            } else {
+                mostrarMensaje(data.mensaje || `Incorrecto. La respuesta era: ${data.respuesta_correcta}`, false);
+                input.value = '';
+                input.focus();
+            }
+        } catch (error) {
+            mostrarMensaje('Error: ' + error.message, false);
+            console.error('Error:', error);
+        } finally {
+            input.disabled = false;
+        }
     });
 
-
-    // Obtener CSRF token
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                cookie = cookie.trim();
-                if (cookie.startsWith(name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
+    function mostrarMensaje(texto, esExito) {
+        mensajeDiv.textContent = texto;
+        mensajeDiv.className = `mensaje-escribir ${esExito ? 'exito' : 'error'}`;
+        
+        if (esExito) {
+            input.classList.add('correcto');
+            setTimeout(() => input.classList.remove('correcto'), 1000);
+        } else {
+            input.classList.add('incorrecto');
+            setTimeout(() => input.classList.remove('incorrecto'), 1000);
         }
-        return cookieValue;
+    }
+
+    // Función para obtener el token CSRF
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
     }
 });

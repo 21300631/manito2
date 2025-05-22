@@ -2,9 +2,8 @@ from django.urls import path
 from .views import   generarLeccion, siguiente_ejercicio, mostrar_ejercicio
 from .views_ejercicios import ejercicio_emparejar, ejercicio_completar, ejercicio_escribir, ejercicio_gesto, ejercicio_seleccion, ejercicio_seleccion2
 from .views_validar import verificar_seleccion, verificar_completar, verificar_seleccion2,  verificar_escribir, verificar_emparejar
-from .views_gesto import analizar_gesto_referencia
-# from .views import load_reference_gesto
-# validar_completar, validar_escribir, validar_gesto, validar_seleccion, validar_seleccion2
+# from .views_gesto import gesto_referencia
+
 urlpatterns = [  
     # generar lecciones
     path('generar/', generarLeccion, name='generar_leccion'),  # Cambié la URL a 'generarLeccion' para evitar conflictos con la vista
@@ -26,7 +25,6 @@ urlpatterns = [
 
     # path('comparar_gesto/', comparar_gesto, name='comparar_gesto'),
     
-    path('analizar-gesto-referencia/<int:palabra_id>/', analizar_gesto_referencia, name='analizar_gesto_referencia'),
 
     # path('load_reference_gesto/', load_reference_gesto, name='load_reference_gesto'),
 

@@ -257,10 +257,13 @@ def ejercicio_gesto(request):
         'video': palabra.gesto.lower().endswith('.mp4'),
         'theme': request.session.get('theme', 'light'),
         'palabra_correcta': palabra.palabra,
+        'json_url': f'landmarks/{palabra}.json',
+
     }
 
     print("Url:", archivo_url)
     print("Palabra:", palabra.palabra)
 
     return render(request, 'gesto.html', contexto)
+
 
