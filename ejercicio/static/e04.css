@@ -85,6 +85,8 @@ body.dark {
 .btn-salir{
     position: absolute;
     right: 0;
+    top: 40px;
+
     margin-right: 100px;
     width: 140px;
     height: 70px;

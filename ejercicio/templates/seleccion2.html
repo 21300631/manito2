@@ -15,7 +15,7 @@
         <div class="contenido">
             <div class="panel-barra">
                 <div class="progress-container">
-                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="progress-bar" id="progressBar" data-progreso-inicial="{{ request.session.progreso|default:0 }}"></div>
                 </div>
             </div>
             <div class="panel2">
@@ -28,7 +28,7 @@
                     {% for opcion in opciones %}
                         <div class="card" data-id="{{ opcion.id }}">
                             {% if opcion.es_video %}
-                                <video src="{{ opcion.url }}" autoplay width="80%"></video>
+                                <video src="{{ opcion.url }}" autoplay loop width="80%"></video>
                             {% else %}
                                 <img src="{{ opcion.url }}" alt="Gesto de {{ opcion.palabra }}" width="80%">
                             {% endif %}
@@ -36,10 +36,14 @@
                     {% endfor %}
                 </div>
                 <div class="panel-btn">
-                    <button class="btn-salir">Salir</button>
+                    <form method="POST" action="{% url 'reiniciar_progreso' %}">
+                        {% csrf_token %}
+
+                        <button class="btn-salir">Salir</button>
+                    </form>
                     <form method="post" action="{% url 'siguiente_ejercicio' %}">
                         {% csrf_token %}
-                        <button type="submit">Siguiente</button>
+                        <button style="display: none;" type="submit">Siguiente</button>
                     </form>
                 </div>
             </div>

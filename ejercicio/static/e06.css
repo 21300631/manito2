@@ -85,6 +85,7 @@ body.dark {
 .btn-salir{
     position: absolute;
     right: 0;
+    top: 40px;
     margin-right: 100px;
     width: 140px;
     height: 70px;
@@ -158,12 +159,25 @@ body.dark {
 }
 
 #nextBtn:disabled {
-    background-color: #cccccc;
+    margin-left: 30px;
+    border: none;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 10px;
+    background-color: #BCDCFB;
     cursor: not-allowed;
 }
 
 #nextBtn:not(:disabled) {
-    background-color: #4CAF50;
+    font-size: 18px;
+    margin-left: 30px;
+    
+    background-color: #3C91E6;
+    border: none;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 10%;
+
     color: white;
     animation: pulse 1.5s infinite;
 }
@@ -177,3 +191,77 @@ body.dark {
 #webcam {
     transform: scaleX(-1); /* Esto invierte el video horizontalmente */
 }
+
+
+#recordBtn {
+    display: none; /* Oculto por defecto */
+}
+
+/* Estilos para el contador */
+#countdown {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    color: white;
+    text-shadow: 2px 2px 4px black;
+    z-index: 100;
+}
+
+#recordingTimer {
+    display: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+    z-index: 100;
+}
+
+#recordBtn {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 10px;
+}
+
+#recordBtn:hover {
+    background-color: #c0392b;
+}
+
+#recordBtn:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+.btn-grabar {
+    display: inline-block !important;
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 10px;
+}
+
+.btn-grabar:hover {
+    background-color: #c0392b;
+}
+
+.btn-grabar:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+

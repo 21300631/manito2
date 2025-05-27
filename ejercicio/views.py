@@ -6,43 +6,27 @@ from django.http import HttpResponseForbidden, HttpResponse
 
 
 def generarLeccion(request):
-    import random
-    from django.http import HttpResponseForbidden
-    from django.shortcuts import redirect
-
-    # datos del usuario
     usuario = request.user
     perfil = Profile.objects.get(user=usuario)
     leccion = int(request.GET.get('leccion_id', 0))
 
-   
-
-    # Validación
     if leccion > perfil.leccion:
         return HttpResponseForbidden("No tienes acceso a esta lección todavía.")
     
-    # Obtener objetos relevantes
     leccion_obj = Leccion.objects.get(id=leccion)
-    palabras_nuevas = list(leccion_obj.palabras.all()[:3])  # Aseguramos que sea lista
+    palabras_nuevas = list(leccion_obj.palabras.all()[:3])  # 3 palabras nuevas
 
-    
-
-    # Obtener palabras de repaso
+    # Obtener palabras de repaso 
     relaciones_repaso = list(PalabraUsuario.objects.filter(usuario=perfil))
     palabras_repaso = []
-
-    if len(relaciones_repaso) < 7:
-        # No hay suficientes palabras para repaso: se rellenan con palabras nuevas
-        palabras_repaso = palabras_nuevas.copy()
-
-        # Añadir más palabras hasta tener 7
-        while len(palabras_repaso) < 7:
-            palabra_aleatoria = random.choice(palabras_nuevas)
-            palabras_repaso.append(palabra_aleatoria)
+    
+    if len(relaciones_repaso) >= 7:
+        palabras_repaso = random.sample([rel.palabra for rel in relaciones_repaso], 7)
     else:
-        # Hay suficientes: seleccionamos 7 aleatorias de las ya practicadas
-        todas_palabras_repaso = [rel.palabra for rel in relaciones_repaso]
-        palabras_repaso = random.sample(todas_palabras_repaso, 7)
+        # Si no hay suficientes, completar con palabras nuevas
+        palabras_repaso = [rel.palabra for rel in relaciones_repaso]
+        faltantes = 7 - len(palabras_repaso)
+        palabras_repaso.extend(random.choices(palabras_nuevas, k=faltantes))
 
     # Instrucciones
     instrucciones_repaso = list(Instruccion.objects.exclude(tipo='gesto'))
@@ -50,59 +34,58 @@ def generarLeccion(request):
     
     ejercicios = []
 
-    # Primero: 3 ejercicios de gesto con palabras nuevas (en orden fijo)
+    # 3 ejercicios de gesto con palabras nuevas
     for palabra in palabras_nuevas:
         ejercicios.append({
-            'palabra': palabra,
-            'instruccion': instruccion_gesto,
-            'texto_instruccion': instruccion_gesto.generar_texto(palabra.palabra)
+            'palabra': palabra.id,  # Guardar solo el ID
+            'instruccion': 'gesto',
+            'texto': instruccion_gesto.generar_texto(palabra.palabra)
         })
 
-    # Luego: 7 ejercicios de repaso con instrucciones aleatorias
+    # 7 ejercicios de repaso con instrucciones aleatorias
     for palabra in palabras_repaso:
-        instruccion_aleatoria = random.choice(instrucciones_repaso)
+        instruccion = random.choice(instrucciones_repaso)
         ejercicios.append({
-            'palabra': palabra,
-            'instruccion': instruccion_aleatoria,
-            'texto_instruccion': instruccion_aleatoria.generar_texto(palabra.palabra)
+            'palabra': palabra.id,  # Guardar solo el ID
+            'instruccion': instruccion.tipo,
+            'texto': instruccion.generar_texto(palabra.palabra)
         })
 
-    # Guardar en sesión, sin mezclar (orden fijo: gesto -> repaso)
-    request.session['ejercicios'] = [
-        {
-            'palabra': ejercicio['palabra'].id,
-            'instruccion': ejercicio['instruccion'].tipo,
-            'texto': ejercicio['texto_instruccion']
-        } for ejercicio in ejercicios
-    ]
-    request.session['ejercicio_actual'] = 0
+    # Mezclar los ejercicios (excepto los primeros 3 de gesto si quieres mantener ese orden)
+    ejercicios_repaso = ejercicios[3:]
+    random.shuffle(ejercicios_repaso)
+    ejercicios = ejercicios[:3] + ejercicios_repaso
 
-    print("Ejercicios guardados en la sesión:", request.session['ejercicios'])
+    # Guardar en sesión
+    request.session['ejercicios'] = ejercicios
+    request.session['ejercicio_actual'] = 0
+    request.session.modified = True
+
+    print(f"Generados {len(ejercicios)} ejercicios:")  # Debug
+    for i, ej in enumerate(ejercicios, 1):
+        print(f"{i}. Palabra ID: {ej['palabra']}, Tipo: {ej['instruccion']}")
 
     return redirect('mostrar_ejercicio')
 
 def mostrar_ejercicio(request):
-    # Verificar que exista la sesión de ejercicios
     if 'ejercicios' not in request.session:
-        return redirect('alguna_vista_de_error')  # o handle this case appropriately
+        return redirect('generarLeccion')  # o la vista apropiada
     
     ejercicios = request.session['ejercicios']
     index = request.session.get('ejercicio_actual', 0)
     
-    print(f"Mostrando ejercicio {index + 1} de {len(ejercicios)}")  # Debug
+    # print(f"Ejercicio {index + 1} de {len(ejercicios)}")  Debug
     
     if index >= len(ejercicios):
-        print("Todos los ejercicios completados")  # Debug
+        print("Todos los ejercicios completados")  # si el index es mayor que la long de los ejericicos se va a finalizado
         return render(request, "finalizado.html")
 
     try:
-        actual = ejercicios[index]
+        actual = ejercicios[index]  # Obtener el ejercicio actual
         instruccion_tipo = actual['instruccion']
         
-        print(f"Redirigiendo a ejercicio de tipo: {instruccion_tipo}")  # Debug
         
-        # Diccionario de redirecciones
-        redirecciones = {
+        redirecciones = { # redirecciones a las vistas de los ejercicios
             'emparejar': 'ejercicio_emparejar',
             'seleccion': 'ejercicio_seleccion',
             'escribir': 'ejercicio_escribir',
@@ -122,6 +105,44 @@ def mostrar_ejercicio(request):
 
 
 def siguiente_ejercicio(request):
-    request.session['ejercicio_actual'] += 1
+    request.session['ejercicio_actual'] += 1 # Aumentar el índice del ejercicio actual
+    
+    # Aumentar el progreso en cada ejercicio
+    if 'progreso' not in request.session:
+        request.session['progreso'] = 0
+    
+    request.session['progreso'] = min(request.session['progreso'] + 10, 100)
+    request.session.modified = True
+
     return redirect('mostrar_ejercicio')
 
+
+def reiniciar_progreso(request):
+    if request.method == "POST":
+        usuario = request.session.get('usuario')
+        foto_perfil = request.session.get('foto_perfil')
+
+
+        # Reiniciar progreso y ejercicios
+        request.session['progreso'] = 0
+        request.session['ejercicio_actual'] = 0
+        request.session.pop('ejercicios', None)  # Elimina la lista de ejercicios si existe
+
+        request.session.modified = True
+
+        request.session['usuario'] = usuario
+        request.session['foto_perfil'] = foto_perfil
+
+
+    return redirect('inicio')  # o la vista que desees mostrar después de reiniciar
+     # Reemplaza con tu URL de inicio o menú principal
+
+def mostrar_finalizado(request):
+    # Reiniciar progreso y ejercicios
+    request.session['progreso'] = 0
+    request.session['ejercicio_actual'] = 0
+    request.session.pop('ejercicios', None)  # Elimina la lista de ejercicios si existe
+
+    request.session.modified = True
+
+    return render(request, 'finalizado.html')  # o la vista que desees mostrar después de reiniciar

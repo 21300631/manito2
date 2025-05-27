@@ -1,13 +1,15 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ejercicio1</title>
-    <link rel="stylesheet" href="{% static 'e03.css'%}">
+    <title>Emparejar Palabras con Gestos</title>
+    <link rel="stylesheet" href="{% static 'e03.css' %}">
 </head>
-<body class="{{ theme }}" data-theme="{{ theme }}" data-url-verificacion="{% url 'verificar_emparejar' %}" data-url-siguiente="{% url 'siguiente_ejercicio' %}">
+<body class="{{ theme }}" data-theme="{{ theme }}" 
+      data-url-verificacion="{% url 'verificar_emparejar' %}" 
+      data-url-siguiente="{% url 'siguiente_ejercicio' %}">
 
     <div class="todo">
         <div class="instruccion">
@@ -16,7 +18,7 @@
         <div class="contenido">
             <div class="panel-barra">
                 <div class="progress-container">
-                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="progress-bar" id="progressBar" data-progreso-inicial="{{ request.session.progreso|default:0 }}"></div>
                 </div>
             </div>
             <div class="panel2">
@@ -26,27 +28,28 @@
                     {% endfor %}
                 </div>
                 <div class="gestos">
-            {% for gesto in gestos %}
-                <div class="gesto" data-id="{{ gesto.objeto.id }}">
-                    {% if gesto.es_video %}
-                        <video src="{{ gesto.url }}" alt="Gesto {{ palabra_correcta}}" autoplay loop width="80%"></video>
-                    {% else %}
-                        <img src="{{ gesto.url }}" alt="Gesto {{ gesto.objeto.palabra}}" width="80%" padding="10%" margin="0">
-                    {% endif %}
+                    {% for gesto in gestos %}
+                        <div class="gesto" data-id="{{ gesto.objeto.id }}">
+                            {% if gesto.es_video %}
+                                <video src="{{ gesto.url }}" autoplay loop muted width="80%"></video>
+                            {% else %}
+                                <img src="{{ gesto.url }}" alt="Gesto" width="80%">
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-                <div class="panel-btn">
-                    <button class="btn-salir">Salir</button>
-                    <button id="btn-verificar" disabled>Verificar</button>
-                    <form method="post" action="{% url 'siguiente_ejercicio' %}">
+                <div method="POST" class="panel-btn">
+                    <form action="{% url 'reiniciar_progreso' %}">
                         {% csrf_token %}
-                        <button type="submit">Siguiente</button>
+
+                        <button class="btn-salir">Salir</button>
                     </form>
+                    <button id="btn-verificar" disabled>Verificar</button>
                 </div>
             </div>
         </div>
     </div>
+    
     <script src="{% static 'progress.js' %}"></script>
     <script src="{% static 'emparejar.js' %}"></script>
 </body>

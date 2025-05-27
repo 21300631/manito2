@@ -8,35 +8,39 @@ import random
 import re
 
 def ejercicio_emparejar(request):
-    print("Ejercicio Selección")
     ejercicios = request.session.get('ejercicios', [])
     index = request.session.get('ejercicio_actual', 0)
+    progreso = request.session.get('progreso', 0)
+    print(f"Ejercicio Emparejar - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")  # Debug
     
     if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
 
     ejercicio_actual = ejercicios[index]
-    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
+    palabra_id = ejercicio_actual['palabra']
     palabra_obj = Palabra.objects.get(id=palabra_id)
 
     user = request.user
     perfil = Profile.objects.get(user=user)
 
+    # Obtener palabras para el ejercicio
     if PalabraUsuario.objects.filter(usuario=perfil).count() < 2:
-        # si no hay suficientes de repaso, utiliza las mismas de la leccion para rellenar
         palabras_usuario = list(
             Palabra.objects.filter(leccion=1).exclude(id=palabra_obj.id).order_by('?')[:2]
         )
     else:
-        # Obtener las relaciones PalabraUsuario y luego las palabras asociadas
         relaciones_usuario = PalabraUsuario.objects.filter(usuario=perfil).exclude(palabra=palabra_obj)
         palabras_usuario = [relacion.palabra for relacion in relaciones_usuario.order_by('?')[:2]]
 
     opciones = palabras_usuario + [palabra_obj]
-    random.shuffle(opciones)
+    random.shuffle(opciones)  # Mezclar palabras
+
+    # Crear lista de gestos mezclada (no en el mismo orden que las palabras)
+    gestos_mezclados = opciones.copy()
+    random.shuffle(gestos_mezclados)
 
     opciones_gestos_con_url = []
-    for gesto_obj in opciones:
+    for gesto_obj in gestos_mezclados:
         es_video = str(gesto_obj.gesto).lower().endswith('.mp4')
         opciones_gestos_con_url.append({
             'objeto': gesto_obj,
@@ -46,21 +50,18 @@ def ejercicio_emparejar(request):
 
     context = {
         'theme': request.session.get('theme', 'claro'),
-        'texto_instruccion': f"Empareja las palabras con su respectivo gesto",
+        'texto_instruccion': "Empareja cada palabra con su gesto correspondiente",
         'palabras': opciones,
         'gestos': opciones_gestos_con_url,
-        'palabra_correcta': palabra_obj.palabra,
-        'gesto_correcto': f"{MANITO_BUCKET_DOMAIN}/{palabra_obj.gesto}",
     }
-    print("Leccion:", [l.leccion for l in opciones])
-    print("Palabras:", [p.palabra for p in opciones])
-    print("Gestos URLs:", [g['url'] for g in opciones_gestos_con_url])
     return render(request, 'emparejar.html', context)
 
 def ejercicio_seleccion(request):
-    print("Ejercicio Selección")
     ejercicios = request.session.get('ejercicios', [])
     index = request.session.get('ejercicio_actual', 0)
+    progreso = request.session.get('progreso', 0)
+    print(f"Ejercicio seleccion - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")  # Debug
+
     
     if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
@@ -103,6 +104,9 @@ def ejercicio_seleccion2(request):
     print("Ejercicio Selección 2")
     ejercicios = request.session.get('ejercicios', [])
     index = request.session.get('ejercicio_actual', 0)
+    progreso = request.session.get('progreso', 0)
+    print(f"Ejercicio seleccion2 - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")  # Debug
+
     
     if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
@@ -157,9 +161,11 @@ def ejercicio_seleccion2(request):
 
 
 def ejercicio_completar(request):
-    print("Ejercicio Completar")
     ejercicios = request.session.get('ejercicios', [])
     index = request.session.get('ejercicio_actual', 0)
+    progreso = request.session.get('progreso', 0)
+    print(f"Ejercicio completar - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")  # Debug
+
     
     if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
@@ -205,9 +211,11 @@ def ejercicio_completar(request):
 
 
 def ejercicio_escribir(request):
-    print("Ejercicio Escribir")
     ejercicios = request.session.get('ejercicios', [])
     index = request.session.get('ejercicio_actual', 0)
+    progreso = request.session.get('progreso', 0)
+    print(f"Ejercicio escribir - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")  # Debug
+
     
     if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
@@ -233,37 +241,31 @@ def ejercicio_escribir(request):
     return render(request, 'escribir.html', context)
 
 
-
-
 def ejercicio_gesto(request):
-    print("Ejercicio Gesto")
     ejercicios = request.session.get('ejercicios', [])
     index = request.session.get('ejercicio_actual', 0)
+    progreso = request.session.get('progreso', 0)
+    print(f"Ejercicio Gesto - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")  # Debug
+
     
     if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
 
     ejercicio_actual = ejercicios[index]
-    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
+    palabra_id = ejercicio_actual['palabra']
     palabra = Palabra.objects.get(id=palabra_id)
 
-
-
     archivo_url = f"{MANITO_BUCKET_DOMAIN}/{palabra.gesto}"
+    
+    print("Gesto URL:", archivo_url)
 
     contexto = {
         'texto_instruccion': f"Realiza el gesto correspondiente a la palabra: {palabra.palabra}",
         'archivo': archivo_url,
-        'video': palabra.gesto.lower().endswith('.mp4'),
+        'is_video': palabra.gesto.lower().endswith('.mp4'),  # Cambiado a is_video
         'theme': request.session.get('theme', 'light'),
         'palabra_correcta': palabra.palabra,
-        'json_url': f'landmarks/{palabra}.json',
-
+        'json_url': f'landmarks/{palabra.palabra}.json',  # Asegúrate que coincida con tus archivos
     }
 
-    print("Url:", archivo_url)
-    print("Palabra:", palabra.palabra)
-
     return render(request, 'gesto.html', contexto)
-
-

@@ -1,0 +1,77 @@
+Performing system checks...
+
+System check identified no issues (0 silenced).
+May 23, 2025 - 19:10:31
+Django version 4.2.20, using settings 'manito.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+Generados 10 ejercicios:
+1. Palabra ID: 4, Tipo: gesto
+2. Palabra ID: 5, Tipo: gesto
+3. Palabra ID: 6, Tipo: gesto
+4. Palabra ID: 16, Tipo: escribir
+5. Palabra ID: 17, Tipo: completar
+6. Palabra ID: 13, Tipo: completar
+7. Palabra ID: 8, Tipo: completar
+8. Palabra ID: 19, Tipo: completar
+9. Palabra ID: 2, Tipo: emparejar
+10. Palabra ID: 12, Tipo: seleccion
+Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/D.png
+https://post-manito.s3.amazonaws.com/usuario/caridad.png
+0
+Circulo
+Generados 10 ejercicios:
+1. Palabra ID: 4, Tipo: gesto
+2. Palabra ID: 5, Tipo: gesto
+3. Palabra ID: 6, Tipo: gesto
+4. Palabra ID: 7, Tipo: completar
+5. Palabra ID: 2, Tipo: emparejar
+6. Palabra ID: 3, Tipo: escribir
+7. Palabra ID: 4, Tipo: seleccion2
+8. Palabra ID: 14, Tipo: completar
+9. Palabra ID: 8, Tipo: seleccion
+10. Palabra ID: 11, Tipo: seleccion2
+Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/D.png
+Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/E.png
+Ejercicio Gesto - Índice: 3, Total Ejercicios: 10, Progreso 20
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/F.png
+Ejercicio completar - Índice: 4, Total Ejercicios: 10, Progreso 30
+Ejercicio Emparejar - Índice: 5, Total Ejercicios: 10, Progreso 40
+Ejercicio escribir - Índice: 6, Total Ejercicios: 10, Progreso 50
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/C.png
+Ejercicio Selección 2
+Ejercicio seleccion2 - Índice: 7, Total Ejercicios: 10, Progreso 60
+Ejercicio completar - Índice: 8, Total Ejercicios: 10, Progreso 70
+Ejercicio seleccion - Índice: 9, Total Ejercicios: 10, Progreso 80
+Opciones: [{'id': 103, 'palabra': 'Lengua', 'url': 'https://manito-bucket1.s3.amazonaws.com/cuerpo/lengua.mp4', 'es_video': True}, {'id': 160, 'palabra': 'Limpio', 'url': 'https://manito-bucket1.s3.amazonaws.com/adjetivos/limpio.mp4', 'es_video': True}, {'id': 8, 'palabra': 'H', 'url': 'https://manito-bucket1.s3.amazonaws.com/Abecedario/H.png', 'es_video': False}]
+Ejercicio Selección 2
+Ejercicio seleccion2 - Índice: 10, Total Ejercicios: 10, Progreso 90
+Todos los ejercicios completados
+https://post-manito.s3.amazonaws.com/usuario/caridad.png
+0
+Circulo
+Generados 10 ejercicios:
+1. Palabra ID: 4, Tipo: gesto
+2. Palabra ID: 5, Tipo: gesto
+3. Palabra ID: 6, Tipo: gesto
+4. Palabra ID: 6, Tipo: emparejar
+5. Palabra ID: 1, Tipo: seleccion2
+6. Palabra ID: 17, Tipo: escribir
+7. Palabra ID: 19, Tipo: emparejar
+8. Palabra ID: 14, Tipo: completar
+9. Palabra ID: 7, Tipo: escribir
+10. Palabra ID: 18, Tipo: emparejar
+Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/D.png
+Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/E.png
+Ejercicio Gesto - Índice: 3, Total Ejercicios: 10, Progreso 20
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/F.png
+Ejercicio Emparejar - Índice: 4, Total Ejercicios: 10, Progreso 30
+https://post-manito.s3.amazonaws.com/usuario/caridad.png
+0
+Circulo

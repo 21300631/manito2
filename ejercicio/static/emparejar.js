@@ -1,249 +1,159 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar barra de progreso
+    const progressBar = document.getElementById('progressBar');
+    const progresoInicial = parseInt(progressBar.dataset.progresoInicial) || 0;
+    progressBar.style.height = `${progresoInicial}%`;
+    
+    // Elementos del DOM
     const palabras = document.querySelectorAll('.palabra');
     const gestos = document.querySelectorAll('.gesto');
     const btnVerificar = document.getElementById('btn-verificar');
-    const contenedorMensajes = document.createElement('div');
-    contenedorMensajes.className = 'contenedor-mensajes';
-    document.body.appendChild(contenedorMensajes);
+    const urlSiguiente = document.body.dataset.urlSiguiente;
+    const urlVerificacion = document.body.dataset.urlVerificacion;
+    const resultadoDiv = document.getElementById('resultadoEmparejar');
 
-    // Variables de estado
+    // Estado de la aplicación
     let seleccionActual = { palabra: null, gesto: null };
     let paresSeleccionados = [];
     let contadorPareado = 1;
-    let bloqueado = false;
 
-    // Configuración inicial
-    palabras.forEach(p => p.style.pointerEvents = 'auto');
-    gestos.forEach(g => g.style.pointerEvents = 'auto');
-    btnVerificar.disabled = true;
+    // Manejo de selecciones
+    function manejarSeleccion(elementos, tipo) {
+        elementos.forEach(elemento => {
+            elemento.addEventListener('click', () => {
+                if (elemento.classList.contains('emparejada')) return;
 
-    // Eventos para palabras
-    palabras.forEach(palabra => {
-        palabra.addEventListener('click', () => {
-            if (bloqueado || palabra.classList.contains('emparejada')) return;
-            
-            // Deseleccionar otras palabras
-            palabras.forEach(p => {
-                if (p !== palabra) p.classList.remove('seleccionada');
+                // Limpiar selecciones previas del mismo tipo
+                elementos.forEach(el => el.classList.remove('seleccionada'));
+                elemento.classList.add('seleccionada');
+
+                seleccionActual[tipo] = elemento;
+                verificarPar();
             });
-
-            // Seleccionar actual
-            palabra.classList.toggle('seleccionada');
-            seleccionActual.palabra = palabra.classList.contains('seleccionada') ? palabra : null;
-            
-            verificarPar();
         });
-    });
+    }
 
-    // Eventos para gestos
-    gestos.forEach(gesto => {
-        gesto.addEventListener('click', () => {
-            if (bloqueado || gesto.classList.contains('emparejada')) return;
-            
-            // Deseleccionar otros gestos
-            gestos.forEach(g => {
-                if (g !== gesto) g.classList.remove('seleccionada');
-            });
+    manejarSeleccion(palabras, 'palabra');
+    manejarSeleccion(gestos, 'gesto');
 
-            // Seleccionar actual
-            gesto.classList.toggle('seleccionada');
-            seleccionActual.gesto = gesto.classList.contains('seleccionada') ? gesto : null;
-            
-            verificarPar();
-        });
-    });
-
-    // Función para verificar y crear pares
+    // Verificar par seleccionado
     function verificarPar() {
         if (seleccionActual.palabra && seleccionActual.gesto) {
-            bloqueado = true;
-            
             const palabraID = seleccionActual.palabra.dataset.id;
             const gestoID = seleccionActual.gesto.dataset.id;
 
-            paresSeleccionados.push({
-                palabra_id: palabraID,
-                gesto_id: gestoID
-            });
+            // Verificar si ya fue emparejado
+            const yaEmparejado = paresSeleccionados.some(
+                par => par.palabra_id === palabraID || par.gesto_id === gestoID
+            );
 
-            // Animación de emparejamiento
-            animarEmparejamiento(seleccionActual.palabra, seleccionActual.gesto, contadorPareado);
+            if (!yaEmparejado) {
+                paresSeleccionados.push({
+                    palabra_id: palabraID,
+                    gesto_id: gestoID
+                });
 
-            // Actualizar estado
-            seleccionActual.palabra.classList.add('emparejada');
-            seleccionActual.gesto.classList.add('emparejada');
-            seleccionActual = { palabra: null, gesto: null };
-            contadorPareado++;
+                animarEmparejamiento(seleccionActual.palabra, seleccionActual.gesto, contadorPareado);
+                contadorPareado++;
 
-            // Habilitar botón si tenemos todos los pares
-            if (paresSeleccionados.length === Math.min(palabras.length, gestos.length)) {
-                btnVerificar.disabled = false;
+                // Deshabilitar elementos emparejados
+                seleccionActual.palabra.classList.add('emparejada');
+                seleccionActual.gesto.classList.add('emparejada');
             }
 
-            setTimeout(() => {
-                bloqueado = false;
-            }, 300);
+            // Resetear selección
+            seleccionActual = { palabra: null, gesto: null };
+
+            // Habilitar botón cuando todos los pares están hechos
+            btnVerificar.disabled = paresSeleccionados.length !== palabras.length;
         }
     }
 
     // Animación al emparejar
     function animarEmparejamiento(palabraEl, gestoEl, numeroPar) {
         const clase = `pareado-${numeroPar}`;
-        
         palabraEl.classList.add(clase);
         gestoEl.classList.add(clase);
         palabraEl.classList.remove('seleccionada');
         gestoEl.classList.remove('seleccionada');
-
-        // Efecto visual
-        palabraEl.style.transform = 'scale(1.1)';
-        gestoEl.style.transform = 'scale(1.1)';
-        
-        setTimeout(() => {
-            palabraEl.style.transform = 'scale(1)';
-            gestoEl.style.transform = 'scale(1)';
-        }, 200);
     }
 
-    // Evento del botón verificar
+    // Verificar emparejamientos con el servidor
     btnVerificar.addEventListener('click', () => {
-        if (bloqueado) return;
+        btnVerificar.disabled = true; // Deshabilitar botón durante la verificación
         
-        bloqueado = true;
-        btnVerificar.disabled = true;
-        
-        const urlVerificacion = '/verificar_emparejar/'; // Ajusta según tu URL
-
         fetch(urlVerificacion, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken(),
+                'X-CSRFToken': getCookie('csrftoken')
             },
-            body: JSON.stringify({ 
-                pares: paresSeleccionados.map(p => ({
-                    palabra_id: parseInt(p.palabra_id),
-                    gesto_id: parseInt(p.gesto_id)
-                }))
-            })
+            body: JSON.stringify({ pares: paresSeleccionados })
         })
-        .then(res => {
-            if (!res.ok) throw new Error('Error en la respuesta del servidor');
-            return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
-            if (data.error) throw new Error(data.error);
-            
-            if (data.completado) {
-                mostrarMensaje('¡Lección completada!', true);
-                setTimeout(() => {
-                    window.location.href = '/finalizado/';
-                }, 1500);
-                return;
-            }
-
             if (data.todos_correctos) {
-                // Todo correcto
-                mostrarMensaje(data.mensaje || '¡Correcto!', true);
-                animarResultado(true);
+                
+                // Actualizar barra de progreso
+                actualizarBarraProgreso(10);
                 
                 setTimeout(() => {
-                    window.location.href = '/mostrar_ejercicio/';
-                }, 1500);
+                    if (data.completado) {
+                        window.location.href = data.redirect || urlSiguiente;
+                    } else {
+                        window.location.href = urlSiguiente;
+                    }
+                }, 1000);
             } else {
-                // Algunos incorrectos
-                mostrarMensaje(data.mensaje || 'Algunos emparejamientos son incorrectos', false);
-                resaltarIncorrectos(data.resultado);
-                animarResultado(false);
-                
-                setTimeout(() => {
-                    reiniciarEjercicio();
-                    bloqueado = false;
-                }, 3000);
+                setTimeout(reiniciarPares, 1500);
             }
         })
         .catch(error => {
-            mostrarMensaje(error.message || 'Error de conexión', false);
             console.error('Error:', error);
-            bloqueado = false;
+            resultadoDiv.textContent = 'Error al verificar. Intenta nuevamente.';
+            resultadoDiv.style.color = 'red';
             btnVerificar.disabled = false;
         });
     });
 
-    // Función para resaltar incorrectos
-    function resaltarIncorrectos(resultados) {
-        resultados.forEach((par, index) => {
-            if (!par.correcto) {
-                const pareadoClass = `pareado-${index + 1}`;
-                document.querySelectorAll(`.${pareadoClass}`).forEach(el => {
-                    el.classList.add('incorrecto');
-                });
-            }
-        });
-    }
-
-    // Animación de resultado
-    function animarResultado(esCorrecto) {
-        const elementos = document.querySelectorAll('.palabra.emparejada, .gesto.emparejada');
-        
-        elementos.forEach(el => {
-            el.classList.add(esCorrecto ? 'correcto' : 'incorrecto');
-            el.style.transform = esCorrecto ? 'scale(1.1)' : 'rotate(2deg)';
-        });
-        
-        setTimeout(() => {
-            elementos.forEach(el => {
-                el.style.transform = '';
-            });
-        }, 500);
-    }
-
-    // Reiniciar ejercicio
-    function reiniciarEjercicio() {
-        // Limpiar clases
+    // Reiniciar el ejercicio
+    function reiniciarPares() {
         document.querySelectorAll('.palabra, .gesto').forEach(el => {
-            el.classList.remove(
-                'seleccionada', 'emparejada', 'correcto', 'incorrecto',
-                'pareado-1', 'pareado-2', 'pareado-3'
-            );
-            el.style.transform = '';
+            el.className = el.className.split(' ')
+                .filter(cls => !cls.startsWith('pareado-') && 
+                              !['emparejada', 'seleccionada', 'correcto', 'incorrecto'].includes(cls))
+                .join(' ');
         });
-        
-        // Resetear variables
+
         paresSeleccionados = [];
         seleccionActual = { palabra: null, gesto: null };
         contadorPareado = 1;
         btnVerificar.disabled = true;
+        resultadoDiv.textContent = '';
     }
 
-    // Mostrar mensajes flotantes
-    function mostrarMensaje(texto, esExito) {
-        const mensaje = document.createElement('div');
-        mensaje.className = `mensaje ${esExito ? 'exito' : 'error'}`;
-        mensaje.textContent = texto;
+    // Función para actualizar la barra de progreso (CORREGIDA)
+    function actualizarBarraProgreso(porcentaje) {
+        const progresoActual = parseInt(progressBar.style.height) || 0;
+        const nuevoProgreso = Math.min(progresoActual + porcentaje, 100);
         
-        contenedorMensajes.appendChild(mensaje);
+        progressBar.style.height = `${nuevoProgreso}%`;
         
-        setTimeout(() => {
-            mensaje.classList.add('mostrar');
-        }, 10);
-        
-        setTimeout(() => {
-            mensaje.classList.remove('mostrar');
-            setTimeout(() => mensaje.remove(), 300);
-        }, 3000);
     }
 
-    // Obtener token CSRF
-    function getCSRFToken() {
-        const name = 'csrftoken=';
-        const cookies = document.cookie.split(';');
-        
-        for (let cookie of cookies) {
-            if (cookie.trim().startsWith(name)) {
-                return cookie.trim().substring(name.length);
+    // Función para obtener el token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
-        return '';
+        return cookieValue;
     }
 });

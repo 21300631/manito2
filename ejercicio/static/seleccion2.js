@@ -1,4 +1,3 @@
-
 // Obtener CSRF
 function getCookie(name) {
     let cookieValue = null;
@@ -16,10 +15,17 @@ function getCookie(name) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Inicializar barra de progreso vertical
+    const progressBar = document.getElementById("progressBar");
+    const progresoInicial = parseInt(progressBar.dataset.progresoInicial) || 0;
+    progressBar.style.height = `${progresoInicial}%`;
+    
     const tarjetas = document.querySelectorAll(".card");
-
     const urlVerificacion = document.body.dataset.urlVerificacion;
-    const urlSiguiente = document.body.dataset.urlSiguiente;
+    // const resultadoDiv = document.createElement('div'); // Para mostrar mensajes
+    // resultadoDiv.style.marginTop = '10px';
+    // resultadoDiv.style.fontWeight = 'bold';
+    // document.querySelector('.instruccion').appendChild(resultadoDiv);
 
     tarjetas.forEach(card => {
         card.addEventListener("click", () => {
@@ -33,20 +39,43 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: `opcion_id=${opcion_id}`
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Error en la respuesta');
+                return response.json();
+            })
             .then(data => {
-                tarjetas.forEach(t => t.classList.remove("correcto", "incorrecto")); // Limpieza
+                // Limpiar selecciones previas
+                tarjetas.forEach(t => t.classList.remove("correcto", "incorrecto"));
+                
+                // Mostrar resultado
 
                 if (data.correcto) {
                     card.classList.add("correcto");
-                    aumentarBarraProgreso(10); // Si usas barra
+                    actualizarBarraProgreso(10);
+                    
                     setTimeout(() => {
-                        window.location.href = urlSiguiente;
+                        // Usar redirect_url si existe, o ir a /ejercicio/mostrar/ por defecto
+                        const redirectUrl = data.redirect_url || '/ejercicio/mostrar/';
+                        window.location.href = redirectUrl;
                     }, 800);
                 } else {
                     card.classList.add("incorrecto");
                 }
+            })
+            .catch(error => {
+                console.error("Error:", error);
             });
         });
     });
+
+    // Función para actualizar barra de progreso vertical
+    function actualizarBarraProgreso(porcentaje) {
+        const progresoActual = parseInt(progressBar.style.height) || 0;
+        const nuevoProgreso = Math.min(progresoActual + porcentaje, 100);
+        
+        progressBar.style.height = `${nuevoProgreso}%`;
+        console.log(`Barra de progreso actualizada: ${nuevoProgreso}%`);
+        
+        
+    }
 });

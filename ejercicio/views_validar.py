@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 from .models import Palabra
 from django.shortcuts import redirect
 
+
 @csrf_exempt
 @require_POST
 def verificar_seleccion(request):
@@ -21,19 +22,18 @@ def verificar_seleccion(request):
         es_correcto = opcion_id == palabra_correcta_id
         
         if es_correcto:
-            request.session['ejercicio_actual'] = index + 1
-            request.session.modified = True
+            # Actualizar progreso
+
             
             if request.session['ejercicio_actual'] >= len(ejercicios):
                 return JsonResponse({
                     'correcto': True,
                     'completado': True,
-                    'mensaje': '¡Ejercicio completado correctamente!'
+                    'redirect_url': '/ejercicio/finalizado/',  # URL explícita
                 })
             return JsonResponse({
                 'correcto': True,
-                'redirect': True,
-                'mensaje': '¡Correcto! Pasando al siguiente ejercicio...'
+                'redirect_url': '/ejercicio/siguiente/',  # URL explícita en lugar de True
             })
             
         return JsonResponse({
@@ -45,6 +45,7 @@ def verificar_seleccion(request):
 
 @csrf_exempt
 @require_POST
+
 def verificar_seleccion2(request):
     try:
         opcion_id = int(request.POST.get("opcion_id"))
@@ -59,24 +60,21 @@ def verificar_seleccion2(request):
         es_correcto = opcion_id == palabra_correcta_id
         
         if es_correcto:
-            request.session['ejercicio_actual'] = index + 1
-            request.session.modified = True
+            # Actualizar progreso y contador
             
             if request.session['ejercicio_actual'] >= len(ejercicios):
                 return JsonResponse({
                     'correcto': True,
                     'completado': True,
-                    'mensaje': '¡Todos los ejercicios completados!'
+                    'redirect_url': '/ejercicio/finalizado/',  # URL explícita
                 })
             return JsonResponse({
                 'correcto': True,
-                'redirect': True,
-                'mensaje': '¡Correcto!'
+                'redirect_url': '/ejercicio/siguiente/',  # URL explícita en lugar de True
             })
             
         return JsonResponse({
             'correcto': False,
-            'mensaje': 'Esa no es la opción correcta.'
         })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
@@ -97,24 +95,20 @@ def verificar_completar(request):
         es_correcto = opcion_id == palabra_correcta_id
         
         if es_correcto:
-            request.session['ejercicio_actual'] = index + 1
-            request.session.modified = True
             
             if request.session['ejercicio_actual'] >= len(ejercicios):
                 return JsonResponse({
                     'correcto': True,
                     'completado': True,
-                    'mensaje': '¡Has completado todos los ejercicios!'
+                    'redirect_url': '/ejercicio/finalizado/',  # URL explícita
                 })
             return JsonResponse({
                 'correcto': True,
-                'redirect': True,
-                'mensaje': '¡Respuesta correcta!'
+                'redirect': '/ejercicio/siguiente/',  # URL explícita
             })
             
         return JsonResponse({
             'correcto': False,
-            'mensaje': 'No es la opción que completa correctamente la frase.'
         })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
@@ -123,40 +117,29 @@ def verificar_completar(request):
 @require_POST
 def verificar_escribir(request):
     try:
-        respuesta_usuario = request.POST.get('respuesta_usuario', '').strip().lower()
+        respuesta = request.POST.get('respuesta_usuario', '').strip().lower()
         index = request.session.get('ejercicio_actual', 0)
         ejercicios = request.session.get('ejercicios', [])
         
-        if index >= len(ejercicios):
-            return JsonResponse({'completado': True})
-            
         ejercicio_actual = ejercicios[index]
-        palabra_id = ejercicio_actual['palabra']
-        palabra_correcta = Palabra.objects.get(id=palabra_id).palabra.strip().lower()
-        es_correcto = respuesta_usuario == palabra_correcta
+        palabra = Palabra.objects.get(id=ejercicio_actual['palabra'])
+        es_correcto = respuesta == palabra.palabra.lower()
         
         if es_correcto:
-            request.session['ejercicio_actual'] = index + 1
-            request.session.modified = True
+            # Actualizar progreso en sesión
             
-            if request.session['ejercicio_actual'] >= len(ejercicios):
-                return JsonResponse({
-                    'correcto': True,
-                    'completado': True,
-                    'respuesta_correcta': palabra_correcta,
-                    'mensaje': '¡Felicidades! Curso completado.'
-                })
             return JsonResponse({
                 'correcto': True,
-                'redirect': True,
-                'mensaje': '¡Perfecto!'
+                'redirect_url': '/ejercicio/siguiente/',  # URL explícita
+                'completado': request.session['ejercicio_actual'] >= len(ejercicios),
+                'mensaje': '¡Respuesta correcta!'
             })
             
         return JsonResponse({
             'correcto': False,
-            'respuesta_correcta': palabra_correcta,
-            'mensaje': f'La respuesta correcta es: {palabra_correcta}'
+            'mensaje': f'Incorrecto. '
         })
+        
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
     
@@ -187,18 +170,18 @@ def verificar_emparejar(request):
                 break
                 
         if todos_correctos:
-            request.session['ejercicio_actual'] = index + 1
-            request.session.modified = True
             
             if request.session['ejercicio_actual'] >= len(ejercicios):
                 return JsonResponse({
                     'todos_correctos': True,
                     'completado': True,
+                    'redirect_url': '/ejercicio/finalizado/',  # URL explícita
+
                     'mensaje': '¡Emparejamiento perfecto! Curso terminado.'
                 })
             return JsonResponse({
                 'todos_correctos': True,
-                'redirect': True,
+                'redirect': '/ejercicio/siguiente/',  # URL explícita
                 'mensaje': '¡Todo correcto!'
             })
             
@@ -220,8 +203,8 @@ def verificar_gesto(request):
         
         if index >= len(ejercicios):
             return JsonResponse({'completado': True})
+        request.session['progreso'] = min(request.session['progreso'] + 10, 100)
             
-        request.session['ejercicio_actual'] = index + 1
         request.session.modified = True
         
         if request.session['ejercicio_actual'] >= len(ejercicios):
@@ -229,11 +212,12 @@ def verificar_gesto(request):
                 'correcto': True,
                 'completado': True,
                 'mensaje': '¡Has completado todos los ejercicios!'
+
             })
             
         return JsonResponse({
             'correcto': True,
-            'redirect': True,
+            'redirect': '/ejercicio/siguiente/',  # URL explícita
             'mensaje': '¡Bien hecho! Siguiente ejercicio...'
         })
     except Exception as e:

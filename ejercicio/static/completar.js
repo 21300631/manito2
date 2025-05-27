@@ -1,5 +1,4 @@
-
-// Obtener CSRF
+// Función para obtener el token CSRF
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -15,116 +14,73 @@ function getCookie(name) {
     return cookieValue;
 }
 
-
-// Función para mostrar mensajes al usuario
-function mostrarMensaje(mensaje, esExito = true) {
-    const mensajeDiv = document.createElement('div');
-    mensajeDiv.className = `mensaje-flotante ${esExito ? 'exito' : 'error'}`;
-    mensajeDiv.textContent = mensaje;
-    document.body.appendChild(mensajeDiv);
-    
-    setTimeout(() => {
-        mensajeDiv.remove();
-    }, 3000);
-}
-
-// Función para actualizar la barra de progreso
-function aumentarBarraProgreso(incremento) {
-    const barra = document.querySelector('.barra-progreso');
-    if (barra) {
-        const progresoActual = parseInt(barra.style.width || '0');
-        const nuevoProgreso = Math.min(progresoActual + incremento, 100);
-        barra.style.width = `${nuevoProgreso}%`;
-        barra.setAttribute('aria-valuenow', nuevoProgreso);
-    }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
+    // Inicializar barra de progreso vertical
+    const progressBar = document.getElementById("progressBar");
+    const progresoInicial = parseInt(progressBar.dataset.progresoInicial) || 0;
+    progressBar.style.height = `${progresoInicial}%`;  // Usamos height para vertical
+    
     const gestos = document.querySelectorAll(".gesto");
-    const csrftoken = getCookie("csrftoken");
-    const urlVerificacion = "/verificar_completar/"; // Puedes dejarlo como dataset si prefieres
+    const urlVerificacion = document.body.dataset.urlVerificacion;
+    const urlSiguiente = document.body.dataset.urlSiguiente;
+    // const resultadoDiv = document.getElementById('resultadoCompletar'); // Elemento para feedback
 
     gestos.forEach(gesto => {
-        gesto.addEventListener("click", async () => {
-            // Deshabilitar clicks adicionales mientras se procesa
-            gestos.forEach(g => g.style.pointerEvents = 'none');
+        gesto.addEventListener("click", () => {
+            // Limpiar selecciones previas
+            gestos.forEach(g => g.classList.remove("correcto", "incorrecto"));
             
-            const opcion_id = gesto.dataset.id;
+            const opcion_id = gesto.getAttribute("data-id");
 
-            try {
-                const response = await fetch(urlVerificacion, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                        "X-CSRFToken": csrftoken
-                    },
-                    body: `opcion_id=${opcion_id}`
-                });
-
-                const data = await response.json();
-
-                if (data.error) {
-                    mostrarMensaje(data.error, false);
-                    gestos.forEach(g => g.style.pointerEvents = 'auto');
-                    return;
-                }
-
-                if (data.completado) {
-                    gesto.classList.add("correcto");
-                    aumentarBarraProgreso(10);
-                    mostrarMensaje(data.mensaje);
-                    setTimeout(() => {
-                        window.location.href = "/finalizado/";
-                    }, 1500);
-                    return;
-                }
-
+            fetch(urlVerificacion, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: `opcion_id=${opcion_id}`
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error en la respuesta');
+                return response.json();
+            })
+            .then(data => {
                 if (data.correcto) {
                     gesto.classList.add("correcto");
-                    aumentarBarraProgreso(10);
-                    mostrarMensaje(data.mensaje);
+                    actualizarBarraProgreso(10); // Aumenta 10%
                     
-                    setTimeout(() => {
-                        window.location.href = "/mostrar_ejercicio/";
-                    }, 1500);
+                    if (data.completado) {
+                        // resultadoDiv.textContent = "¡Lección completada!";
+                        // resultadoDiv.style.color = "green";
+                        setTimeout(() => {
+                            window.location.href = data.redirect || "/finalizado/";
+                        }, 1000);
+                    } else {
+                        // resultadoDiv.textContent = data.mensaje || "¡Correcto!";
+                        // resultadoDiv.style.color = "green";
+                        setTimeout(() => {
+                            window.location.href = urlSiguiente;
+                        }, 800);
+                    }
                 } else {
                     gesto.classList.add("incorrecto");
-                    mostrarMensaje(data.mensaje, false);
-                    
-                    // Resaltar la opción correcta
-                    const opciones = document.querySelectorAll('.gesto');
-                    opciones.forEach(op => {
-                        if (op.dataset.id == data.respuesta_correcta) {
-                            op.classList.add('respuesta-correcta');
-                        }
-                    });
-                    
-                    // Rehabilitar los botones después de mostrar el feedback
-                    setTimeout(() => {
-                        gestos.forEach(g => {
-                            g.style.pointerEvents = 'auto';
-                            g.classList.remove("incorrecto");
-                        });
-                    }, 2000);
+                    // resultadoDiv.style.color = "red";
                 }
-
-            } catch (error) {
-                mostrarMensaje("Error de conexión", false);
-                gestos.forEach(g => g.style.pointerEvents = 'auto');
-            }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                // resultadoDiv.style.color = "red";
+            });
         });
     });
 
-    // Efecto hover para los gestos
-    gestos.forEach(gesto => {
-        gesto.addEventListener('mouseenter', () => {
-            if (gesto.style.pointerEvents !== 'none') {
-                gesto.style.transform = 'scale(1.05)';
-            }
-        });
+    // Función para actualizar barra vertical
+    function actualizarBarraProgreso(porcentaje) {
+        const progresoActual = parseInt(progressBar.style.height) || 0;
+        const nuevoProgreso = Math.min(progresoActual + porcentaje, 100);
         
-        gesto.addEventListener('mouseleave', () => {
-            gesto.style.transform = 'scale(1)';
-        });
-    });
+        progressBar.style.height = `${nuevoProgreso}%`; // Usamos height
+        
+        
+    }
 });

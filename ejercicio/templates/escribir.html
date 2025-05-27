@@ -16,14 +16,14 @@
         <div class="contenido">
             <div class="panel-barra">
                 <div class="progress-container">
-                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="progress-bar" id="progressBar" data-progreso-inicial="{{ request.session.progreso|default:0 }}"></div>
                 </div>
             </div>
             <div class="panel2">
                 <div class="ejercicio">
                     <div class="gesto">
                         {% if es_video %}
-                            <video src="{{ gesto_url }}" autoplay width="250" alt="Gesto de {{ palabra_correcta }}"></video>
+                            <video src="{{ gesto_url }}" autoplay loop width="80%" alt="Gesto de {{ palabra_correcta }}"></video>
                         {% else %}
                             <img src="{{ gesto_url }}" alt="Gesto de {{ palabra_correcta }}" width="80%" padding="10%" margin="0">
                         {% endif %}
@@ -38,17 +38,21 @@
                 </div>
                 <div class="panel-btn">
                     <div id="resultadoEscribir" class="resultado"></div>
-                    <button class="btn-salir">Salir</button>
+                    <form  method="POST" action="{% url 'reiniciar_progreso' %}">
+                        {% csrf_token %}
+
+                        <button class="btn-salir">Salir</button>
+                    </form>
                     <form method="post" action="{% url 'siguiente_ejercicio' %}">
                         {% csrf_token %}
-                        <button class="btn-siguiente" type="submit">Siguiente</button>
+                        <button style="display: none;" type="submit">Siguiente</button>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="{% static 'progress.js' %}"></script>
     <script src="{% static 'escribir.js' %}"></script>
 
 </body>
