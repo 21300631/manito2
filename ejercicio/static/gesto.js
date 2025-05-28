@@ -11,7 +11,43 @@ document.addEventListener('DOMContentLoaded', () => {
         const countdownElement = document.getElementById('countdown');
         const recordingTimerElement = document.getElementById('recordingTimer');
         const gestoVideo = document.getElementById('gestoVideo');
+        const palabraActual= gestoVideo.dataset.palabra;
+        const palabraJsonUrl = gestoVideo.dataset.palabraJson;
+
+        let referenceLandmarks = null;
+
+        console.log(`Palabra actual: ${palabraActual}`);
+        console.log(`URL de landmarks: ${palabraJsonUrl}`);
         
+        if (typeof LANDMARKS_JSON_URL !== 'undefined') {
+            console.log("JSON de la palabra:", LANDMARKS_JSON_URL);
+        }
+        // Opción 2: Obtener el JSON mediante fetch
+        else if (palabraJsonUrl) {
+            fetch(palabraJsonUrl)
+                .then(response => response.json())
+                .then(jsonData => {
+                    console.log("JSON de la palabra obtenido:", jsonData);
+                    // Aquí puedes usar jsonData como necesites
+                })
+                .catch(error => {
+                    console.error("Error obteniendo JSON de la palabra:", error);
+                });
+        }
+
+        if (palabraJsonUrl) {
+            fetch(palabraJsonUrl)
+                .then(response => response.json())
+                .then(jsonData => {
+                    referenceLandmarks = jsonData;
+                    console.log("Landmarks de referencia cargados:", referenceLandmarks);
+                })
+                .catch(error => {
+                    console.error("Error cargando JSON de referencia:", error);
+                });
+        }
+        
+
         // Mostrar el botón de grabar
         if (recordButton) {
             recordButton.style.display = 'inline-block';
@@ -56,6 +92,186 @@ document.addEventListener('DOMContentLoaded', () => {
                 hands.onResults(onHandsResults);
                 
                 return hands;
+            }
+
+            // Función para normalizar landmarks
+            function normalizeLandmarks(landmarks) {
+                if (!landmarks || landmarks.length === 0) return null;
+                
+                // 1. Calcular centroide (punto central)
+                const centroid = landmarks.reduce((acc, point) => {
+                    acc.x += point.x;
+                    acc.y += point.y;
+                    acc.z += point.z;
+                    return acc;
+                }, {x: 0, y: 0, z: 0});
+                
+                centroid.x /= landmarks.length;
+                centroid.y /= landmarks.length;
+                centroid.z /= landmarks.length;
+                
+                // 2. Calcular escala basada en la distancia máxima al centroide
+                let maxDistance = 0;
+                landmarks.forEach(point => {
+                    const dx = point.x - centroid.x;
+                    const dy = point.y - centroid.y;
+                    const dz = point.z - centroid.z;
+                    const distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                    if (distance > maxDistance) maxDistance = distance;
+                });
+                
+                if (maxDistance === 0) return null;
+                
+                // 3. Normalizar y centrar
+                return landmarks.map(point => ({
+                    id: point.id,
+                    x: (point.x - centroid.x) / maxDistance,
+                    y: (point.y - centroid.y) / maxDistance,
+                    z: (point.z - centroid.z) / maxDistance
+                }));
+            }
+
+            // Función para calcular la similitud entre dos conjuntos de landmarks
+            function calculateSimilarity(userLandmarks, referenceLandmarks) {
+                if (!userLandmarks || !referenceLandmarks) return 0;
+                
+                const normalizedUser = normalizeLandmarks(userLandmarks);
+                const normalizedRef = normalizeLandmarks(referenceLandmarks);
+                
+                if (!normalizedUser || !normalizedRef) return 0;
+                
+                // Pesos diferentes para puntos clave (puntas de dedos más importantes)
+                const fingerTips = [4, 8, 12, 16, 20]; // Puntas de los dedos
+                const weights = {};
+                for (let i = 0; i < 21; i++) {
+                    weights[i] = fingerTips.includes(i) ? 1.5 : 1.0;
+                }
+                
+                let totalError = 0;
+                let totalWeight = 0;
+                
+                for (let i = 0; i < Math.min(normalizedUser.length, normalizedRef.length); i++) {
+                    const userPoint = normalizedUser[i];
+                    const refPoint = normalizedRef[i];
+                    
+                    const dx = userPoint.x - refPoint.x;
+                    const dy = userPoint.y - refPoint.y;
+                    const dz = userPoint.z - refPoint.z;
+                    
+                    const error = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                    totalError += error * weights[i];
+                    totalWeight += weights[i];
+                }
+                
+                if (totalWeight === 0) return 0;
+                
+                const avgError = totalError / totalWeight;
+                
+                // Mapear error a similitud (0-1)
+                const similarity = Math.exp(-avgError * 3); // Ajustar este factor según necesidad
+                
+                return Math.max(0, Math.min(1, similarity));
+            }
+
+            // Función para procesar todos los frames y calcular la similitud promedio
+            function processAllFrames(userFrames, referenceFrames) {
+                if (!userFrames || userFrames.length === 0 || !referenceFrames || referenceFrames.length === 0) return 0;
+                
+                // 1. Muestrear frames para igualar longitud
+                const sampledUserFrames = sampleFrames(userFrames, referenceFrames.length);
+                
+                // 2. Comparar frame a frame
+                let totalSimilarity = 0;
+                let comparisons = 0;
+                
+                for (let i = 0; i < referenceFrames.length; i++) {
+                    const refFrame = referenceFrames[i];
+                    const userFrame = sampledUserFrames[i];
+                    
+                    if (!refFrame || !userFrame) continue;
+                    
+                    // Comparar cada mano en el frame
+                    refFrame.forEach(refHand => {
+                        const userHand = userFrame.find(h => h.handedness === refHand.handedness);
+                        if (userHand) {
+                            const similarity = calculateSimilarity(userHand.landmarks, refHand.landmarks);
+                            totalSimilarity += similarity;
+                            comparisons++;
+                        }
+                    });
+                }
+                
+                if (comparisons === 0) return 0;
+                
+                return (totalSimilarity / comparisons) * 100; // Convertir a porcentaje
+            }
+
+            function sampleFrames(frames, targetCount) {
+                if (frames.length <= targetCount) return [...frames];
+                
+                const sampled = [];
+                const step = frames.length / targetCount;
+                
+                for (let i = 0; i < targetCount; i++) {
+                    const index = Math.floor(i * step);
+                    sampled.push(frames[index]);
+                }
+                
+                return sampled;
+            }
+
+            // Modificar la función stopRecording para mostrar los resultados
+            function stopRecording() {
+                if (!isRecording) return;
+                
+                isRecording = false;
+                if (recordingTimerElement) recordingTimerElement.style.display = 'none';
+                if (mediaRecorder) {
+                    mediaRecorder.onstop = () => {
+                        console.log("Total frames usuario:", allHandLandmarks.length);
+                        console.log("Total frames referencia:", referenceLandmarks.length);
+
+                        // Calcular similitud con los landmarks de referencia
+                        if (referenceLandmarks && allHandLandmarks.length > 0) {
+                            const similarityPercentage = processAllFrames(allHandLandmarks, referenceLandmarks);
+                            console.log("Primer frame usuario:", allHandLandmarks[0]);
+                            console.log("Primer frame referencia:", referenceLandmarks[0]);
+                            console.log(`Similitud promedio: ${similarityPercentage.toFixed(1)}%`);
+                            // Determinar si aprobó o no
+                            const isApproved = similarityPercentage >= 70;
+                            const resultMessage = isApproved 
+                                ? `¡Felicidades! Tu ejecución tuvo una similitud del <b>${similarityPercentage.toFixed(1)}%</b> con el gesto de referencia. <span style="color:green;">✅ APROBADO</span>`
+                                : `Tu ejecución tuvo una similitud del <b>${similarityPercentage.toFixed(1)}%</b> con el gesto de referencia. <span style="color:red;">❌ NO APROBADO</span> (Se requiere 70% o más)`;
+                            
+                            // Mostrar resultados al usuario con SweetAlert2
+                            Swal.fire({
+                                title: isApproved ? '¡Aprobado!' : 'Intenta de nuevo',
+                                html: resultMessage,
+                                icon: isApproved ? 'success' : 'error',
+                                confirmButtonText: 'Entendido',
+                                customClass: {
+                                    popup: 'result-popup',
+                                    title: isApproved ? 'approved-title' : 'not-approved-title'
+                                }
+                            });
+
+                            // También puedes mostrar resultados más detallados en la consola
+                            console.log(`Similitud promedio: ${similarityPercentage.toFixed(1)}% - ${isApproved ? 'APROBADO' : 'NO APROBADO'}`);
+                        } else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: 'No se pudieron comparar los landmarks. Asegúrate de que se detectaron tus manos correctamente.',
+                                icon: 'error'
+                            });
+                        }
+                        
+                        console.log("Todos los landmarks de mano recolectados:", JSON.stringify(allHandLandmarks, null, 2));
+                    };
+                    mediaRecorder.stop();
+                }
+                if (nextButton) nextButton.disabled = false;
+                if (recordButton) recordButton.disabled = false;
+                if (gestoVideo) gestoVideo.play();
             }
 
             // Procesar resultados de detección de manos
@@ -105,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
             function showAlert() {
                 Swal.fire({
                     title: 'Instrucciones',
-                    text: 'Tienes 4 segundos para realizar el ejercicio. Cuando estés listo, presiona el botón "Grabar".',
+                    text: 'Tienes 2 segundos para realizar el ejercicio. Cuando estés listo, presiona el botón "Grabar".',
                     icon: 'info',
                     confirmButtonText: 'Entendido'
                 });
@@ -157,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     mediaRecorder.start(100);
                     
-                    let secondsLeft = 4;
+                    let secondsLeft = 2;
                     if (recordingTimerElement) recordingTimerElement.textContent = secondsLeft;
                     
                     recordingTimerInterval = setInterval(() => {
@@ -183,29 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            function stopRecording() {
-                if (!isRecording) return;
-                
-                isRecording = false;
-                if (recordingTimerElement) recordingTimerElement.style.display = 'none';
-                if (mediaRecorder) {
-                    mediaRecorder.onstop = () => {
-                        // Mostrar todos los landmarks recolectados
-                        console.log("Todos los landmarks de mano recolectados:", JSON.stringify(allHandLandmarks, null, 2));
-                        
-                        // Aquí puedes procesar o enviar los datos como necesites
-                        // Ejemplo de estructura simplificada si solo quieres los landmarks sin info de mano:
-                        const simplifiedLandmarks = allHandLandmarks.map(frame => 
-                            frame.flatMap(hand => hand.landmarks)
-                        );
-                        console.log("Landmarks simplificados:", JSON.stringify(simplifiedLandmarks, null, 2));
-                    };
-                    mediaRecorder.stop();
-                }
-                if (nextButton) nextButton.disabled = false;
-                if (recordButton) recordButton.disabled = false;
-                if (gestoVideo) gestoVideo.play();
-            }
+            
 
             if (recordButton) {
                 recordButton.addEventListener('click', startRecording);
@@ -250,8 +444,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } else {
         console.log("Ejercicio de imagen detectado");
-        // [Aquí va todo tu código para el manejo de imágenes con landmarks]
-        // Asegúrate de que este bloque esté completo y bien cerrado
 
         // Verifica que la URL esté definida
         if (!LANDMARKS_JSON_URL) {
@@ -339,41 +531,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Función mejorada para calcular similitud
-        function calculateSimilarity(landmarks1, landmarks2) {
-            if (!landmarks1 || !landmarks2 || landmarks1.length !== landmarks2.length) return 0;
+        function calculateSimilarity(userLandmarks, referenceLandmarks) {
+            if (!userLandmarks || !referenceLandmarks) return 0;
             
-            const fingerWeights = {
-                thumb: 1.5, index: 1.2, middle: 1.0, ring: 0.9, pinky: 0.8
-            };
+            // 1. Alinear los landmarks usando Procrustes analysis (versión simplificada)
+            const alignedUser = alignLandmarks(userLandmarks, referenceLandmarks);
             
-            let totalWeightedDistance = 0;
-            let totalWeight = 0;
+            // 2. Calcular distancia ponderada por importancia de puntos
+            let totalDistance = 0;
+            let validPoints = 0;
+            const fingerTips = [4, 8, 12, 16, 20]; // Puntas de los dedos son más importantes
             
-            for (let i = 0; i < landmarks1.length; i++) {
-                let weight = 1.0;
-                if (i >= 1 && i <= 4) weight = fingerWeights.thumb;
-                else if (i >= 5 && i <= 8) weight = fingerWeights.index;
-                else if (i >= 9 && i <= 12) weight = fingerWeights.middle;
-                else if (i >= 13 && i <= 16) weight = fingerWeights.ring;
-                else if (i >= 17 && i <= 20) weight = fingerWeights.pinky;
+            for (let i = 0; i < alignedUser.length && i < referenceLandmarks.length; i++) {
+                const userPoint = alignedUser[i];
+                const refPoint = referenceLandmarks[i];
                 
-                const dx = landmarks1[i].x - landmarks2[i].x;
-                const dy = landmarks1[i].y - landmarks2[i].y;
-                const dz = landmarks1[i].z - landmarks2[i].z;
+                const dx = userPoint.x - refPoint.x;
+                const dy = userPoint.y - refPoint.y;
+                const dz = userPoint.z - refPoint.z;
                 
-                totalWeightedDistance += Math.sqrt(dx*dx + dy*dy + dz*dz) * weight;
-                totalWeight += weight;
+                // Ponderar más las puntas de los dedos
+                const weight = fingerTips.includes(i) ? 1.5 : 1.0;
+                totalDistance += weight * Math.sqrt(dx*dx + dy*dy + dz*dz);
+                validPoints += weight;
             }
             
-            const averageDistance = totalWeightedDistance / totalWeight;
-            let similarity = Math.max(0, 100 - (averageDistance * 200));
+            if (validPoints === 0) return 0;
             
-            // Penalizar si la mano está demasiado abierta
-            if (isHandTooOpen(landmarks2)) {
-                similarity *= 0.6; // Reducción más agresiva
-            }
+            const avgDistance = totalDistance / validPoints;
+            return Math.exp(-avgDistance * 3); // Ajustar factor de escala
+        }
+
+        function alignLandmarks(source, target) {
+            // Implementación simplificada de alineación Procrustes
+            // 1. Centrar ambos conjuntos en la muñeca (punto 0)
+            const wrist = target[0];
+            const centeredTarget = target.map(p => ({
+                x: p.x - wrist.x,
+                y: p.y - wrist.y,
+                z: p.z - wrist.z
+            }));
             
-            return similarity;
+            const sourceWrist = source[0];
+            const centeredSource = source.map(p => ({
+                x: p.x - sourceWrist.x,
+                y: p.y - sourceWrist.y,
+                z: p.z - sourceWrist.z
+            }));
+            
+            // 2. Escalar basado en la longitud de la palma
+            const targetPalmLength = Math.sqrt(
+                Math.pow(centeredTarget[5].x, 2) + 
+                Math.pow(centeredTarget[5].y, 2) + 
+                Math.pow(centeredTarget[5].z, 2)
+            );
+            
+            const sourcePalmLength = Math.sqrt(
+                Math.pow(centeredSource[5].x, 2) + 
+                Math.pow(centeredSource[5].y, 2) + 
+                Math.pow(centeredSource[5].z, 2)
+            );
+            
+            if (targetPalmLength === 0 || sourcePalmLength === 0) return source;
+            
+            const scale = targetPalmLength / sourcePalmLength;
+            
+            return centeredSource.map(p => ({
+                x: p.x * scale,
+                y: p.y * scale,
+                z: p.z * scale
+            }));
         }
 
         // Detectar mano abierta

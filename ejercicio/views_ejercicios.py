@@ -258,6 +258,8 @@ def ejercicio_gesto(request):
     archivo_url = f"{MANITO_BUCKET_DOMAIN}/{palabra.gesto}"
     
     print("Gesto URL:", archivo_url)
+    
+
 
     contexto = {
         'texto_instruccion': f"Realiza el gesto correspondiente a la palabra: {palabra.palabra}",

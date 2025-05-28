@@ -8,7 +8,7 @@ class Medalla(models.Model):
     imagen = models.ImageField(upload_to='medallas/')
     
     class Meta:
-        ordering = ['nombre']  # Orden natural: Bronce, Plata, Oro
+        ordering = ['nombre']  # Orden: Bronce, Plata, Oro
     
     def __str__(self):
         return self.nombre

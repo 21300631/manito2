@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
     function cargarVideo(indice) {
         if (indice >= videoUrls.length) return;
 
-        // Limpiar eventos anteriores
         videoElement.onloadeddata = null;
         videoElement.onerror = null;
         
@@ -56,7 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
             loadingMessage.innerHTML = `Error cargando video (${indice+1}/${videoUrls.length})<br>Intenta recargar la página`;
             loadingMessage.style.display = 'block';
             
-            // Saltar al siguiente video después de 2 segundos
             setTimeout(() => {
                 if (index < videoUrls.length - 1) {
                     index++;
@@ -96,7 +94,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Manejo de clic en ejercicios
     items.forEach((item, i) => {
         item.addEventListener('click', () => {
             clearInterval(intervalo);

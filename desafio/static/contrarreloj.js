@@ -5,10 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvasCtx = canvasElement.getContext('2d');
 
     videoElement.autoplay = true;
-    videoElement.style.transform = "scaleX(-1)"; // 👈 Inversión horizontal (espejo)
+    videoElement.style.transform = "scaleX(-1)"; 
     canvasElement.style.width = '100%';
     canvasElement.style.maxWidth = '400px';
-    canvasElement.style.transform = "scaleX(-1)"; // 👈 Opcional: si quieres que el canvas también se vea en espejo
+    canvasElement.style.transform = "scaleX(-1)"; 
 
     const userGestoDiv = document.querySelector('.gesto.g-usuario');
     userGestoDiv.appendChild(videoElement);
@@ -19,10 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const camera = new Camera(videoElement, {
             onFrame: async () => {
-                // Opción 1: Enviar el video original (MediaPipe manejará la inversión)
-                // await hands.send({ image: videoElement });
                 
-                // Opción 2: Si necesitas invertir el frame antes de enviarlo:
                 
                 canvasCtx.save();
                 canvasCtx.scale(-1, 1);
@@ -71,22 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// En tu archivo JS principal (donde procesas la cámara)
 let referenciaLandmarks = null;
 
-// Función para cargar los landmarks de referencia
-// async function cargarReferencia(palabra_id) {
-//     try {
-//         const response = await fetch(`/analizar_gesto_referencia/${palabra_id}/`);
-//         const data = await response.json();
-//         referenciaLandmarks = data.landmarks;
-//         console.log("Referencia cargada:", data.palabra);
-//     } catch (error) {
-//         console.error("Error cargando referencia:", error);
-//     }
-// }
-
-// Comparación de landmarks (en hands.onResults)
 hands.onResults(results => {
     if (!results.multiHandLandmarks || !referenciaLandmarks) return;
 
@@ -98,14 +81,3 @@ hands.onResults(results => {
     }
 });
 
-// Función de comparación (Distancia Euclidiana normalizada)
-// function calcularSimilitud(landmarks1, landmarks2) {
-//     let errorTotal = 0;
-//     for (let i = 0; i < Math.min(landmarks1.length, landmarks2.length); i++) {
-//         const dx = landmarks1[i][0] - landmarks2[i][0];
-//         const dy = landmarks1[i][1] - landmarks2[i][1];
-//         errorTotal += Math.sqrt(dx * dx + dy * dy);  // Ignoramos 'z' para simplificar
-//     }
-//     const errorPromedio = errorTotal / landmarks1.length;
-//     return 1 - Math.min(errorPromedio, 0.3) / 0.3;  // Normalizar a 0-1
-// }

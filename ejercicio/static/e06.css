@@ -265,3 +265,24 @@ body.dark {
     cursor: not-allowed;
 }
 
+
+#feedback {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+}
+
+#feedback.correct {
+    color: #00FF00;
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+#feedback.incorrect {
+    color: #FF0000;
+    background-color: rgba(255, 0, 0, 0.2);
+}

@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let temporizador;
     let paresDisponibles = [];
     let paresActivos = [];
-        // Añadir estas variables al inicio con las demás
     let paresUsados = [];
     let indiceReposicion = 0;
     let gruposDePares = [];
@@ -114,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return div;
     }
 
-    // 2. Funciones de Lógica del Juego
     function manejarSeleccion(elemento) {
         // Evitar seleccionar elementos ya acertados
         if (elemento.classList.contains('acertado')) {

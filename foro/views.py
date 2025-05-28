@@ -1,13 +1,11 @@
 from django.shortcuts import render
 from django.views.generic import ListView
-# from django.contrib.auth.decorators import login_required
 from publicacion.models import Publicacion, Comentario
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from registro.models import Profile
 from django.http import JsonResponse
 from inicio.models import Notificacion
-# from .forms import ComentarioForm
 
 
 # Create your views here.
@@ -16,14 +14,6 @@ def foro(request):
     
     return render(request, "foro.html", {"publicaciones": publicaciones})
 
-# @login_required
-# def dar_like(request, publicacion_id):
-#     publicacion = get_object_or_404(Publicacion, id=publicacion_id)
-#     if request.user.profile in publicacion.likes.all():
-#         publicacion.likes.remove(request.user.profile)  # Si ya le dio like, lo quita
-#     else:
-#         publicacion.likes.add(request.user.profile)  # Agrega el like
-#     return redirect('foro')
 
 @login_required
 def dar_like(request, publicacion_id):

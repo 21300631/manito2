@@ -23,9 +23,6 @@ def inicioSesion(request):
             'notificaciones': notificaciones
     }
     
-    print(perfil.imagen.url)  # ¿Devuelve una ruta válida?
-    print(perfil.racha)      # ¿Tiene un valor numérico?
-    print(perfil.medalla)    # ¿Existe la medalla?
     return render(request, 'inicio.html', contexto)	
 
 

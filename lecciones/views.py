@@ -3,7 +3,7 @@ from registro.models import Profile
 
 
 # Create your views here.
-    
+#Estas partes son para que se vea el progreso de las lecciones y se desbloqueen las siguientes
 def etapa1(request):
     usuario = request.user
     profile = Profile.objects.get(user=usuario)
@@ -97,7 +97,7 @@ def etapa4(request):
     profile = Profile.objects.get(user=usuario)
     leccion_actual = profile.leccion
     
-    # Rango de lecciones (110-164) y repasos (401-405)
+    # Rango de lecciones (116-164) y repasos (401-405)
     rango_lecciones = list(range(116, 165))
     repasos = [401, 402, 403, 404, 405]
     
