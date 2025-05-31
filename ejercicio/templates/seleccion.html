@@ -23,7 +23,7 @@
                     {% for opcion in opciones %}
                         <button type="button" class="card opcion-btn" data-id="{{ opcion.id }}">
                             {% if opcion.es_video %}
-                                <video src="{{ opcion.url }}" autoplay loop width="80%"></video>
+                                <video src="{{ opcion.url }}" autoplay loop muted width="80%"></video>
                             {% else %}
                                 <img src="{{ opcion.url }}" alt="Gesto de {{ opcion.palabra }}" width="80%">
                             {% endif %}

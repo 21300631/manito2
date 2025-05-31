@@ -23,7 +23,7 @@
                 <div class="ejercicio">
                     <div class="gesto">
                         {% if es_video %}
-                            <video src="{{ gesto_url }}" autoplay loop width="80%" alt="Gesto de {{ palabra_correcta }}"></video>
+                            <video src="{{ gesto_url }}" autoplay muted loop width="80%" alt="Gesto de {{ palabra_correcta }}"></video>
                         {% else %}
                             <img src="{{ gesto_url }}" alt="Gesto de {{ palabra_correcta }}" width="80%" padding="10%" margin="0">
                         {% endif %}

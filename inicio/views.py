@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from inicio.models import Notificacion
 from django.shortcuts import render
 from registro.models import Profile
+from django.http import JsonResponse
 
 
 @login_required
@@ -24,5 +25,22 @@ def inicioSesion(request):
     }
     
     return render(request, 'inicio.html', contexto)	
+
+@login_required
+def puntosUsuario(request):
+    user = request.user
+    usuario = get_object_or_404(Profile, user=user)
+    return JsonResponse({
+        'puntos': usuario.puntos,
+        'unlocked_stages':{
+            'etapa1': True,
+            'etapa2': usuario.puntos >= 6800,
+            'etapa3': usuario.puntos >= 10200,
+            'etapa4': usuario.puntos >= 16200,
+
+        }
+       
+    })
+
 
 
