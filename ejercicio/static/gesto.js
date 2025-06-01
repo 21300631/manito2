@@ -374,7 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (recordingTimerElement) recordingTimerElement.style.display = 'none';
                 if (mediaRecorder) {
                     mediaRecorder.onstop = () => {
-
                         const filteredLandmarks = filterStaticFrames(allHandLandmarks);
                         console.log("Total frames usuario:", allHandLandmarks.length);
                         console.log("Total frames referencia:", referenceLandmarks.length);
@@ -386,6 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             console.log("Primer frame usuario:", allHandLandmarks[0]);
                             console.log("Primer frame referencia:", referenceLandmarks[0]);
                             console.log(`Similitud promedio: ${similarityPercentage.toFixed(1)}%`);
+                            
                             // Determinar si aprobó o no
                             const isApproved = similitudFinal >= 70;
 
@@ -405,6 +405,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 customClass: {
                                     popup: 'result-popup',
                                     title: isApproved ? 'approved-title' : 'not-approved-title'
+                                }
+                            }).then((result) => {
+                                // Esta función se ejecuta cuando el usuario hace clic en "Entendido"
+                                if (isApproved) {
+                                    // Redirigir al siguiente ejercicio solo si fue aprobado
+                                    window.location.href = "/ejercicio/siguiente/";
                                 }
                             });
 
@@ -633,6 +639,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let referenceLandmarks = null;
         let currentSimilarity = 0;
         let isGestureCorrect = false;
+        let correctPoseStartTime = null;
+        const REQUIRED_CORRECT_TIME = 2000;
         let calibrationValues = {
             openHandThreshold: 0.4, // Ajustar según pruebas
             similarityThreshold: 80
@@ -757,7 +765,18 @@ document.addEventListener('DOMContentLoaded', () => {
             minTrackingConfidence: 0.3    // Reducir para mantener el tracking
         });
 
-        
+        let isRedirecting = false; // Variable global para controlar redirecciones
+
+        // En tu función de redirección
+        function safeRedirect() {
+            if (!isRedirecting) {
+                isRedirecting = true;
+                setTimeout(() => {
+                    window.location.href = "/ejercicio/siguiente/";
+                }, 500);
+            }
+        }
+
         // Agrega esto en la parte donde configuras los elementos (al principio del código)
         const Swal = window.Swal; // Asegúrate de tener SweetAlert cargado
 
@@ -800,9 +819,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // Mostrar feedback
                     if (isGestureCorrect) {
-                        showFeedback("✓ Gesto Correcto", true);
-                        nextButton.disabled = false;
-                    } else {
+                        if (correctPoseStartTime === null) {
+                            correctPoseStartTime = Date.now();
+                        } else {
+                            const elapsedTime = Date.now() - correctPoseStartTime;
+                            const remainingTime = REQUIRED_CORRECT_TIME - elapsedTime;
+                            
+                            // Actualizar feedback con cuenta regresiva
+                            if (remainingTime > 0) {
+                                showFeedback(`✓ Mantén la pose (${Math.ceil(remainingTime/1000)}s)`, true);
+                            } else {
+                                showFeedback("✓ ¡Correcto! Avanzando...", true);
+                                // Usar el nombre de la URL definido en Django
+                                setTimeout(() => {
+                                    safeRedirect();
+                                }, 500);
+                            }
+                        }
+                    }  else {
+                        correctPoseStartTime = null; // Reiniciar si la pose no es correcta
+
                         showFeedback(`✗ Ajusta tu gesto (${currentSimilarity.toFixed(0)}%)`, false);
                         nextButton.disabled = true;
                         
@@ -813,6 +849,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             } else {
+                correctPoseStartTime = null; // Reiniciar si no hay manos detectadas
                 showFeedback("Muestra tu mano en el área", false);
                 nextButton.disabled = true;
                 
