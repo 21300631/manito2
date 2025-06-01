@@ -110,3 +110,11 @@ body.dark .todo {
 body.dark .contenido p {
     color: #eee;
 }
+
+
+.confetti {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    border-radius: 50%;
+}
