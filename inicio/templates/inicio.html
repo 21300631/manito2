@@ -135,9 +135,9 @@
         <div class="item6">
             <div class="divdesafios">
                 <div class="panel-desafios">
-                    <strong>Nombre desafio</strong>
-                    <span>Descripcion de mi desafio </br> shalala impus lorem</span>
-                    <a href="desafio.html">A jugar</a>
+                    <strong id="nombre-desafio">Nombre desafio</strong>
+                    <span id="descripcion">Desafio semanal</span>
+                    <a href="#" id="enlace-desafio">A jugar</a>
                 </div>
             </div>
         </div>
@@ -145,9 +145,6 @@
     </div>
     {% if messages %}
     <script>
-        const APP_URLS = {
-            puntosUsuario: "{% url 'puntos_usuario' %}"
-        };
         
             Swal.fire({
                 icon: 'success',

@@ -134,7 +134,7 @@ def reiniciar_progreso(request):
         request.session['foto_perfil'] = foto_perfil
 
 
-    return redirect('inicio')  # o la vista que desees mostrar después de reiniciar
+    return redirect('/inicio/')  # o la vista que desees mostrar después de reiniciar
      # Reemplaza con tu URL de inicio o menú principal
 
 def mostrar_finalizado(request):

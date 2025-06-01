@@ -26,7 +26,7 @@ urlpatterns = [
     path('reiniciar-progreso/', reiniciar_progreso, name='reiniciar_progreso'),
 
     path('finalizado/', mostrar_finalizado, name='finalizado'),  # Cambié la URL a 'mostrar_ejercicio' para evitar conflictos con la vista
-    path('inicio/', inicioSesion, name='inicio'),  # Cambié la URL a 'inicio' para evitar conflictos con la vista
+    # path('inicio/', inicioSesion, name='inicio'),  # Cambié la URL a 'inicio' para evitar conflictos con la vista
     # path('comparar_gesto/', comparar_gesto, name='comparar_gesto'),
     
 

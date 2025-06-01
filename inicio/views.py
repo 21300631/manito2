@@ -30,17 +30,28 @@ def inicioSesion(request):
 def puntosUsuario(request):
     user = request.user
     usuario = get_object_or_404(Profile, user=user)
+    
+    # Definir el número máximo de lecciones por etapa
+    etapas_lecciones = {
+        'etapa1': 38,
+        'etapa2': 22,
+        'etapa3': 55,
+        'etapa4': 55
+    }
+    
+    # Verificar si ha completado las lecciones de la etapa anterior
+    etapa2_completa = usuario.puntos >= 6800 and usuario.leccion >= etapas_lecciones['etapa1']
+    etapa3_completa = usuario.puntos >= 10200 and usuario.leccion >= sum(etapas_lecciones[e] for e in ['etapa1', 'etapa2'])
+    etapa4_completa = usuario.puntos >= 16200 and usuario.leccion >= sum(etapas_lecciones[e] for e in ['etapa1', 'etapa2', 'etapa3'])
+    
     return JsonResponse({
         'puntos': usuario.puntos,
-        'unlocked_stages':{
-            'etapa1': True,
-            'etapa2': usuario.puntos >= 6800,
-            'etapa3': usuario.puntos >= 10200,
-            'etapa4': usuario.puntos >= 16200,
-
-        }
-       
+        'leccion_actual': usuario.leccion,
+        'unlocked_stages': {
+            'etapa1': True,  # Siempre disponible
+            'etapa2': etapa2_completa,
+            'etapa3': etapa3_completa,
+            'etapa4': etapa4_completa,
+        },
+        'etapas_lecciones': etapas_lecciones
     })
-
-
-

@@ -1,6 +1,10 @@
 // Primero define la gráfica sin datos
 let myDoughnutChart;
 
+   const APP_URLS = {
+            puntosUsuario: "puntosUsuario/"
+        };
+
 function inicializarGrafica(puntosActuales, puntosFaltantes) {
     const ctx = document.getElementById('dona-grafica').getContext('2d');
     
@@ -121,7 +125,7 @@ function bringToFront(element) {
 }
 
 
-function accesoEtapa(etapa, elemento){
+function accesoEtapa(etapa, elemento) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -133,20 +137,38 @@ function accesoEtapa(etapa, elemento){
         .then(data => {
             const puntosNecesarios = parseInt(elemento.getAttribute('data-required-points'));
             const puntosUsuario = data.puntos;
-            if( puntosUsuario >= puntosNecesarios) {
-                // Si el usuario tiene suficientes puntos, redirigir a la etapa
+            const leccionUsuario = data.leccion_actual;
+            
+            // Verificar si la etapa está desbloqueada según el backend
+            if(data.unlocked_stages[`etapa${etapa}`]) {
                 window.location.href = `/lecciones/etapa${etapa}/`;
             } else {
-                // Si no tiene suficientes puntos, mostrar un mensaje
+                // Determinar qué requisito falta
+                let mensaje = '';
+                if(puntosUsuario < puntosNecesarios) {
+                    mensaje = `Necesitas ${puntosNecesarios} puntos para desbloquear esta etapa.`;
+                } else {
+                    // Calcular lecciones faltantes
+                    const etapas = data.etapas_lecciones;
+                    let leccionesRequeridas = 0;
+                    
+                    if(etapa === 2) leccionesRequeridas = etapas.etapa1;
+                    else if(etapa === 3) leccionesRequeridas = etapas.etapa1 + etapas.etapa2;
+                    else if(etapa === 4) leccionesRequeridas = etapas.etapa1 + etapas.etapa2 + etapas.etapa3;
+                    
+                    const leccionesFaltantes = leccionesRequeridas - leccionUsuario;
+                    mensaje = `Necesitas completar ${leccionesFaltantes} lecciones más de la etapa anterior.`;
+                }
+                
                 Swal.fire({
                     title: '¡Ups!',
-                    text: `Te falta completar la etapa anterior`,
+                    text: mensaje,
                     icon: 'warning',
                     confirmButtonText: 'Aceptar'
                 });
             }
-    })
-    .catch(error => console.error(error));
+        })
+        .catch(error => console.error(error));
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -177,34 +199,26 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             return response.json();
         })
-       .then(data => {
+        .then(data => {
             if (data.error) throw new Error(data.error);
             
-            // Actualiza las etapas bloqueadas
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                const requiredPoints = card.getAttribute('data-required-points');
-                if (requiredPoints) {
-                    const stage = `etapa${requiredPoints === '6800' ? '2' : 
-                                  requiredPoints === '10200' ? '3' : '4'}`;
-                    if (!data.unlocked_stages[stage]) {
-                        card.classList.add('locked');
-                    }
-                }
-            });
+            // Bloquear etapas según el backend
+            for (let i = 2; i <= 4; i++) {
+                const card = document.getElementById(`etapa${i}-card`).closest('.card');
+            }
             
-            // Actualiza la gráfica
+            // Resto del código para la gráfica
             const puntosFaltantes = calcularPuntosFaltantes(data.puntos);
             inicializarGrafica(data.puntos, puntosFaltantes);
             
-            // Actualiza el texto "Siguiente etapa"
+            // Actualizar texto de siguiente etapa
             const nextStageText = document.querySelector('.texto-puntos span');
-            if (data.puntos < 6800) {
-                nextStageText.textContent = '2 (6800 pts)';
-            } else if (data.puntos < 10200) {
-                nextStageText.textContent = '3 (10200 pts)';
-            } else if (data.puntos < 16200) {
-                nextStageText.textContent = '4 (16200 pts)';
+            if (!data.unlocked_stages.etapa2) {
+                nextStageText.textContent = '2 (6800 pts y completar etapa 1)';
+            } else if (!data.unlocked_stages.etapa3) {
+                nextStageText.textContent = '3 (10200 pts y completar etapa 2)';
+            } else if (!data.unlocked_stages.etapa4) {
+                nextStageText.textContent = '4 (16200 pts y completar etapa 3)';
             } else {
                 nextStageText.textContent = '¡Todas completadas!';
             }
@@ -219,3 +233,61 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 });
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const nombreDesafio = document.getElementById('nombre-desafio');
+    const enalceDesafio = document.getElementById('enlace-desafio');
+    const descripcionDesafio = document.getElementById('descripcion');
+
+    // obtener el minuto actual
+    const minutos = new Date().getMinutes();
+
+    // esto es para determinar el desafio basandonos en que cambia cada 10 minutos 
+    const segmento = Math.floor(minutos / 2) % 3;
+
+    let desafio, url, descripcion;
+
+    switch (segmento) {
+        case 0:
+            desafio = "Contrarreloj";
+            descripcion = "Un juego de velocidad y precisión donde debes completar tareas en el menor tiempo posible.";
+            url = "/desafio/contrarreloj/";
+            break;
+        case 1:
+            desafio = "Memorama";
+            descripcion = "Un juego de memoria donde debes encontrar pares de cartas iguales.";
+            url = "/desafio/memorama/";
+            break;
+        case 2:
+            desafio = "Relacion";
+            descripcion = "Un juego de asociación donde debes relacionar conceptos con imágenes.";
+            url = "/desafio/relacion/";
+            break;
+    }
+
+    // actualizar la pagina
+    nombreDesafio.textContent = desafio;
+    descripcionDesafio.textContent = descripcion;
+
+    fetch(APP_URLS.puntosUsuario)
+        .then(response => response.json())
+        .then(data => {
+            if(data.puntos > 900){
+                enalceDesafio.href = url;
+            } else {
+                enalceDesafio.href = "#";
+                enalceDesafio.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    Swal.fire({
+                        title: '¡Ups!',
+                        text: 'Necesitas al menos 900 puntos para acceder a los desafíos.',
+                        icon: 'warning',
+                        confirmButtonText: 'Aceptar'
+                    });
+                });
+            }
+        })
+});
+

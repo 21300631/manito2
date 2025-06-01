@@ -29,10 +29,10 @@
                         {% endif %}
                     </div>
                     <div class="texto">
-                        <form method="post" action="{% url 'verificar_escribir' %}">
+                        <form class="respuesta" method="post" action="{% url 'verificar_escribir' %}">
                             {% csrf_token %}
                             <input type="text" name="respuesta_usuario" class="input" placeholder="Escribe la palabra aquí" required>
-                            <button type="submit">Verificar</button>
+                            <button type="submit" class="btn-verificar">Verificar</button>
                         </form>
                     </div>
                 </div>
