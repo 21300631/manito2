@@ -46,10 +46,6 @@
                     {% if is_video %}  <!-- Cambiado a is_video para coincidir con tu lógica -->
                         <button id="recordBtn" class="btn-grabar">Grabar</button>
                     {% endif %}
-                    <form method="post" action="{% url 'siguiente_ejercicio' %}">
-                        {% csrf_token %}
-                        <button class="btn-sig" type="submit" id="nextBtn" disabled>Siguiente</button>
-                    </form>
                 </div>
 
             </div>
