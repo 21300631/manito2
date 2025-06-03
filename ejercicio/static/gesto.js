@@ -410,7 +410,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 // Esta función se ejecuta cuando el usuario hace clic en "Entendido"
                                 if (isApproved) {
                                     // Redirigir al siguiente ejercicio solo si fue aprobado
-                                    window.location.href = "/ejercicio/siguiente/";
+                                     actualizarBarraProgreso(10);
+                                    // Redirigir al siguiente ejercicio solo si fue aprobado
+                                    setTimeout(() => {
+                                        window.location.href = "/ejercicio/siguiente/";
+                                    }, 500);
                                 }
                             });
 
@@ -830,6 +834,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 showFeedback(`✓ Mantén la pose (${Math.ceil(remainingTime/1000)}s)`, true);
                             } else {
                                 showFeedback("✓ ¡Correcto! Avanzando...", true);
+                                // Actualizar barra de progreso antes de redirigir
+                                actualizarBarraProgreso(10);
                                 // Usar el nombre de la URL definido en Django
                                 setTimeout(() => {
                                     safeRedirect();
@@ -957,17 +963,78 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function actualizarBarraProgreso(porcentaje) {
+    async function actualizarBarraProgreso(porcentaje) {
         const progressBar = document.getElementById("progressBar");
-        const progresoActual = parseInt(progressBar.style.width) || 0;
-        const nuevoProgreso = progresoActual + porcentaje;
+        if (!progressBar) {
+            console.error("No se encontró el elemento progressBar");
+            return;
+        }
         
-        // Asegúrate de no superar el 100%
-        progressBar.style.height = Math.min(nuevoProgreso, 100) + "%";
+        // Obtener progreso actual de forma más robusta
+        let progresoActual;
         
-        // Cambia el color si está cerca de completarse (opcional)
-        console.log(`Barra de progreso actualizada: ${nuevoProgreso}%`);
-       
+        // Primero intenta obtenerlo del atributo data-progreso
+        if (progressBar.dataset.progreso) {
+            progresoActual = parseInt(progressBar.dataset.progreso);
+        } 
+        // Luego del estilo
+        else if (progressBar.style.height) {
+            progresoActual = parseInt(progressBar.style.height);
+        }
+        // Finalmente del atributo inicial o 0
+        else {
+            progresoActual = parseInt(progressBar.dataset.progresoInicial) || 0;
+        }
+        
+        // Asegurarse que no sea NaN
+        if (isNaN(progresoActual)) {
+            progresoActual = 0;
+        }
+        
+        // Calcular nuevo progreso (sin exceder 100)
+        const nuevoProgreso = Math.min(progresoActual + porcentaje, 100);
+        
+        // Actualizar visualmente y en el dataset
+        progressBar.style.height = nuevoProgreso + "%";
+        progressBar.dataset.progreso = nuevoProgreso;
+        
+        console.log(`Progreso actualizado de ${progresoActual}% a ${nuevoProgreso}%`);
+        
+        // Guardar en el servidor
+        try {
+            const response = await fetch('/actualizar_progreso/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ progreso: nuevoProgreso })
+            });
+            
+            if (!response.ok) throw new Error('Error al guardar progreso');
+            
+            return nuevoProgreso;
+        } catch (error) {
+            console.error("Error al guardar progreso:", error);
+            return nuevoProgreso;
+        }
     }
+
+    // Función auxiliar para obtener cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
 
 });

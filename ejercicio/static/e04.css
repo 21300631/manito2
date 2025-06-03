@@ -234,3 +234,37 @@ body.dark {
     background-color: #4CAF50;
     width: 0%;
 }
+
+
+
+/* por ver */
+.gesto {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+}
+
+.gesto:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.gesto.correcto {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.gesto.incorrecto {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+#feedback-message {
+    transition: all 0.3s ease;
+}

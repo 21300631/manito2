@@ -16,7 +16,10 @@
         <div class="contenido">
             <div class="panel-barra">
                 <div class="progress-container">
-                    <div class="progress-bar" id="progressBar" data-progreso-inicial="{{ request.session.progreso|default:0 }}"></div>
+                    
+                    <div class="progress-bar" id="progressBar" 
+                        style="height: {{ request.session.progreso|default:0 }}%;" 
+                        data-progreso-inicial="{{ request.session.progreso|default:0 }}"></div>
                 </div>
             </div>
             <div class="panel2">
@@ -46,6 +49,10 @@
                     {% if is_video %}  <!-- Cambiado a is_video para coincidir con tu lógica -->
                         <button id="recordBtn" class="btn-grabar">Grabar</button>
                     {% endif %}
+                    <form method="post" action="{% url 'siguiente_ejercicio' %}">
+                        {% csrf_token %}
+                        <button class="btn-sig" type="submit" id="nextBtn" disabled>Siguiente</button>
+                    </form>
                 </div>
 
             </div>

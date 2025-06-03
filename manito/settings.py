@@ -20,6 +20,20 @@ STATIC_URL = '/static/'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
+SESSION_COOKIE_AGE = 1209600  # 2 semanas en segundos
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = TrueSESSION_COOKIE_AGE = 1209600  # 2 semanas (valor recomendado)
+
+# La sesión expira cuando el usuario cierra el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Renovar la sesión con cada request
+SESSION_SAVE_EVERY_REQUEST = True
+
+LOGIN_URL = '/login/'  # URL donde está el login
+LOGIN_REDIRECT_URL = 'inicio_global'  # Nombre de la URL a donde redirigir tras login
+LOGOUT_REDIRECT_URL = '/login/'  # Para redirigir después de logout
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-g3mr!rkd9s-9$(bstwm^5@r-^yq1g)=$jr*_hqwl3k(3r+(a7y'
 
@@ -59,6 +73,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

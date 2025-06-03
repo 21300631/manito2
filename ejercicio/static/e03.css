@@ -259,3 +259,57 @@ body.dark {
     border: 2px solid #007bff; /* Borde azul */
 }
 
+
+
+/* por ver  */
+
+.palabra, .gesto {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+}
+
+.palabra:hover, .gesto:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.palabra.seleccionada, .gesto.seleccionada {
+    background-color: #e2e3e5;
+    border-color: #d3d6d8;
+}
+
+.palabra.emparejada, .gesto.emparejada {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Estilos para pares emparejados */
+.pareado-1 { background-color: #fff3cd; border-color: #ffecb5; }
+.pareado-2 { background-color: #d1ecf1; border-color: #bee5eb; }
+.pareado-3 { background-color: #d4edda; border-color: #c3e6cb; }
+.pareado-4 { background-color: #f8d7da; border-color: #f5c6cb; }
+
+#btn-verificar {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#btn-verificar:hover {
+    background-color: #0069d9;
+}
+
+#btn-verificar:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}

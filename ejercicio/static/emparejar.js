@@ -8,9 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const palabras = document.querySelectorAll('.palabra');
     const gestos = document.querySelectorAll('.gesto');
     const btnVerificar = document.getElementById('btn-verificar');
-    const urlSiguiente = document.body.dataset.urlSiguiente;
     const urlVerificacion = document.body.dataset.urlVerificacion;
-    const resultadoDiv = document.getElementById('resultadoEmparejar');
+    
+    // Crear elemento para feedback mejorado
+    const feedbackDiv = document.createElement('div');
+    feedbackDiv.id = 'feedback-message';
+    feedbackDiv.style.margin = '15px 0';
+    feedbackDiv.style.padding = '12px';
+    feedbackDiv.style.borderRadius = '5px';
+    feedbackDiv.style.display = 'none';
+    feedbackDiv.style.fontWeight = 'bold';
+    document.querySelector('.instruccion').appendChild(feedbackDiv);
 
     // Estado de la aplicación
     let seleccionActual = { palabra: null, gesto: null };
@@ -81,6 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Verificar emparejamientos con el servidor
     btnVerificar.addEventListener('click', () => {
         btnVerificar.disabled = true; // Deshabilitar botón durante la verificación
+        feedbackDiv.style.display = 'none';
+        
+        // Deshabilitar todas las interacciones durante la verificación
+        palabras.forEach(p => p.style.pointerEvents = 'none');
+        gestos.forEach(g => g.style.pointerEvents = 'none');
         
         fetch(urlVerificacion, {
             method: 'POST',
@@ -90,55 +103,47 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify({ pares: paresSeleccionados })
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error('Error en la respuesta');
+            return res.json();
+        })
         .then(data => {
+            // Mostrar feedback
+            mostrarFeedback(data.mensaje, data.todos_correctos ? 'success' : 'error');
+            
+            // Actualizar barra de progreso si es correcto
             if (data.todos_correctos) {
-                
-                // Actualizar barra de progreso
                 actualizarBarraProgreso(10);
-                
-                setTimeout(() => {
-                    if (data.completado) {
-                        window.location.href = data.redirect || urlSiguiente;
-                    } else {
-                        window.location.href = urlSiguiente;
-                    }
-                }, 1000);
-            } else {
-                setTimeout(reiniciarPares, 1500);
             }
+            
+            // Avanzar después de un breve retraso
+            setTimeout(() => {
+                window.location.href = data.redirect_url;
+            }, 1000);
         })
         .catch(error => {
             console.error('Error:', error);
-            resultadoDiv.textContent = 'Error al verificar. Intenta nuevamente.';
-            resultadoDiv.style.color = 'red';
+            mostrarFeedback('Ocurrió un error. Por favor intenta nuevamente.', 'error');
             btnVerificar.disabled = false;
+            palabras.forEach(p => p.style.pointerEvents = 'auto');
+            gestos.forEach(g => g.style.pointerEvents = 'auto');
         });
     });
 
-    // Reiniciar el ejercicio
-    function reiniciarPares() {
-        document.querySelectorAll('.palabra, .gesto').forEach(el => {
-            el.className = el.className.split(' ')
-                .filter(cls => !cls.startsWith('pareado-') && 
-                              !['emparejada', 'seleccionada', 'correcto', 'incorrecto'].includes(cls))
-                .join(' ');
-        });
-
-        paresSeleccionados = [];
-        seleccionActual = { palabra: null, gesto: null };
-        contadorPareado = 1;
-        btnVerificar.disabled = true;
-        resultadoDiv.textContent = '';
+    // Función para mostrar feedback
+    function mostrarFeedback(mensaje, tipo) {
+        feedbackDiv.textContent = mensaje;
+        feedbackDiv.style.display = 'block';
+        feedbackDiv.style.backgroundColor = tipo === 'success' ? '#d4edda' : '#f8d7da';
+        feedbackDiv.style.color = tipo === 'success' ? '#155724' : '#721c24';
+        feedbackDiv.style.border = tipo === 'success' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
     }
 
-    // Función para actualizar la barra de progreso (CORREGIDA)
+    // Función para actualizar la barra de progreso
     function actualizarBarraProgreso(porcentaje) {
         const progresoActual = parseInt(progressBar.style.height) || 0;
         const nuevoProgreso = Math.min(progresoActual + porcentaje, 100);
-        
         progressBar.style.height = `${nuevoProgreso}%`;
-        
     }
 
     // Función para obtener el token CSRF

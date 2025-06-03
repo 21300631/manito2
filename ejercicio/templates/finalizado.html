@@ -22,10 +22,9 @@
             </div>
             <div class="icono-felicidades">🎉</div>
             <p>¡Has completado todos los ejercicios con éxito!</p>
-            <form  method="POST" action="{% url 'reiniciar_progreso' %}">
+            <form method="POST" action="{% url 'reiniciar_progreso' %}">
                 {% csrf_token %}
-
-                <button class="btn-volver">Volver al inicio</button>
+                <button type="submit" class="btn-volver">Volver al inicio</button>
             </form>
         </div>
     </div>

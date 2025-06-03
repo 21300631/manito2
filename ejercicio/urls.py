@@ -1,6 +1,6 @@
 from django.urls import path
 from inicio.views import inicioSesion
-from .views import   generarLeccion, siguiente_ejercicio, mostrar_ejercicio, reiniciar_progreso, mostrar_finalizado
+from .views import   generarLeccion, siguiente_ejercicio, mostrar_ejercicio, reiniciar_progreso, mostrar_finalizado, actualizar_progreso
 from .views_ejercicios import ejercicio_emparejar, ejercicio_completar, ejercicio_escribir, ejercicio_gesto, ejercicio_seleccion, ejercicio_seleccion2
 from .views_validar import verificar_seleccion, verificar_completar, verificar_seleccion2,  verificar_escribir, verificar_emparejar
 # from .views_gesto import gesto_referencia
@@ -28,6 +28,8 @@ urlpatterns = [
     path('finalizado/', mostrar_finalizado, name='finalizado'),  # Cambié la URL a 'mostrar_ejercicio' para evitar conflictos con la vista
     # path('inicio/', inicioSesion, name='inicio'),  # Cambié la URL a 'inicio' para evitar conflictos con la vista
     # path('comparar_gesto/', comparar_gesto, name='comparar_gesto'),
+
+    path('actualizar_progreso/', actualizar_progreso, name='actualizar_progreso'),
     
 
     # path('load_reference_gesto/', load_reference_gesto, name='load_reference_gesto'),
