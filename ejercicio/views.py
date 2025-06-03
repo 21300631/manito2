@@ -5,6 +5,8 @@ import random
 from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib.auth.decorators import login_required
 
+
+@login_required
 def generarLeccion(request):
     usuario = request.user
     perfil = Profile.objects.get(user=usuario)
@@ -81,6 +83,7 @@ def generarLeccion(request):
 
     return redirect('mostrar_ejercicio')
 
+@login_required
 def mostrar_ejercicio(request):
     # Verificar e inicializar progreso si no existe
     if 'progreso' not in request.session:
@@ -120,6 +123,8 @@ def mostrar_ejercicio(request):
         print(f"Error al mostrar ejercicio: {str(e)}")
         return redirect('generarLeccion')
 
+
+@login_required
 def siguiente_ejercicio(request):
     if 'ejercicios' not in request.session:
         return redirect('generarLeccion')
@@ -158,6 +163,8 @@ def siguiente_ejercicio(request):
     request.session.modified = True
     return redirect('mostrar_ejercicio')
 
+
+@login_required
 def preparar_repeticion_ejercicios(request):
     # Solo permitir una ronda de repetición
     if request.session.get('repeticiones', 0) >= 1:
@@ -188,48 +195,41 @@ def preparar_repeticion_ejercicios(request):
     return redirect('mostrar_ejercicio')
 
 @login_required
+@login_required
 def reiniciar_progreso(request):
     if request.method == "POST":
-        # Mantener solo los datos esenciales de sesión
-        datos_importantes = {
+        # 1. Preservar datos críticos de autenticación
+        auth_data = {
             '_auth_user_id': request.session.get('_auth_user_id'),
             '_auth_user_backend': request.session.get('_auth_user_backend'),
-            '_auth_user_hash': request.session.get('_auth_user_hash'),
-            'usuario': request.session.get('usuario'),
-            'foto_perfil': request.session.get('foto_perfil'),
-            'leccion_actual': request.session.get('leccion_actual')
+            '_auth_user_hash': request.session.get('_auth_user_hash')
         }
         
-        # Limpiar solo los datos relacionados con el progreso
-        keys_to_remove = [
-            'progreso', 'ejercicio_actual', 'ejercicios', 
-            'ejercicios_originales', 'ejercicios_errores',
-            'repeticiones', 'en_repeticion'
-        ]
+        # 2. Limpiar solo datos de progreso
+        request.session.pop('progreso', None)
+        request.session.pop('ejercicios', None)
+        # ... (eliminar solo las claves específicas necesarias)
         
-        for key in keys_to_remove:
-            if key in request.session:
-                del request.session[key]
-        
-        # Restaurar datos importantes
-        for key, value in datos_importantes.items():
+        # 3. Restaurar auth data
+        for key, value in auth_data.items():
             if value is not None:
                 request.session[key] = value
         
         request.session.modified = True
-        return redirect('/inicio/')  # Usar el nombre de la URL
-    
     return redirect('/inicio/')
 
-
+@login_required
 def mostrar_finalizado(request):
-    # Guardar estadísticas si es necesario
+   
     total = len(request.session.get('ejercicios_originales', []))
     errores = len(request.session.get('ejercicios_errores', []))
     aciertos = total - errores if total > 0 else 0
     
     # Limpiar la sesión (manteniendo datos importantes)
-    keys_to_keep = ['usuario', 'foto_perfil', 'leccion_actual']
+    keys_to_keep = [
+        '_auth_user_id', '_auth_user_backend', '_auth_user_hash',
+        'usuario', 'foto_perfil'
+    ]
     session_keys = list(request.session.keys())
     for key in session_keys:
         if key not in keys_to_keep:

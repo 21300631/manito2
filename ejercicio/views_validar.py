@@ -4,9 +4,16 @@ import json
 from django.views.decorators.http import require_POST
 from .models import Palabra
 from django.shortcuts import redirect
+from django.contrib.auth.decorators import user_passes_test
 
-@csrf_exempt
+
+def check_auth(user):
+    return user.is_authenticated
+
+
+@user_passes_test(check_auth)
 @require_POST
+@csrf_exempt
 def verificar_seleccion(request):
     try:
         opcion_id = int(request.POST.get("opcion_id"))
@@ -53,8 +60,9 @@ def verificar_seleccion(request):
         return JsonResponse({'error': str(e)}, status=400)
     
 
-@csrf_exempt
+@user_passes_test(check_auth)
 @require_POST
+@csrf_exempt
 def verificar_seleccion2(request):
     try:
         opcion_id = int(request.POST.get("opcion_id"))
@@ -100,8 +108,10 @@ def verificar_seleccion2(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-@csrf_exempt
+
+@user_passes_test(check_auth)
 @require_POST
+@csrf_exempt
 def verificar_completar(request):
     try:
         opcion_id = int(request.POST.get("opcion_id"))
@@ -152,8 +162,9 @@ def verificar_completar(request):
         return JsonResponse({'error': str(e)}, status=400)
     
 
-@csrf_exempt
+@user_passes_test(check_auth)
 @require_POST
+@csrf_exempt
 def verificar_escribir(request):
     try:
         respuesta = request.POST.get('respuesta_usuario', '').strip().lower()
@@ -200,9 +211,9 @@ def verificar_escribir(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
     
-    
-@csrf_exempt
+@user_passes_test(check_auth)
 @require_POST
+@csrf_exempt
 def verificar_emparejar(request):
     try:
         data = json.loads(request.body)
@@ -258,36 +269,5 @@ def verificar_emparejar(request):
             'mensaje': '¡Todos los emparejamientos correctos!' if todos_correctos else 'Algunos emparejamientos incorrectos - Continuando...'
         })
         
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
-
-@csrf_exempt
-@require_POST
-def verificar_gesto(request):
-    try:
-        # Aquí normalmente validarías si el usuario hizo el gesto correctamente
-        # Como es subjetivo, siempre lo marcamos como correcto
-        index = request.session.get('ejercicio_actual', 0)
-        ejercicios = request.session.get('ejercicios', [])
-        
-        if index >= len(ejercicios):
-            return JsonResponse({'completado': True})
-        request.session['progreso'] = min(request.session['progreso'] + 10, 100)
-            
-        request.session.modified = True
-        
-        if request.session['ejercicio_actual'] >= len(ejercicios):
-            return JsonResponse({
-                'correcto': True,
-                'completado': True,
-                'mensaje': '¡Has completado todos los ejercicios!'
-
-            })
-            
-        return JsonResponse({
-            'correcto': True,
-            'redirect': '/ejercicio/siguiente/',  # URL explícita
-            'mensaje': '¡Bien hecho! Siguiente ejercicio...'
-        })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)

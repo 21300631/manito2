@@ -1,185 +1,28 @@
 Performing system checks...
 
 System check identified no issues (0 silenced).
-June 02, 2025 - 18:27:51
+June 02, 2025 - 20:29:52
 Django version 4.2.20, using settings 'manito.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/J.mp4
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/K.mp4
-Ejercicio Gesto - Índice: 3, Total Ejercicios: 10, Progreso 20
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/L.png
-Ejercicio Selección 2
-Ejercicio seleccion2 - Índice: 4, Total Ejercicios: 10, Progreso 30
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 02, 2025 - 18:35:29
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
-Performing system checks...
-
-Performing system checks...
-
-Performing system checks...
-
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 02, 2025 - 18:36:29
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 3, Total Ejercicios: 10, Progreso 20
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/C.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 3, Total Ejercicios: 10, Progreso 20
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/C.png
-Ejercicio Selección 2
-Ejercicio seleccion2 - Índice: 4, Total Ejercicios: 10, Progreso 30
-Ejercicio Selección 2
-Ejercicio seleccion2 - Índice: 5, Total Ejercicios: 10, Progreso 40
-Ejercicio seleccion - Índice: 6, Total Ejercicios: 10, Progreso 50
-Opciones: [{'id': 331, 'palabra': 'Rinoceronte', 'url': 'https://manito-bucket1.s3.amazonaws.com/', 'es_video': False}, {'id': 241, 'palabra': 'Queso', 'url': 'https://manito-bucket1.s3.amazonaws.com/alimentos/queso.mp4', 'es_video': True}, {'id': 4, 'palabra': 'D', 'url': 'https://manito-bucket1.s3.amazonaws.com/Abecedario/D.png', 'es_video': False}]
-Ejercicio escribir - Índice: 7, Total Ejercicios: 10, Progreso 60
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/Ñ.mp4
-Ejercicio seleccion - Índice: 8, Total Ejercicios: 10, Progreso 70
-Opciones: [{'id': 133, 'palabra': 'Triángulo', 'url': 'https://manito-bucket1.s3.amazonaws.com/', 'es_video': False}, {'id': 316, 'palabra': 'Paloma', 'url': 'https://manito-bucket1.s3.amazonaws.com/', 'es_video': False}, {'id': 12, 'palabra': 'L', 'url': 'https://manito-bucket1.s3.amazonaws.com/Abecedario/L.png', 'es_video': False}]
-Ejercicio escribir - Índice: 9, Total Ejercicios: 10, Progreso 80
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/E.png
-Ejercicio seleccion - Índice: 10, Total Ejercicios: 10, Progreso 90
-Opciones: [{'id': 186, 'palabra': 'Avena', 'url': 'https://manito-bucket1.s3.amazonaws.com/alimentos/avena.mp4', 'es_video': True}, {'id': 3, 'palabra': 'C', 'url': 'https://manito-bucket1.s3.amazonaws.com/Abecedario/C.png', 'es_video': False}, {'id': 446, 'palabra': 'Tubo', 'url': 'https://manito-bucket1.s3.amazonaws.com/', 'es_video': False}]
 Usuario: fersasmorales, Contraseña: GorillAZ2006_
 Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/D.png
 Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/E.png
 Ejercicio Gesto - Índice: 3, Total Ejercicios: 10, Progreso 20
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/C.png
-Ejercicio escribir - Índice: 4, Total Ejercicios: 10, Progreso 30
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/L.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 3, Total Ejercicios: 10, Progreso 20
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/C.png
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/F.png
+Ejercicio seleccion - Índice: 4, Total Ejercicios: 10, Progreso 30
+Opciones: [{'id': 376, 'palabra': 'Cortina', 'url': 'https://manito-bucket1.s3.amazonaws.com/', 'es_video': False}, {'id': 4, 'palabra': 'D', 'url': 'https://manito-bucket1.s3.amazonaws.com/Abecedario/D.png', 'es_video': False}, {'id': 497, 'palabra': 'Nayarit', 'url': 'https://manito-bucket1.s3.amazonaws.com/', 'es_video': False}]
 Ejercicio Selección 2
-Ejercicio seleccion2 - Índice: 4, Total Ejercicios: 10, Progreso 30
-Ejercicio completar - Índice: 5, Total Ejercicios: 10, Progreso 40
-Ejercicio Emparejar - Índice: 6, Total Ejercicios: 10, Progreso 50
-Ejercicio completar - Índice: 7, Total Ejercicios: 10, Progreso 60
+Ejercicio seleccion2 - Índice: 5, Total Ejercicios: 10, Progreso 40
+Ejercicio escribir - Índice: 6, Total Ejercicios: 10, Progreso 50
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
 Ejercicio Selección 2
-Ejercicio seleccion2 - Índice: 8, Total Ejercicios: 10, Progreso 70
+Ejercicio seleccion2 - Índice: 7, Total Ejercicios: 10, Progreso 60
+Ejercicio escribir - Índice: 8, Total Ejercicios: 10, Progreso 70
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/Ñ.mp4
 Ejercicio Selección 2
 Ejercicio seleccion2 - Índice: 9, Total Ejercicios: 10, Progreso 80
-Ejercicio completar - Índice: 10, Total Ejercicios: 10, Progreso 90
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 02, 2025 - 19:05:15
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 02, 2025 - 19:06:01
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 02, 2025 - 19:06:04
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 02, 2025 - 19:08:20
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 02, 2025 - 19:08:35
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 02, 2025 - 19:08:38
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 02, 2025 - 19:08:41
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
+Ejercicio Emparejar - Índice: 10, Total Ejercicios: 10, Progreso 90
