@@ -264,8 +264,8 @@ nav a{
 
 /* Estados de lecciones - Etapa 3 */
 .leccionA.completada {
-    background-color: #4CAF50 !important;
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    background-color: #167BDD !important;
+    box-shadow: 0 0 10px rgba(76, 106, 175, 0.5);
 }
 
 .leccionA.en-progreso {
@@ -284,7 +284,7 @@ nav a{
 }
 
 .leccionB.completada {
-    background-color: #4CAF50 !important;
+    background-color: #EF767A !important;
 }
 
 .leccionB.en-progreso {
@@ -305,19 +305,3 @@ nav a{
     100% { transform: scale(1); }
 }
 
-/* Ajustes para tema oscuro */
-body.dark .leccionA.completada {
-    background-color: #2E7D32 !important;
-}
-
-body.dark .leccionA.en-progreso {
-    background-color: #FF8F00 !important;
-}
-
-body.dark .leccionB.completada {
-    background-color: #2E7D32 !important;
-}
-
-body.dark .leccionB.en-progreso {
-    background-color: #FF8F00 !important;
-}

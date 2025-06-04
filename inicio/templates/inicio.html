@@ -146,7 +146,7 @@
     {% if messages %}
     <script>
         {% for message in messages %}
-            {% if message.tags == 'success' and 'welcome_back' in message.extra_tags %}
+            {% if 'welcome_back' in message.extra_tags %}
                 Swal.fire({
                     icon: 'success',
                     title: '¡Bienvenido de vuelta!',
@@ -156,9 +156,8 @@
                         title: 'custom-title-class',
                     }
                 }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "/repaso/";  // Redirige a /repaso/
-                    }
+                    // Redirige independientemente de cómo se cierre el alert
+                    window.location.href = "/repaso/";
                 });
             {% else %}
                 Swal.fire({

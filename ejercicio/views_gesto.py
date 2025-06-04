@@ -1,23 +1,29 @@
-import json
-from pathlib import Path
+# views.py
 from django.http import JsonResponse
-from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from inicio.models import RegistroGesto
 
-def gesto_referencia(request, palabra_id):
+
+@csrf_exempt
+@require_POST
+def evaluar_gesto(request, palabra_id):
     try:
-        # Ruta al archivo JSON (ajusta según tu estructura)
-        json_path = Path(settings.BASE_DIR) / 'static' / 'json' / f'letra_{palabra_id}.json'
+        from django.utils import timezone
+        import json
         
-        with open(json_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            
-        return JsonResponse({
-            'landmarks': data['landmarks'],
-            'palabra': palabra_id,
-            'modo_prueba': False
-        })
+        data = json.loads(request.body)
+        correcto = data.get('correcto', False)
         
-    except FileNotFoundError:
-        return JsonResponse({'error': 'Archivo de gesto no encontrado'}, status=404)
+        # Registrar el gesto (usando tu modelo RegistroGesto)
+        RegistroGesto.objects.create(
+            usuario=request.user.profile,
+            palabra_id=palabra_id,
+            correcto=correcto,
+            fecha=timezone.now()
+        )
+        
+        return JsonResponse({'status': 'success'})
+    
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)

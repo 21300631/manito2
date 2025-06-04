@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect
 from registro.models import Profile
-
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 # Create your views here.
 #Estas partes son para que se vea el progreso de las lecciones y se desbloqueen las siguientes
+@login_required
 def etapa1(request):
     usuario = request.user
     profile = Profile.objects.get(user=usuario)
     leccion_actual = profile.leccion  # Suponiendo que guardas la última lección alcanzada
 
-    lecciones_etapa1 = list(range(1, 39)) + [101, 102, 103, 104]
+    lecciones_etapa1 = list(range(1, 39)) + [501, 502, 503, 504]
 
     
     # Inicializa todas las lecciones como bloqueadas
@@ -18,6 +20,16 @@ def etapa1(request):
     # Marcar lecciones completadas (todas las anteriores a la actual)
     for i in range(1, leccion_actual):
         lecciones_estado[i] = 'completada'
+
+    # Para las loterias de repaso
+    if leccion_actual == 9:
+        lecciones_estado[501] = 'completada'
+    elif leccion_actual == 21:
+        lecciones_estado[502] = 'completada'
+    elif leccion_actual == 28:
+        lecciones_estado[503] = 'completada'
+    elif leccion_actual == 38:
+        lecciones_estado[504] = 'completada'
     
     # Marcar lección actual
     if leccion_actual <= max(lecciones_estado.keys()):
@@ -32,6 +44,7 @@ def etapa1(request):
         'theme': profile.theme if hasattr(profile, 'theme') else 'light'
     })       
 
+@login_required
 def etapa2(request):
     usuario = request.user
     profile = Profile.objects.get(user=usuario)
@@ -47,6 +60,11 @@ def etapa2(request):
     for i in range(34, leccion_actual):
         if i in lecciones_estado:
             lecciones_estado[i] = 'completada'
+
+    if leccion_actual == 45:
+        lecciones_estado[201] = 'completada'
+    elif leccion_actual == 60:
+        lecciones_estado[202] = 'completada'
     
     # Marcar lección actual
     if leccion_actual in lecciones_estado:
@@ -61,6 +79,7 @@ def etapa2(request):
         'theme': profile.theme if hasattr(profile, 'theme') else 'light'
     })
 
+@login_required
 def etapa3(request):
     usuario = request.user
     profile = Profile.objects.get(user=usuario)
@@ -81,6 +100,15 @@ def etapa3(request):
     if leccion_actual in lecciones_estado:
         lecciones_estado[leccion_actual] = 'en-progreso'
     
+    if leccion_actual == 74:
+        lecciones_estado[301] = 'completada'
+    elif leccion_actual == 88:
+        lecciones_estado[302] = 'completada'
+    elif leccion_actual == 102:
+        lecciones_estado[303] = 'completada'
+    elif leccion_actual == 115:
+        lecciones_estado[304] = 'completada'
+    
     # Forzar primera lección si todas están bloqueadas
     if all(status == 'bloqueada' for status in lecciones_estado.values()):
         lecciones_estado[54] = 'en-progreso'
@@ -91,7 +119,7 @@ def etapa3(request):
     })
 
 
-
+@login_required
 def etapa4(request):
     usuario = request.user
     profile = Profile.objects.get(user=usuario)
@@ -114,6 +142,19 @@ def etapa4(request):
     for leccion in rango_lecciones:
         if leccion < leccion_actual:
             lecciones_estado[leccion] = 'completada'
+
+    # Marcar repasos completados
+    if leccion_actual == 129:
+        lecciones_estado[401] = 'completada'
+    elif leccion_actual == 143:
+        lecciones_estado[402] = 'completada'
+    elif leccion_actual == 152:
+        lecciones_estado[403] = 'completada'
+    elif leccion_actual == 161:
+        lecciones_estado[404] = 'completada'
+    elif leccion_actual == 170:
+        lecciones_estado[405] = 'completada'
+
     
     # Marcar actual
     if leccion_actual in lecciones_estado:

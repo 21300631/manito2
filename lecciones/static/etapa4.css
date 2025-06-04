@@ -257,16 +257,49 @@ nav a{
 }
 
 .item18{
-    grid-column: 1;
-    grid-row: 16;
+    grid-column: 1/4    ;
+    grid-row: 18;
 }
 
 .item19{
-    grid-column: 1/5;
+    grid-column: 4;
     grid-row: 18;
 }
 
-.item20{
-    grid-column: 5;
-    grid-row: 18;
+
+
+/* Estados de lecciones - Etapa 2 */
+.leccionA.completada {
+    background-color: #167BDD !important;
+    box-shadow: 0 0 10px rgba(83, 76, 175, 0.5);
+}
+
+.leccionA.en-progreso {
+    background-color: #FFC107 !important;
+    color: #000000 !important;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.7);
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+.leccionA.bloqueada {
+    background-color: #9E9E9E !important;
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.leccionB.completada {
+    background-color: #EF767A !important;
+}
+
+.leccionB.en-progreso {
+    background-color: #FFC107 !important;
+    color: #000000 !important;
+}
+
+.leccionB.bloqueada {
+    background-color: #9E9E9E !important;
+    pointer-events: none;
+    cursor: not-allowed;
 }

@@ -6,29 +6,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repaso</title>
     <link rel="stylesheet" href="{% static 'repaso.css'%}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
 </head>
 <body class="{{ theme }}" data-theme="{{ theme }}">
     <div class="todo">
         <div class="instruccion">
-            <p>Realiza los siguientes gestos</p>
-        </div>
+            <p id="texto-instruccion">Realiza el gesto correspondiente a la palabra: {{ palabras.0.texto }}</p>
+        </div>  
         <div class="contenido">
             <div class="panel">
                 <div class="ejercicio">
                     <div class="referencia">
-
+                        <!-- Aquí se mostrará el gesto (imagen o video) -->
+                        <div class="media" id="media-container">
+                            {% if palabras.0.is_video %}
+                                <video src="{{ palabras.0.gesto_url }}" muted autoplay loop id="current-media" width="80%"></video>
+                            {% else %}
+                                <img src="{{ palabras.0.gesto_url }}" alt="{{ palabras.0.texto }}" id="current-media" width="80%"> 
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="usuario">
-
+                        <!-- Espacio para que el usuario practique -->
                     </div>
                 </div>
                 <div class="panel-btn">
                     <button class="btn-salir">No lo recuerdo</button>
+                    <button class="btn-siguiente">Siguiente</button>
                 </div>
             </div>
         </div>
     </div>
-    <script src="{% static 'ejercicio.js' %}"></script>
 
+    <script>
+        const palabrasRepaso = JSON.parse('{{ palabras_json|escapejs }}');
+        let currentIndex = 0;
+        const totalEjercicios = palabrasRepaso.length;
+        const MANITO_BUCKET_DOMAIN = "{{ settings.MANITO_BUCKET_DOMAIN|escapejs }}";
+        const estadisticasUrl = "{% url 'estadisticas' %}";  # Asegúrate de tener esta URL configurada
+    </script>
+
+    <script src="{% static 'repaso.js' %}"></script>
 </body>
 </html>

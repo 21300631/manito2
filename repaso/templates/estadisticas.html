@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio1</title>
+    <link rel="stylesheet" href="{% static 're01.css'%}">
+</head>
+
+<body class="{{ theme }}" data-theme="{{ theme }}">
+    <div class="container">
+        <h1>Estadísticas de tu Repaso</h1>
+        <!-- Aquí puedes mostrar estadísticas -->
+        <a href="/inicio/" class="btn">Volver al Inicio</a>
+    </div>
+</body>
+</html>
