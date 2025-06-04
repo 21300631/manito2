@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from registro.models import Profile 
-from .models import Leccion, Instruccion, PalabraUsuario
+from .models import Leccion, Instruccion, PalabraUsuario, Palabra
 import random
 from django.http import HttpResponseForbidden, HttpResponse
 from django.contrib.auth.decorators import login_required
-
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import LeccionUsuario
 
 @login_required
 def generarLeccion(request):
@@ -195,7 +199,6 @@ def preparar_repeticion_ejercicios(request):
     return redirect('mostrar_ejercicio')
 
 @login_required
-@login_required
 def reiniciar_progreso(request):
     if request.method == "POST":
         # 1. Preservar datos críticos de autenticación
@@ -218,14 +221,90 @@ def reiniciar_progreso(request):
         request.session.modified = True
     return redirect('/inicio/')
 
+
+@login_required
 @login_required
 def mostrar_finalizado(request):
-   
+    print("Puntos anteriores:", request.user.profile.puntos)
+
     total = len(request.session.get('ejercicios_originales', []))
     errores = len(request.session.get('ejercicios_errores', []))
     aciertos = total - errores if total > 0 else 0
-    
-    # Limpiar la sesión (manteniendo datos importantes)
+
+    puntosAciertos = aciertos * 10
+    puntosErrores = errores * 5
+    puntosTotales = puntosAciertos + puntosErrores
+
+    # Obtenemos el perfil directamente
+    perfil = request.user.profile
+
+    try:
+        # 1. Actualizar puntos
+        perfil.puntos += puntosTotales
+        
+        # 2. Manejo de lecciones
+        leccion_actual_id = request.session.get('leccion_actual')  # Asegúrate que coincide con lo guardado en generarLeccion
+        print(f"ID lección actual desde sesión: {leccion_actual_id}")
+        
+        if leccion_actual_id:
+            try:
+                leccion_actual = Leccion.objects.get(id=leccion_actual_id)
+                print(f"Lección encontrada: {leccion_actual.id}")
+                
+                # Verificar si ya está registrada en LeccionUsuario
+                leccion_registrada = LeccionUsuario.objects.filter(
+                    usuario=perfil,  # Usamos perfil aquí
+                    leccion=leccion_actual
+                ).exists()
+                print(f"¿Lección ya registrada? {leccion_registrada}")
+                
+                if not leccion_registrada:
+                    # Buscar siguiente lección
+                    siguiente_leccion = Leccion.objects.filter(
+                        id__gt=leccion_actual_id
+                    ).order_by('id').first()
+                    
+                    if siguiente_leccion:
+                        # Actualizar la lección en el perfil
+                        perfil.leccion = siguiente_leccion.id
+                        print(f"Actualizando lección en perfil a: {siguiente_leccion.id}")
+                    
+                    # Registrar lección completada
+                    LeccionUsuario.objects.create(
+                        usuario=perfil,  # Usamos perfil aquí
+                        leccion=leccion_actual,
+                        completada=True,
+                        fecha_completada=timezone.now()
+                    )
+                    print(f"Lección {leccion_actual_id} registrada en LeccionUsuario")
+                    
+                    # 3. Agregar palabras aprendidas
+                    palabras_leccion = Palabra.objects.filter(leccion__id=leccion_actual_id)
+                    palabras_agregadas = 0
+                    for palabra in palabras_leccion:
+                        if not PalabraUsuario.objects.filter(
+                            usuario=perfil,  # Usamos perfil aquí
+                            palabra=palabra
+                        ).exists():
+                            PalabraUsuario.objects.create(
+                                usuario=perfil,  # Usamos perfil aquí
+                                palabra=palabra,
+                                fecha_completada=timezone.now()  # Usamos el campo correcto según tu modelo
+                            )
+                            palabras_agregadas += 1
+                    print(f"Palabras agregadas: {palabras_agregadas}")
+                
+            except Leccion.DoesNotExist:
+                print(f"Error: Lección con ID {leccion_actual_id} no encontrada")
+        
+        perfil.save()
+        print(f"Puntos totales actualizados: {perfil.puntos}")
+        print(f"Lección actual en perfil: {perfil.leccion}")
+
+    except Exception as e:
+        print(f"Error inesperado: {str(e)}")
+
+    # Limpiar sesión
     keys_to_keep = [
         '_auth_user_id', '_auth_user_backend', '_auth_user_hash',
         'usuario', 'foto_perfil'
@@ -234,17 +313,13 @@ def mostrar_finalizado(request):
     for key in session_keys:
         if key not in keys_to_keep:
             del request.session[key]
-    
+
     request.session.modified = True
     return render(request, 'finalizado.html', {
         'total_ejercicios': total,
         'ejercicios_correctos': aciertos
     })
 
-# views.py
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
 
 @csrf_exempt
 def actualizar_progreso(request):

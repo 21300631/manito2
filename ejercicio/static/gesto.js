@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentSimilarity = 0;
         let isGestureCorrect = false;
         let correctPoseStartTime = null;
-        const REQUIRED_CORRECT_TIME = 2000;
+        const REQUIRED_CORRECT_TIME = 1000;
         let calibrationValues = {
             openHandThreshold: 0.4, // Ajustar según pruebas
             similarityThreshold: 80

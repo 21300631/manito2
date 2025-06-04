@@ -262,7 +262,7 @@ body.dark {
 
 
 /* por ver  */
-
+/* 
 .palabra, .gesto {
     cursor: pointer;
     transition: all 0.3s ease;
@@ -276,7 +276,7 @@ body.dark {
 .palabra:hover, .gesto:hover {
     transform: translateY(-2px);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+} */
 
 .palabra.seleccionada, .gesto.seleccionada {
     background-color: #e2e3e5;
@@ -289,10 +289,10 @@ body.dark {
 }
 
 /* Estilos para pares emparejados */
-.pareado-1 { background-color: #fff3cd; border-color: #ffecb5; }
-.pareado-2 { background-color: #d1ecf1; border-color: #bee5eb; }
-.pareado-3 { background-color: #d4edda; border-color: #c3e6cb; }
-.pareado-4 { background-color: #f8d7da; border-color: #f5c6cb; }
+.pareado-1 { background-color: #fade83; border-color: #ffd862; }
+.pareado-2 { background-color: #5bd9f0; border-color: #34d0e8; }
+.pareado-3 { background-color: #68b2e3; border-color: #2f44e2; }
+.pareado-4 { background-color: #f33caa; border-color: #e62291; }
 
 #btn-verificar {
     margin-top: 20px;

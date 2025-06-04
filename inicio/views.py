@@ -4,17 +4,35 @@ from inicio.models import Notificacion
 from django.shortcuts import render
 from registro.models import Profile
 from django.http import JsonResponse
-
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib import messages
 
 @login_required
 def inicioSesion(request):
     usuario = request.user
     perfil = Profile.objects.get(user=usuario)  # Obtiene el perfil del usuario
     notificaciones = Notificacion.objects.filter(receptor=request.user).order_by('-fecha')[:10]
+
+    # Con esto veo si el usuario ha regresado despues de 3 dias
+    # Pero para pruebas le puse 15 min
+    now = timezone.now()
+    if perfil.last_login:
+        minutes_since_last_login = (now - perfil.last_login).total_seconds() / 60
+        # days_since_last_login = (now - perfil.last_login).days
+        if minutes_since_last_login > 15:
+            messages.success(request, "¡Que bueno que has vuelto! No te habíamos visto en más de 3 días.", extra_tags='welcome_back')
+    
+    # Actualizar la última fecha de login
+    perfil.last_login = now
+    perfil.save()
+
     try:
         medalla = perfil.medalla  # Obtiene la medalla del usuario
     except Profile.DoesNotExist:
         medalla = None  # Si el usuario no tiene perfil, medalla será None
+    
     contexto = {
             'usuario': usuario,
             'imagen': perfil.imagen,
@@ -24,7 +42,7 @@ def inicioSesion(request):
             'notificaciones': notificaciones
     }
     
-    return render(request, 'inicio.html', contexto)	
+    return render(request, 'inicio.html', contexto)
 
 @login_required
 def puntosUsuario(request):
@@ -55,3 +73,20 @@ def puntosUsuario(request):
         },
         'etapas_lecciones': etapas_lecciones
     })
+
+# signals.py
+# from django.db.models.signals import pre_save
+# from django.contrib.auth.models import User
+# from django.dispatch import receiver
+# from .models import Profile
+# from django.utils import timezone
+
+# @receiver(pre_save, sender=User)
+# def update_last_login(sender, instance, **kwargs):
+#     if instance.pk:  # Solo para usuarios existentes
+#         try:
+#             profile = instance.profile
+#             profile.last_login = timezone.now()
+#             profile.save()
+#         except Profile.DoesNotExist:
+#             Profile.objects.create(user=instance, last_login=timezone.now())

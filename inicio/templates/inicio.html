@@ -91,7 +91,7 @@
                         <img src="{% static 'gema.png'%}" alt="">
                         <div class="puntos-info">
                             <p>Siguiente etapa: <span>2 (6800 pts)</span></p>
-                            <p>Tienes: <span id="puntos-usuario">0</span> puntos</p>
+                            <p>Tienes: <span id="puntos-usuario"> 0 </span> puntos</p>
                         </div>
                         
                     </div>
@@ -145,16 +145,32 @@
     </div>
     {% if messages %}
     <script>
-        
-            Swal.fire({
-                icon: 'success',
-                title: 'Bienvenido',
-                text: "{{ message }}",
-                customClass: {
-                    title: 'custom-title-class',
-                }
-            });
-        
+        {% for message in messages %}
+            {% if message.tags == 'success' and 'welcome_back' in message.extra_tags %}
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Bienvenido de vuelta!',
+                    text: "{{ message }}",
+                    confirmButtonText: 'Entendido',
+                    customClass: {
+                        title: 'custom-title-class',
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/repaso/";  // Redirige a /repaso/
+                    }
+                });
+            {% else %}
+                Swal.fire({
+                    icon: '{{ message.tags }}',
+                    title: '{{ message.tags|title }}',
+                    text: "{{ message }}",
+                    customClass: {
+                        title: 'custom-title-class',
+                    }
+                });
+            {% endif %}
+        {% endfor %}
     </script>
     {% endif %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from .storages import ImageStorage
-
+from django.utils import timezone
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  # Conexión con User
@@ -18,6 +18,7 @@ class Profile(models.Model):
     medalla = models.ForeignKey('inicio.Medalla', on_delete=models.SET_NULL, null=True, blank=True)
     theme = models.CharField(max_length=10, default="light")  # 'light' o 'dark'
     leccion = models.IntegerField(default=1)  # ID de la lección actual
+    last_login = models.DateTimeField(default=timezone.now)  # Fecha y hora del último inicio de sesión
 
     @property
     def medalla_actual(self):
