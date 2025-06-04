@@ -1,54 +1,16 @@
 Performing system checks...
 
 System check identified no issues (0 silenced).
-June 03, 2025 - 18:44:24
+June 03, 2025 - 19:55:50
 Django version 4.2.20, using settings 'manito.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 3, Total Ejercicios: 10, Progreso 20
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/C.png
-Ejercicio completar - Índice: 4, Total Ejercicios: 10, Progreso 30
-Ejercicio completar - Índice: 5, Total Ejercicios: 10, Progreso 40
-Ejercicio seleccion - Índice: 6, Total Ejercicios: 10, Progreso 50
-Opciones: [{'id': 158, 'palabra': 'Imposible', 'url': 'https://manito-bucket1.s3.amazonaws.com/adjetivos/imposible.mp4', 'es_video': True}, {'id': 1, 'palabra': 'A', 'url': 'https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png', 'es_video': False}, {'id': 56, 'palabra': 'Año', 'url': 'https://manito-bucket1.s3.amazonaws.com/calendario/año.mp4', 'es_video': True}]
-Ejercicio seleccion - Índice: 7, Total Ejercicios: 10, Progreso 60
-Opciones: [{'id': 367, 'palabra': 'Colador', 'url': 'https://manito-bucket1.s3.amazonaws.com/', 'es_video': False}, {'id': 1, 'palabra': 'A', 'url': 'https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png', 'es_video': False}, {'id': 193, 'palabra': 'Cena', 'url': 'https://manito-bucket1.s3.amazonaws.com/alimentos/cena.mp4', 'es_video': True}]
-Ejercicio completar - Índice: 8, Total Ejercicios: 10, Progreso 70
-Ejercicio completar - Índice: 9, Total Ejercicios: 10, Progreso 80
-Ejercicio completar - Índice: 10, Total Ejercicios: 10, Progreso 90
-Puntos anteriores: 95
-ID lección actual desde sesión: 1
-Lección encontrada: 1
-¿Lección ya registrada? False
-Actualizando lección en perfil a: 2
-Lección 1 registrada en LeccionUsuario
-Palabras agregadas: 3
-Puntos totales actualizados: 195
-Lección actual en perfil: 2
-Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png
-Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Gesto - Índice: 3, Total Ejercicios: 10, Progreso 20
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/C.png
-Ejercicio escribir - Índice: 4, Total Ejercicios: 10, Progreso 30
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/B.png
-Ejercicio Emparejar - Índice: 5, Total Ejercicios: 10, Progreso 40
-Ejercicio seleccion - Índice: 6, Total Ejercicios: 10, Progreso 50
-Opciones: [{'id': 1, 'palabra': 'A', 'url': 'https://manito-bucket1.s3.amazonaws.com/Abecedario/A.png', 'es_video': False}, {'id': 462, 'palabra': 'Escala', 'url': 'https://manito-bucket1.s3.amazonaws.com/', 'es_video': False}, {'id': 93, 'palabra': 'Codo', 'url': 'https://manito-bucket1.s3.amazonaws.com/calendario/codo.mp4', 'es_video': True}]
-Ejercicio Emparejar - Índice: 7, Total Ejercicios: 10, Progreso 60
-Ejercicio completar - Índice: 8, Total Ejercicios: 10, Progreso 70
-Ejercicio Emparejar - Índice: 9, Total Ejercicios: 10, Progreso 80
-Ejercicio Selección 2
-Ejercicio seleccion2 - Índice: 10, Total Ejercicios: 10, Progreso 90
-Puntos anteriores: 195
-ID lección actual desde sesión: 1
-Lección encontrada: 1
-¿Lección ya registrada? True
-Puntos totales actualizados: 295
-Lección actual en perfil: 2
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 03, 2025 - 20:02:28
+Django version 4.2.20, using settings 'manito.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+

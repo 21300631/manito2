@@ -223,7 +223,6 @@ def reiniciar_progreso(request):
 
 
 @login_required
-@login_required
 def mostrar_finalizado(request):
     print("Puntos anteriores:", request.user.profile.puntos)
 
@@ -235,7 +234,6 @@ def mostrar_finalizado(request):
     puntosErrores = errores * 5
     puntosTotales = puntosAciertos + puntosErrores
 
-    # Obtenemos el perfil directamente
     perfil = request.user.profile
 
     try:
@@ -243,7 +241,7 @@ def mostrar_finalizado(request):
         perfil.puntos += puntosTotales
         
         # 2. Manejo de lecciones
-        leccion_actual_id = request.session.get('leccion_actual')  # Asegúrate que coincide con lo guardado en generarLeccion
+        leccion_actual_id = request.session.get('leccion_actual')
         print(f"ID lección actual desde sesión: {leccion_actual_id}")
         
         if leccion_actual_id:
@@ -253,7 +251,7 @@ def mostrar_finalizado(request):
                 
                 # Verificar si ya está registrada en LeccionUsuario
                 leccion_registrada = LeccionUsuario.objects.filter(
-                    usuario=perfil,  # Usamos perfil aquí
+                    usuario=perfil,
                     leccion=leccion_actual
                 ).exists()
                 print(f"¿Lección ya registrada? {leccion_registrada}")
@@ -265,38 +263,47 @@ def mostrar_finalizado(request):
                     ).order_by('id').first()
                     
                     if siguiente_leccion:
-                        # Actualizar la lección en el perfil
                         perfil.leccion = siguiente_leccion.id
                         print(f"Actualizando lección en perfil a: {siguiente_leccion.id}")
                     
                     # Registrar lección completada
                     LeccionUsuario.objects.create(
-                        usuario=perfil,  # Usamos perfil aquí
+                        usuario=perfil,
                         leccion=leccion_actual,
                         completada=True,
                         fecha_completada=timezone.now()
                     )
                     print(f"Lección {leccion_actual_id} registrada en LeccionUsuario")
                     
-                    # 3. Agregar palabras aprendidas
+                    # 3. Agregar palabras aprendidas (versión optimizada)
                     palabras_leccion = Palabra.objects.filter(leccion__id=leccion_actual_id)
-                    palabras_agregadas = 0
-                    for palabra in palabras_leccion:
-                        if not PalabraUsuario.objects.filter(
-                            usuario=perfil,  # Usamos perfil aquí
-                            palabra=palabra
-                        ).exists():
-                            PalabraUsuario.objects.create(
-                                usuario=perfil,  # Usamos perfil aquí
+                    
+                    # Obtener todas las palabras que el usuario ya tiene registradas
+                    palabras_existentes = set(PalabraUsuario.objects.filter(
+                        usuario=perfil
+                    ).values_list('palabra_id', flat=True))
+                    
+                    # Filtrar solo las palabras nuevas
+                    palabras_nuevas = [p for p in palabras_leccion if p.id not in palabras_existentes]
+                    
+                    # Crear todas las relaciones nuevas en una sola operación
+                    if palabras_nuevas:
+                        PalabraUsuario.objects.bulk_create([
+                            PalabraUsuario(
+                                usuario=perfil,
                                 palabra=palabra,
-                                fecha_completada=timezone.now()  # Usamos el campo correcto según tu modelo
-                            )
-                            palabras_agregadas += 1
-                    print(f"Palabras agregadas: {palabras_agregadas}")
+                                fecha_completada=timezone.now()
+                            ) for palabra in palabras_nuevas
+                        ])
+                        print(f"Palabras agregadas: {len(palabras_nuevas)}")
+                    else:
+                        print("Todas las palabras ya estaban registradas")
                 
             except Leccion.DoesNotExist:
                 print(f"Error: Lección con ID {leccion_actual_id} no encontrada")
-        
+
+        # Actualizar racha
+        perfil.actualizar_racha()
         perfil.save()
         print(f"Puntos totales actualizados: {perfil.puntos}")
         print(f"Lección actual en perfil: {perfil.leccion}")
@@ -317,9 +324,9 @@ def mostrar_finalizado(request):
     request.session.modified = True
     return render(request, 'finalizado.html', {
         'total_ejercicios': total,
-        'ejercicios_correctos': aciertos
+        'ejercicios_correctos': aciertos,
+        'racha_actual': perfil.racha
     })
-
 
 @csrf_exempt
 def actualizar_progreso(request):

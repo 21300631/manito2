@@ -28,3 +28,23 @@ class Profile(models.Model):
     
     def __str__(self):
         return self.user.username
+    
+    def actualizar_racha(self):
+        ahora = timezone.now()
+        diferencia = ahora - self.last_login
+        
+        # Si pasaron más de 10 minutos, reiniciar racha
+        if diferencia > timezone.timedelta(minutes=15):
+            print(f"Diferencia de teimpo: {diferencia}.")
+            if self.racha > 0:
+                print(f"Reiniciando racha para {self.user.username}")
+            self.racha = 0
+        else:
+            # Incrementar racha y otorgar puntos
+            self.racha += 1
+            self.puntos += 10  # 10 puntos por mantener la racha
+            print(f"Tiempo desde el último acceso: {diferencia}.")
+            print(f"Racha incrementada: {self.racha} (10 puntos añadidos)")
+        
+        self.last_login = ahora  # Actualizamos el último acceso
+        self.save()
