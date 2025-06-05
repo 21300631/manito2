@@ -16,7 +16,6 @@ const calibrationValues = {
 const videoElement = document.getElementById('inputVideo');
 const canvasElement = document.getElementById('outputCanvas');
 const canvasCtx = canvasElement.getContext('2d');
-const nextButton = document.getElementById('nextBtn');
 const feedbackElement = document.getElementById('feedback');
 const noRecuerdoBtn = document.getElementById('noRecuerdoBtn');
 
@@ -138,7 +137,6 @@ function onResults(results) {
     } else {
         correctPoseStartTime = null;
         showFeedback("Muestra tu mano en el área", false);
-        nextButton.disabled = true;
     }
 }
 
@@ -155,13 +153,11 @@ function handleGestureFeedback() {
                 showFeedback(`✓ Mantén la pose (${Math.ceil(remainingTime/1000)}s)`, true);
             } else {
                 showFeedback("✓ ¡Correcto!", true);
-                nextButton.disabled = false;
             }
         }
     } else {
         correctPoseStartTime = null;
         showFeedback(`✗ Ajusta tu gesto (${currentSimilarity.toFixed(0)}%)`, false);
-        nextButton.disabled = true;
     }
 }
 
@@ -248,7 +244,7 @@ function setupEventListeners() {
     // videoElement.style.transform = "scaleX(-1)";
     canvasElement.style.width = '100%';
     canvasElement.style.maxWidth = '400px';
-    // canvasElement.style.transform = "scaleX(-1)";    
+    // canvasElement.style.transform = "scaleX(-1)";
     canvasElement.style.borderRadius = '10px';
 
     
@@ -261,12 +257,7 @@ function setupEventListeners() {
         });
     }
     
-    // Botón "Siguiente"
-    if (nextButton) {
-        nextButton.addEventListener('click', () => {
-            window.location.href = "/repaso/siguiente/";
-        });
-    }
+    
 }
 
 // Iniciar cámara

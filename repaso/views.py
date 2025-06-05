@@ -43,6 +43,11 @@ def pagina(request):
     
     return render(request, 'repaso.html', contexto)
 
+
+@login_required
+def siguiente(request):
+    return redirect('repaso')
+
 @login_required
 @require_GET
 def estadisticas(request):
