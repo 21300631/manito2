@@ -187,7 +187,6 @@ def noRecuerdo(request):
         
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
 @login_required
 def finalizar_repaso(request):
     """Muestra las estadísticas finales del repaso"""
@@ -198,18 +197,19 @@ def finalizar_repaso(request):
     errores = len(request.session.get('repaso_errores', []))
     aciertos = total - errores
     
+    contexto = {
+        'total_ejercicios': total,
+        'ejercicios_correctos': aciertos,
+        'ejercicios_incorrectos': errores,
+        'porcentaje_acierto': (aciertos / total * 100) if total > 0 else 0,
+        'tipo_repaso': 'general'
+    }
+    
     # Limpiar la sesión
     request.session.pop('repaso_palabras', None)
     request.session.pop('repaso_index', None)
     request.session.pop('repaso_errores', None)
     request.session.modified = True
-    
-    contexto = {
-        'total_ejercicios': total,
-        'ejercicios_correctos': aciertos,
-        'porcentaje_acierto': (aciertos / total * 100) if total > 0 else 0,
-        'tipo_repaso': 'general'
-    }
     
     return render(request, 'estadisticas.html', contexto)
 

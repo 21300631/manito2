@@ -12,11 +12,6 @@
 {% load static %}
 <body class="{{ theme }}" data-theme="{{ theme }}">
     <div class="todo">
-        <!-- Barra de progreso -->
-        <div class="progress-container">
-            <div class="progress-bar"></div>
-            <div class="progress-text">Ejercicio {{ progreso.actual }} de {{ progreso.total }}</div>
-        </div>
 
         <div class="instruccion">
             <p id="texto-instruccion">Realiza el gesto correspondiente a la palabra: <strong>{{ palabra.texto }}</strong></p>
@@ -51,7 +46,6 @@
                 <!-- Botones -->
                 <div class="btn-container">
                     <button id="noRecuerdoBtn" class="btn btn-no-recuerdo">No lo recuerdo</button>
-                    <button id="nextBtn" class="btn btn-siguiente" disabled>Siguiente</button>
                 </div>
             </div>
         </div>
