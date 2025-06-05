@@ -17,7 +17,6 @@ const videoElement = document.getElementById('inputVideo');
 const canvasElement = document.getElementById('outputCanvas');
 const canvasCtx = canvasElement.getContext('2d');
 const feedbackElement = document.getElementById('feedback');
-const noRecuerdoBtn = document.getElementById('noRecuerdoBtn');
 
 // Conexiones de la mano
 const HAND_CONNECTIONS = [
@@ -140,15 +139,6 @@ function onResults(results) {
     }
 }
 
-function goToNextExercise() {
-    if (camera) {
-        camera.stop();
-    }
-    if (videoElement.srcObject) {
-        videoElement.srcObject.getTracks().forEach(track => track.stop());
-    }
-    window.location.href = "/repaso/siguiente/";
-}
 
 function handleGestureFeedback() {
     if (isGestureCorrect) {
@@ -162,21 +152,7 @@ function handleGestureFeedback() {
                 showFeedback(`✓ Mantén la pose (${Math.ceil(remainingTime/1000)}s)`, true);
             } else {
                 showFeedback("✓ ¡Correcto!", true);
-                
-                // Usar CURRENT_WORD_ID en lugar de currentWordId
-                fetch('/repaso/siguiente/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: `palabra_id=${CURRENT_WORD_ID}`
-                }).then(() => {
-                    window.location.href = "/repaso/";
-                }).catch(error => {
-                    console.error('Error:', error);
-                    window.location.href = "/repaso/";
-                });
+                goToNextExercise();
             }
         }
     } else {
@@ -184,6 +160,45 @@ function handleGestureFeedback() {
         showFeedback(`✗ Ajusta tu gesto (${currentSimilarity.toFixed(0)}%)`, false);
     }
 }
+
+function goToNextExercise() {
+    // Detener la cámara primero
+    if (camera) {
+        camera.stop();
+    }
+    if (videoElement.srcObject) {
+        videoElement.srcObject.getTracks().forEach(track => track.stop());
+    }
+    
+    // Enviar la petición para avanzar
+    fetch('/repaso/siguiente/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            error: false
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'completed') {
+            window.location.href = data.redirect_url;
+        } else {
+            // Forzar recarga limpia de la página
+            window.location.href = data.redirect_url;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Recargar de todas formas si hay error
+        window.location.href = '/repaso/';
+    });
+}
+
+
+
 // Función auxiliar para obtener cookies
 function getCookie(name) {
     let cookieValue = null;
@@ -284,15 +299,6 @@ function setupEventListeners() {
     // canvasElement.style.transform = "scaleX(-1)";
     canvasElement.style.borderRadius = '10px';
 
-    
-    
-    // Botón "No lo recuerdo"
-    if (noRecuerdoBtn) {
-        noRecuerdoBtn.addEventListener('click', () => {
-            // Aquí puedes agregar lógica para manejar cuando el usuario no recuerda
-            window.location.href = "/repaso/siguiente/";
-        });
-    }
     
     
 }

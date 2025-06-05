@@ -7,90 +7,237 @@ from django.conf import settings
 import json
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
 
 @login_required
-def pagina(request):
+def iniciar_repaso(request):
     user = request.user
     perfil = Profile.objects.get(user=user)
+
+    keys = ['repaso_palabras', 'repaso_index', 'repaso_errores']
+    for key in keys:
+        if key in request.session:
+            del request.session[key]
+
     
-    ejercicio_actual = request.session.get('ejercicio_actual', 0)
-    palabras_ids_vistas = request.session.get('palabras_ids_vistas', [])
+    # Obtener palabras para repaso (optimizado)
+    palabras_repaso = PalabraUsuario.objects.filter(usuario=perfil)\
+                          .select_related('palabra')\
+                          .order_by('?')[:10]  # Orden aleatorio y límite 10
     
-    # Obtener relaciones para repaso (excluyendo vistas)
-    relaciones_repaso = PalabraUsuario.objects.filter(usuario=perfil)\
-                             .exclude(palabra__id__in=palabras_ids_vistas)\
-                             .select_related('palabra')\
-                             .order_by('-fecha_completada')[:10]
+    if not palabras_repaso.exists():
+        return redirect('no_hay_palabras')
     
-    # Convertir a lista solo si hay resultados
-    if not relaciones_repaso:
-        # Limpiar sesión y redirigir si no hay más palabras
-        request.session.pop('ejercicio_actual', None)
-        request.session.pop('palabras_ids_vistas', None)
-        return redirect('estadisticas')
+    # Crear lista de IDs de palabras
+    palabras_ids = [rel.palabra.id for rel in palabras_repaso]
     
-    # Solo mezclar si es el primer ejercicio (ejercicio_actual == 0)
-    if ejercicio_actual == 0:
-        relaciones_repaso = list(relaciones_repaso)
-        random.shuffle(relaciones_repaso)
-        request.session['palabras_ids_vistas'] = [r.palabra.id for r in relaciones_repaso]
+    # Debug: imprimir palabras seleccionadas
+    palabras_seleccionadas = Palabra.objects.filter(id__in=palabras_ids)
+    print("Palabras seleccionadas para repaso:")
+    for palabra in palabras_seleccionadas:
+        print(f"- {palabra.palabra} (ID: {palabra.id})")
     
-    # Verificar que el índice sea válido
-    if ejercicio_actual >= len(relaciones_repaso):
-        request.session.pop('ejercicio_actual', None)
-        return redirect('estadisticas')
+    # Guardar en sesión (asegurarse de usar .update() para evitar pisar la sesión)
+    request.session.update({
+        'repaso_palabras': palabras_ids,
+        'repaso_index': 0,
+        'repaso_errores': [],
+        'repaso_iniciado': True  # Bandera adicional para verificar
+    })
     
-    # Preparar datos de la palabra actual
-    palabra_actual = relaciones_repaso[ejercicio_actual].palabra
-    palabras_data = [{
+    # Forzar guardado de la sesión
+    request.session.modified = True
+    
+    return redirect('mostrar_ejercicio_repaso')
+
+@csrf_exempt
+@login_required
+def siguiente_ejercicio_repaso(request):
+    print(f"Solicitud recibida - Método: {request.method}")
+    
+    # Verificar sesión
+    if not request.session.get('repaso_iniciado', False):
+        print("Error: No hay sesión de repaso activa")
+        return JsonResponse({'status': 'error', 'message': 'Sesión no iniciada'}, status=400)
+    
+    # Manejar POST (avanzar ejercicio)
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            print(f"Datos recibidos: {data}")
+            
+            if data.get('error', False):
+                current_index = request.session.get('repaso_index', 0)
+                print(f"Registrando error en índice: {current_index}")
+                
+                errores = request.session.get('repaso_errores', [])
+                errores.append(current_index)
+                request.session['repaso_errores'] = errores
+                
+            # Avanzar índice siempre (tanto si hay error como si no)
+            current_index = request.session.get('repaso_index', 0)
+            request.session['repaso_index'] = current_index + 1
+            request.session.modified = True
+            print(f"Nuevo índice: {request.session['repaso_index']}")
+            
+            # Verificar si completó todos los ejercicios
+            palabras_ids = request.session.get('repaso_palabras', [])
+            if request.session['repaso_index'] >= len(palabras_ids):
+                print("Repaso completado - Redirigiendo a finalizar")
+                return JsonResponse({
+                    'status': 'completed',
+                    'redirect_url': '/repaso/finalizar/'
+                })
+            
+            # Devolver datos del siguiente ejercicio
+            try:
+                palabra_actual = Palabra.objects.get(id=palabras_ids[request.session['repaso_index']])
+                palabra_data = {
+                    'id': palabra_actual.id,
+                    'texto': palabra_actual.palabra,
+                    'gesto_url': f"{settings.MANITO_BUCKET_DOMAIN}/{palabra_actual.gesto}" if palabra_actual.gesto else None,
+                    'is_video': bool(palabra_actual.gesto and palabra_actual.gesto.lower().endswith('.mp4')),
+                    'json_url': f'landmarks/{palabra_actual.palabra}.json'
+                }
+                
+                return JsonResponse({
+                    'status': 'success',
+                    'palabra': palabra_data,
+                    'progreso': {
+                        'actual': request.session['repaso_index'] + 1,
+                        'total': len(palabras_ids)
+                    }
+                })
+            except Palabra.DoesNotExist:
+                print(f"Palabra con ID {palabras_ids[request.session['repaso_index']]} no existe")
+                return JsonResponse({'status': 'error', 'message': 'Palabra no encontrada'}, status=404)
+                
+        except Exception as e:
+            print(f"Error procesando POST: {str(e)}")
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+@login_required
+def mostrar_ejercicio_repaso(request):
+    """Muestra el ejercicio actual del repaso"""
+    # Verificar si hay repaso en curso
+    if not request.session.get('repaso_iniciado', False):
+        print("Redirigiendo a iniciar_repaso desde mostrar_ejercicio_repaso - Sesión no iniciada")
+        return redirect('iniciar_repaso')
+    
+    palabras_ids = request.session.get('repaso_palabras', [])
+    index = request.session.get('repaso_index', 0)
+    
+    print(f"Estado actual - Index: {index}, Palabras IDs: {palabras_ids}")
+
+    # Si es la primera vez que se carga o el índice es inválido
+    if index >= len(palabras_ids):
+        print("Redirigiendo a finalizar_repaso - Índice excedido")
+        return redirect('finalizar_repaso')
+    
+    # Obtener palabra actual
+    try:
+        palabra_actual = Palabra.objects.get(id=palabras_ids[index])
+        print(f"Mostrando ejercicio {index + 1}/{len(palabras_ids)}: {palabra_actual.palabra}")
+        print(f"Ejercicio actual: {palabra_actual.palabra} (ID: {palabra_actual.id})")
+    except Palabra.DoesNotExist:
+        print(f"Palabra con ID {palabras_ids[index]} no existe, avanzando...")
+        request.session['repaso_index'] += 1
+        request.session.modified = True
+        return redirect('mostrar_ejercicio_repaso')
+    
+    # Preparar datos de la palabra
+    palabra_data = {
         'id': palabra_actual.id,
         'texto': palabra_actual.palabra,
         'gesto_url': f"{settings.MANITO_BUCKET_DOMAIN}/{palabra_actual.gesto}" if palabra_actual.gesto else None,
         'is_video': bool(palabra_actual.gesto and palabra_actual.gesto.lower().endswith('.mp4')),
         'json_url': f'landmarks/{palabra_actual.palabra}.json'
-    }]
-    
-    # Incrementar contador para la próxima solicitud
-    request.session['ejercicio_actual'] = ejercicio_actual + 1
-    request.session.modified = True
+    }
     
     contexto = {
-        'palabras': palabras_data,
-        'palabras_json': json.dumps(palabras_data, ensure_ascii=False),
-        'current_word_id': palabra_actual.id,
-        'theme': request.session.get('theme', 'light'),
+        'palabra': palabra_data,
+        'palabra_json': json.dumps(palabra_data, ensure_ascii=False),
         'progreso': {
-            'actual': ejercicio_actual + 1,
-            'total': min(10, len(relaciones_repaso))
+            'actual': index + 1,
+            'total': len(palabras_ids)
         },
-        'estadisticas_url': '/estadisticas/'
+        'tipo_ejercicio': 'repaso',
+        'es_ultimo_ejercicio': (index + 1) >= len(palabras_ids)  # Para habilitar/deshabilitar botón siguiente
     }
     
     return render(request, 'repaso.html', contexto)
 
+
 @csrf_exempt
 @login_required
-def siguiente(request):
-    if request.method == 'POST':
-        palabra_id = request.POST.get('palabra_id')
-        # Aquí puedes registrar el éxito en la base de datos si lo necesitas
-        print(f"Ejercicio completado para palabra ID: {palabra_id}")
-    return redirect('pagina')
-
-@login_required
-def noRecuerda(request):
-    # Inicializar contador si no existe
-    if 'no_recuerda' not in request.session:
-        request.session['no_recuerda'] = 0
+def noRecuerdo(request):
+    """Maneja el caso de 'no recuerdo' en el repaso"""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
     
-    request.session['no_recuerda'] += 1
-    request.session.modified = True
-    return redirect('pagina')
+    if 'repaso_index' not in request.session or 'repaso_palabras' not in request.session:
+        return JsonResponse({'status': 'error', 'message': 'Sesión no iniciada'}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        palabra_id = data.get('palabra_id')
+        
+        # Registrar error
+        index = request.session['repaso_index']
+        errores = request.session.get('repaso_errores', [])
+        errores.append(index)
+        request.session['repaso_errores'] = errores
+        
+        # Avanzar al siguiente ejercicio
+        request.session['repaso_index'] += 1
+        request.session.modified = True
+        
+        # Verificar si hemos terminado
+        palabras_ids = request.session.get('repaso_palabras', [])
+        if request.session['repaso_index'] >= len(palabras_ids):
+            return JsonResponse({
+                'status': 'completed',
+                'redirect_url': '/repaso/finalizar/'
+            })
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Error registrado',
+            'next_url': '/repaso/mostrar/'
+        })
+        
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 @login_required
-@require_GET
-def estadisticas(request):
+def finalizar_repaso(request):
+    """Muestra las estadísticas finales del repaso"""
+    if 'repaso_palabras' not in request.session:
+        return redirect('iniciar_repaso')
+    
+    total = len(request.session['repaso_palabras'])
+    errores = len(request.session.get('repaso_errores', []))
+    aciertos = total - errores
+    
+    # Limpiar la sesión
+    request.session.pop('repaso_palabras', None)
+    request.session.pop('repaso_index', None)
+    request.session.pop('repaso_errores', None)
+    request.session.modified = True
+    
     contexto = {
-        'theme': request.session.get('theme', 'light')
+        'total_ejercicios': total,
+        'ejercicios_correctos': aciertos,
+        'porcentaje_acierto': (aciertos / total * 100) if total > 0 else 0,
+        'tipo_repaso': 'general'
     }
+    
     return render(request, 'estadisticas.html', contexto)
+
+@login_required
+def no_hay_palabras(request):
+    """Vista para cuando no hay palabras para repasar"""
+    return render(request, 'estadisticas.html')
