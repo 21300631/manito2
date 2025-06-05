@@ -22,7 +22,7 @@
                     <div class="referencia">
                         <div class="media" id="media-container">
                             {% if palabras.0.is_video %}
-                                <video id="gestoVideo" src="{{ palabras.0.gesto_url }}" muted autoplay loop width="80%" data-palabra="{{ palabras.0.texto }}" data-palabra-json="{% static '' %}{{ palabras.0.json_url }}"></video>
+                                <video id="gestoVideo" src="{{ palabras.0.gesto_url }}" muted autoplay loop width="80%" data-palabra="{{ palabras.0.texto }}" data-palabra-json="{{ palabras.0.json_url }}"></video>
                             {% else %}
                                 <img src="{{ palabras.0.gesto_url }}" alt="{{ palabras.0.texto }}" width="80%" style="padding: 10%; margin: 0;">
                             {% endif %}
@@ -42,6 +42,9 @@
                 <!-- Botones -->
                 <div class="panel-btn">
                     <button id="noRecuerdoBtn" class="btn-salir">No lo recuerdo</button>
+                    <div class="progress-indicator">
+                        Ejercicio {{ palabra.current }} de {{ palabra.total }}
+                    </div>
                     <!-- <button class="btn-siguiente" id="nextBtn" disabled>Siguiente</button> -->
                 </div>
             </div>
@@ -60,7 +63,7 @@
         const IS_VIDEO_EXERCISE = {{ palabras.0.is_video|yesno:"true,false" }};
         const LANDMARKS_JSON_URL = "{% static '' %}" + "{{ palabras.0.json_url }}";
         const PALABRA_ACTUAL = "{{ palabras.0.texto }}";
-
+        const CURRENT_WORD_ID = {{ palabras.0.id|safe }};
 
         // Cargar JSON solo si no es video
         if (!IS_VIDEO_EXERCISE) {

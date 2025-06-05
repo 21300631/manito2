@@ -140,7 +140,16 @@ function onResults(results) {
     }
 }
 
-// Manejar feedback del gesto
+function goToNextExercise() {
+    if (camera) {
+        camera.stop();
+    }
+    if (videoElement.srcObject) {
+        videoElement.srcObject.getTracks().forEach(track => track.stop());
+    }
+    window.location.href = "/repaso/siguiente/";
+}
+
 function handleGestureFeedback() {
     if (isGestureCorrect) {
         if (correctPoseStartTime === null) {
@@ -153,6 +162,21 @@ function handleGestureFeedback() {
                 showFeedback(`✓ Mantén la pose (${Math.ceil(remainingTime/1000)}s)`, true);
             } else {
                 showFeedback("✓ ¡Correcto!", true);
+                
+                // Usar CURRENT_WORD_ID en lugar de currentWordId
+                fetch('/repaso/siguiente/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: `palabra_id=${CURRENT_WORD_ID}`
+                }).then(() => {
+                    window.location.href = "/repaso/";
+                }).catch(error => {
+                    console.error('Error:', error);
+                    window.location.href = "/repaso/";
+                });
             }
         }
     } else {
@@ -160,8 +184,21 @@ function handleGestureFeedback() {
         showFeedback(`✗ Ajusta tu gesto (${currentSimilarity.toFixed(0)}%)`, false);
     }
 }
-
-
+// Función auxiliar para obtener cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 
 // Modificar la función calculateSimilarity para usar landmarks normalizados
 function calculateSimilarity(landmarks1, landmarks2) {

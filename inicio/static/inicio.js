@@ -241,10 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const enalceDesafio = document.getElementById('enlace-desafio');
     const descripcionDesafio = document.getElementById('descripcion');
 
-    // obtener el minuto actual
     const minutos = new Date().getMinutes();
 
-    // esto es para determinar el desafio basandonos en que cambia cada 10 minutos 
     const segmento = Math.floor(minutos / 2) % 3;
 
     let desafio, url, descripcion;

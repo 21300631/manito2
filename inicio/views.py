@@ -19,7 +19,7 @@ def inicioSesion(request):
     if perfil.last_login:
         minutes_since_last_login = (now - perfil.last_login).total_seconds() / 60
         # days_since_last_login = (now - perfil.last_login).days
-        if minutes_since_last_login > 15:
+        if minutes_since_last_login > 3:
             messages.success(request, "¡Que bueno que has vuelto! No te habíamos visto en más de 3 días.", extra_tags='welcome_back success')
     
     # Actualizar la última fecha de login
