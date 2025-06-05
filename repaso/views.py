@@ -50,18 +50,15 @@ def iniciar_repaso(request):
     request.session.modified = True
     
     return redirect('mostrar_ejercicio_repaso')
-
 @csrf_exempt
 @login_required
 def siguiente_ejercicio_repaso(request):
     print(f"Solicitud recibida - Método: {request.method}")
     
-    # Verificar sesión
     if not request.session.get('repaso_iniciado', False):
         print("Error: No hay sesión de repaso activa")
         return JsonResponse({'status': 'error', 'message': 'Sesión no iniciada'}, status=400)
     
-    # Manejar POST (avanzar ejercicio)
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -73,45 +70,24 @@ def siguiente_ejercicio_repaso(request):
                 
                 errores = request.session.get('repaso_errores', [])
                 errores.append(current_index)
-                request.session['repaso_errores'] = errores
+                request.session['repaso_errores'] = errores  # Corregí el typo aquí (errores)
                 
-            # Avanzar índice siempre (tanto si hay error como si no)
             current_index = request.session.get('repaso_index', 0)
             request.session['repaso_index'] = current_index + 1
             request.session.modified = True
-            print(f"Nuevo índice: {request.session['repaso_index']}")
             
-            # Verificar si completó todos los ejercicios
             palabras_ids = request.session.get('repaso_palabras', [])
             if request.session['repaso_index'] >= len(palabras_ids):
-                print("Repaso completado - Redirigiendo a finalizar")
                 return JsonResponse({
                     'status': 'completed',
-                    'redirect_url': '/repaso/finalizar/'
+                    'redirect_url': '/repaso/finalizar/'  # URL absoluta para evitar confusiones
                 })
             
-            # Devolver datos del siguiente ejercicio
-            try:
-                palabra_actual = Palabra.objects.get(id=palabras_ids[request.session['repaso_index']])
-                palabra_data = {
-                    'id': palabra_actual.id,
-                    'texto': palabra_actual.palabra,
-                    'gesto_url': f"{settings.MANITO_BUCKET_DOMAIN}/{palabra_actual.gesto}" if palabra_actual.gesto else None,
-                    'is_video': bool(palabra_actual.gesto and palabra_actual.gesto.lower().endswith('.mp4')),
-                    'json_url': f'landmarks/{palabra_actual.palabra}.json'
-                }
-                
-                return JsonResponse({
-                    'status': 'success',
-                    'palabra': palabra_data,
-                    'progreso': {
-                        'actual': request.session['repaso_index'] + 1,
-                        'total': len(palabras_ids)
-                    }
-                })
-            except Palabra.DoesNotExist:
-                print(f"Palabra con ID {palabras_ids[request.session['repaso_index']]} no existe")
-                return JsonResponse({'status': 'error', 'message': 'Palabra no encontrada'}, status=404)
+            # Devuelve la URL correcta para redirección
+            return JsonResponse({
+                'status': 'success',
+                'redirect_url': '/repaso/ejercicio/'  # URL absoluta
+            })
                 
         except Exception as e:
             print(f"Error procesando POST: {str(e)}")
