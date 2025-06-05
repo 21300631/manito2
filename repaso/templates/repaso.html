@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repaso</title>
     <link rel="stylesheet" href="{% static 'repaso.css'%}">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <!-- Añadir SweetAlert2 para notificaciones -->
+    
 </head>
+{% load static %}
 <body class="{{ theme }}" data-theme="{{ theme }}">
     <div class="todo">
         <div class="instruccion">
@@ -16,36 +18,74 @@
         <div class="contenido">
             <div class="panel">
                 <div class="ejercicio">
+                    <!-- Panel de referencia -->
                     <div class="referencia">
-                        <!-- Aquí se mostrará el gesto (imagen o video) -->
                         <div class="media" id="media-container">
                             {% if palabras.0.is_video %}
-                                <video src="{{ palabras.0.gesto_url }}" muted autoplay loop id="current-media" width="80%"></video>
+                                <video id="gestoVideo" src="{{ palabras.0.gesto_url }}" muted autoplay loop width="80%" data-palabra="{{ palabras.0.texto }}" data-palabra-json="{% static '' %}{{ palabras.0.json_url }}"></video>
                             {% else %}
-                                <img src="{{ palabras.0.gesto_url }}" alt="{{ palabras.0.texto }}" id="current-media" width="80%"> 
+                                <img src="{{ palabras.0.gesto_url }}" alt="{{ palabras.0.texto }}" width="80%" style="padding: 10%; margin: 0;">
                             {% endif %}
                         </div>
                     </div>
+                    <!-- Panel del usuario -->
                     <div class="usuario">
-                        <!-- Espacio para que el usuario practique -->
+                        <canvas id="outputCanvas" width="600" height="500" style="width: 100%; height: auto;  "></canvas>
+                        <video id="inputVideo" autoplay playsinline muted style="display: none;" ></video>
+
+                        <div id="countdown" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; color: white; text-shadow: 2px 2px 4px black;"></div>
+                        <div id="recordingTimer" style="display: none; position: absolute; top: 20px; right: 20px; font-size: 24px; color: white; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px;"></div>
+                        <div id="feedback" style="position: absolute; bottom: 20px; width: 100%; text-align: center; font-size: 24px; font-weight: bold; color: white; text-shadow: 1px 1px 2px black;"></div>
                     </div>
                 </div>
+
+                <!-- Botones -->
                 <div class="panel-btn">
-                    <button class="btn-salir">No lo recuerdo</button>
-                    <button class="btn-siguiente">Siguiente</button>
+                    <button id="noRecuerdoBtn" class="btn-salir">No lo recuerdo</button>
+                    <button class="btn-siguiente" id="nextBtn" disabled>Siguiente</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MediaPipe y librerías -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/numeric/numeric.min.js"></script>
+
+    <!-- Variables JS para landmarks -->
     <script>
-        const palabrasRepaso = JSON.parse('{{ palabras_json|escapejs }}');
-        let currentIndex = 0;
-        const totalEjercicios = palabrasRepaso.length;
-        const MANITO_BUCKET_DOMAIN = "{{ settings.MANITO_BUCKET_DOMAIN|escapejs }}";
-        const estadisticasUrl = "{% url 'estadisticas' %}";  # Asegúrate de tener esta URL configurada
+        const IS_VIDEO_EXERCISE = {{ palabras.0.is_video|yesno:"true,false" }};
+        const LANDMARKS_JSON_URL = "{% static '' %}" + "{{ palabras.0.json_url }}";
+        const PALABRA_ACTUAL = "{{ palabras.0.texto }}";
+
+
+        // Cargar JSON solo si no es video
+        if (!IS_VIDEO_EXERCISE) {
+            fetch(LANDMARKS_JSON_URL)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    referenceLandmarks = data;
+                    console.log("Landmarks de referencia cargados:", referenceLandmarks);
+                })
+                .catch(error => {
+                    console.error("Error cargando landmarks de referencia:", error);
+                    const feedbackElement = document.getElementById("feedback");
+                    if (feedbackElement) {
+                        feedbackElement.textContent = "Error cargando referencia del gesto";
+                        feedbackElement.style.color = "red";
+                    }
+                });
+        }
     </script>
 
+    <!-- Script funcionalidad -->
     <script src="{% static 'repaso.js' %}"></script>
 </body>
+
 </html>

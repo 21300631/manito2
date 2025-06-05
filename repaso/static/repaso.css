@@ -1,9 +1,9 @@
-*{
+* {
     margin: 0;
     padding: 0;
 }
 
-.instruccion{
+.instruccion {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -11,20 +11,21 @@
     height: 97px;
     width: 100%;
 }
-.instruccion p{
+
+.instruccion p {
     text-align: center;
-    font-family:  Arial;
+    font-family: Arial;
     font-weight: bold;
     font-size: 24px;
 }
 
-.contenido{
+.contenido {
     display: flex;
     height: 87vh;
     width: 100%;
 }
 
-.media{
+.media {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,35 +33,41 @@
     height: 100%;
 }
 
-
-.panel{
+.panel {
     position: relative;
     width: 100%;
     height: 100%;
 }
-.ejercicio{
+
+.ejercicio {
     display: flex;
     justify-content: space-around;
     width: 100%;
     height: 100%;
 }
 
-
-.referencia{
+.referencia {
     margin-top: 80px;
     width: 40%;
     height: 55vh;
     background-color: #FFEF8E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.usuario{
+.usuario {
     margin-top: 80px;
     width: 40%;
     height: 55vh;
     background-color: #FFEF8E;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.panel-btn{
+.panel-btn {
     display: flex;
     align-items: center;
     position: absolute;
@@ -69,8 +76,7 @@
     width: 100%;
 }
 
-
-.btn-salir{
+.btn-salir {
     position: absolute;
     right: 0;
     margin-right: 100px;
@@ -93,47 +99,112 @@ body.dark {
     color: white;
 }
 
+/* --- Nuevos estilos para la detección de gestos --- */
+#outputCanvas {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    background-color: #000;
+    border-radius: 8px;
+}
+
+.btn-grabar {
+    position: absolute;
+    bottom: 20px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.btn-grabar:hover {
+    background-color: #c0392b;
+}
+
+.btn-grabar:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
+#countdown, #recordingTimer {
+    position: absolute;
+    top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #e74c3c;
+    z-index: 10;
+}
+
+/* Ajustes para modo oscuro */
+body.dark .usuario,
+body.dark .referencia {
+    background-color: #333;
+}
+
+body.dark .btn-salir {
+    background-color: #444;
+    color: #fff;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-    
-    .ejercicio{
+    .ejercicio {
         flex-direction: column;
         align-items: center;
         justify-content: center;
         height: 70vh;
     }
 
-    .todo{
+    .todo {
         height: 100vh;
     }
-    .contenido{
+
+    .contenido {
         height: 90vh;
     }
-    .panel{
+
+    .panel {
         height: 100%;
     }
 
+    .referencia {
+        width: 80%;
+        height: 20vh;
+    }
 
-    .referencia{
+    .usuario {
         width: 80%;
         height: 20vh;
     }
-    .usuario{
-        width: 80%;
-        height: 20vh;
-    }
-    .panel-btn{
+
+    .panel-btn {
         justify-content: center;
         align-items: center;
-        
     }
 
-    .btn-salir{
+    .btn-salir {
         margin-right: 0;
         position: initial;
-        
+    }
+    
+    /* Ajustes específicos para móvil */
+    #outputCanvas {
+        max-height: 18vh;
+    }
+    
+    .btn-grabar {
+        padding: 8px 16px;
+        font-size: 14px;
+        bottom: 10px;
+    }
+    
+    #countdown, #recordingTimer {
+        font-size: 20px;
     }
 }
-
-
-
-/* cosas individuales de cada ejercicio  */
