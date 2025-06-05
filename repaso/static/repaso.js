@@ -85,23 +85,30 @@ function setupMediaPipe() {
     });
 
     hands.onResults(onResults);
-}
+}   
+
 
 // Manejar resultados de MediaPipe
 function onResults(results) {
-    // Primero dibujamos el frame de la cámara
+    // Dibujar el frame de la cámara en modo espejo
     canvasCtx.save();
-    
+    canvasCtx.scale(-1, 1);
+    canvasCtx.translate(-canvasElement.width, 0);
     canvasCtx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
     canvasCtx.restore();
 
-    console.log(videoElement.style.transform); 
-
-    
-    // Luego dibujamos los landmarks encima
+    // Procesar landmarks
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         const landmarks = results.multiHandLandmarks[0];
-        const currentLandmarks = landmarks.map(point => ({
+        
+        // Ajustar landmarks para que coincidan con la imagen en modo espejo
+        const mirroredLandmarks = landmarks.map(point => ({
+            x: 1 - point.x, // Invertir coordenada X
+            y: point.y,
+            z: point.z
+        }));
+        
+        const currentLandmarks = mirroredLandmarks.map(point => ({
             x: point.x,
             y: point.y,
             z: point.z
@@ -111,16 +118,16 @@ function onResults(results) {
             currentSimilarity = calculateSimilarity(referenceLandmarks, currentLandmarks);
             isGestureCorrect = currentSimilarity > calibrationValues.similarityThreshold;
             
-            // Dibujar landmarks (ya no necesitamos voltearlos porque el canvas ya está en modo espejo)
+            // Dibujar landmarks (ya ajustados para modo espejo)
             const landmarkColor = isGestureCorrect ? '#00FF00' : '#FF0000';
             const connectionColor = isGestureCorrect ? '#00AA00' : '#AA0000';
             
-            drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, {
+            drawConnectors(canvasCtx, mirroredLandmarks, HAND_CONNECTIONS, {
                 color: connectionColor,
                 lineWidth: 3
             });
             
-            drawLandmarks(canvasCtx, landmarks, {
+            drawLandmarks(canvasCtx, mirroredLandmarks, {
                 color: landmarkColor,
                 lineWidth: 2,
                 radius: (idx) => [4, 8, 12, 16, 20, 0].includes(idx) ? 6 : 4
@@ -238,10 +245,10 @@ function setupEventListeners() {
 
     //Configuracion elementos del video
     videoElement.autoplay = true;
-    videoElement.style.transform = "scaleX(-1)";
+    // videoElement.style.transform = "scaleX(-1)";
     canvasElement.style.width = '100%';
     canvasElement.style.maxWidth = '400px';
-    canvasElement.style.transform = "scaleX(-1)";
+    // canvasElement.style.transform = "scaleX(-1)";    
     canvasElement.style.borderRadius = '10px';
 
     
