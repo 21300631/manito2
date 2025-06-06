@@ -22,15 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const tarjetas = document.querySelectorAll(".card");
     const urlVerificacion = document.body.dataset.urlVerificacion;
     
-    // Crear elemento para feedback mejorado
-    const feedbackDiv = document.createElement('div');
-    feedbackDiv.id = 'feedback-message';
-    feedbackDiv.style.margin = '15px 0';
-    feedbackDiv.style.padding = '12px';
-    feedbackDiv.style.borderRadius = '5px';
-    feedbackDiv.style.display = 'none';
-    feedbackDiv.style.fontWeight = 'bold';
-    document.querySelector('.instruccion').appendChild(feedbackDiv);
 
     tarjetas.forEach(card => {
         card.addEventListener("click", () => {
@@ -52,12 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 return response.json();
             })
             .then(data => {
-                // Mostrar feedback visual
                 tarjetas.forEach(t => t.classList.remove("correcto", "incorrecto"));
                 card.classList.add(data.correcto ? "correcto" : "incorrecto");
                 
-                // Mostrar mensaje de feedback
-                mostrarFeedback(data.mensaje, data.correcto ? 'success' : 'error');
                 
                 // Actualizar barra de progreso si es correcto
                 if (data.correcto) {
@@ -71,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(error => {
                 console.error("Error:", error);
-                mostrarFeedback('Ocurrió un error. Por favor intenta nuevamente.', 'error');
                 tarjetas.forEach(t => t.style.pointerEvents = 'auto'); // Rehabilitar tarjetas
             });
         });
@@ -84,14 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
         progressBar.style.height = `${nuevoProgreso}%`;
     }
     
-    // Función para mostrar feedback mejorado
-    function mostrarFeedback(texto, tipo) {
-        feedbackDiv.textContent = texto;
-        feedbackDiv.style.display = 'block';
-        feedbackDiv.style.backgroundColor = tipo === 'success' ? '#d4edda' : '#f8d7da';
-        feedbackDiv.style.color = tipo === 'success' ? '#155724' : '#721c24';
-        feedbackDiv.style.border = tipo === 'success' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
-    }
 });
 
 // Función getCookie se mantiene igual

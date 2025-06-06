@@ -35,7 +35,9 @@
               </div>
             {% endfor %}
         </div>
-          
+        <!-- Añade esto en tu memorama.html -->
+        <input type="hidden" id="request-path" value="{{ request_path }}">
+        <input type="hidden" id="total-pares" value="{{ total_pares }}">
     </div>
     <div class="extras mem">
         <a class="cancelarM" href="/inicio/">Cancelar</a>

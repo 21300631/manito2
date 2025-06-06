@@ -2,91 +2,94 @@ document.addEventListener('DOMContentLoaded', function() {
     // Elementos del juego
     const contador = document.getElementById('contador');
     const tiempoElement = document.getElementById('tiempo');
+    const juegoConfig = document.getElementById('juego-config');
+    const totalPares = juegoConfig ? parseInt(juegoConfig.dataset.totalPares) : 5;
+
+    const elementos = {
+        contador: document.getElementById('contador'),
+        tiempoElement: document.getElementById('tiempo'),
+        totalParesInput: document.getElementById('total-pares'),
+        paresData: document.getElementById('pares-data')
+    };
+    
+    console.log('Elementos encontrados al iniciar:', elementos);
+
+    if (!elementos.paresData) {
+        console.error('Error: Falta el elemento con los datos de pares');
+        return;
+    }
 
     const CONFIG_JUEGO = {
-        paresPorGrupo: 5,    // Cantidad de pares por grupo
-        totalGrupos: 4,      // Cantidad de grupos distintos
-        tiempoPorRonda: 60   // Segundos por ronda
+        paresPorGrupo: 5,
+        totalGrupos: 4,
+        tiempoPorRonda: 60,
+        totalPares: elementos.totalParesInput ? 
+                   parseInt(elementos.totalParesInput.value) : 
+                   5 // Valor por defecto
     };
     
     // Variables de estado
     let seleccionado = null;
     let aciertos = 0;
-    let tiempoRestante = 60;
+    let tiempoRestante = CONFIG_JUEGO.tiempoPorRonda;
     let temporizador;
     let paresDisponibles = [];
     let paresActivos = [];
     let paresUsados = [];
-    let indiceReposicion = 0;
-    let gruposDePares = [];
     let grupoActual = 0;
-
-    
+    let gruposDePares = [];
 
     function inicializarJuego() {
-        try {
-            const paresIniciales = JSON.parse(document.getElementById('pares-data').textContent);
-            paresDisponibles = [...paresIniciales.pares_correctos, ...paresIniciales.pares_reserva];
-            
-            // Crear grupos de 5 pares cada uno
-            crearGruposDePares();
-            verificarGrupos();
-            
-            mostrarParesIniciales();
-        } catch (error) {
-            console.error('Error al inicializar el juego:', error);
-            alert('Error al cargar el juego: ' + error.message);
+        const paresIniciales = JSON.parse(document.getElementById('pares-data').textContent);
+        paresDisponibles = [...paresIniciales.pares_correctos, ...paresIniciales.pares_reserva];
+        
+        if (paresDisponibles.length < 5) {
+            console.error("¡No hay suficientes pares para jugar!");
+            return;
         }
+        
+        crearGruposDePares();
+        mostrarParesIniciales();
     }
 
+
     function crearGruposDePares() {
+        // Mezcla los pares disponibles
         mezclarArray(paresDisponibles);
-        gruposDePares = [];
         
-        for (let i = 0; i < CONFIG_JUEGO.totalGrupos; i++) {
-            const grupo = paresDisponibles.slice(
-                i * CONFIG_JUEGO.paresPorGrupo,
-                (i + 1) * CONFIG_JUEGO.paresPorGrupo
-            );
-            
-            if (grupo.length === CONFIG_JUEGO.paresPorGrupo) {
+        // Divide en grupos de 5
+        gruposDePares = [];
+        for (let i = 0; i < paresDisponibles.length; i += 5) {
+            const grupo = paresDisponibles.slice(i, i + 5);
+            if (grupo.length > 0) {
                 gruposDePares.push(grupo);
             }
         }
+
+        console.log("Grupos generados:", gruposDePares.map(g => g.map(p => p.palabra.palabra)));
     }
 
     function mostrarParesIniciales() {
-        const filaPalabras = document.querySelector('.fila.palabras');
-        const filaImagenes = document.querySelector('.fila.imagenes');
-        
-        // Limpiar filas
-        filaPalabras.innerHTML = '';
-        filaImagenes.innerHTML = '';
-        paresActivos = [];
-        
-        // Obtener el grupo actual (con ciclo infinito usando módulo)
+        // Obtén el grupo actual (usando módulo para ciclar)
         const grupo = gruposDePares[grupoActual % gruposDePares.length];
-        
-        // Separar y mezclar
-        const palabras = grupo.map(p => p.palabra);
-        const imagenes = grupo.map(p => p.imagen);
-        mezclarArray(palabras);
-        mezclarArray(imagenes);
-        
-        // Mostrar los 5 pares
-        for (let i = 0; i < 5; i++) {
-            filaPalabras.appendChild(crearElemento('palabra', palabras[i]));
-            filaImagenes.appendChild(crearElemento('imagen', imagenes[i]));
-            
-            paresActivos.push({
-                palabra: palabras[i],
-                imagen: imagenes[i],
-                esCorrecto: palabras[i].id === imagenes[i].id
-            });
-        }
-        
-        console.log('Mostrando grupo:', grupoActual % gruposDePares.length);
-        verificarBalance();
+        console.log("Mostrando grupo:", grupo.map(p => p.palabra.palabra));
+
+        // Limpia el tablero
+        document.querySelector('.fila.palabras').innerHTML = '';
+        document.querySelector('.fila.imagenes').innerHTML = '';
+
+        // Crea los elementos del grupo actual
+        grupo.forEach(par => {
+            document.querySelector('.fila.palabras').appendChild(crearElemento('palabra', par.palabra));
+            document.querySelector('.fila.imagenes').appendChild(crearElemento('imagen', par.imagen));
+        });
+
+        // Actualiza los pares activos
+        paresActivos = grupo.map(par => ({
+            palabra: par.palabra,
+            imagen: par.imagen,
+            esCorrecto: par.palabra.id === par.imagen.id
+        }));
     }
 
     function crearElemento(tipo, datos) {
@@ -182,64 +185,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function reemplazarParCorrecto(palabraId, imagenId) {
-        try {
-            // 1. Registrar el par usado
-            if (!paresUsados.includes(palabraId)) paresUsados.push(palabraId);
-            if (!paresUsados.includes(imagenId)) paresUsados.push(imagenId);
+        // 1. Elimina el par acertado de los activos
+        paresActivos = paresActivos.filter(p => !(p.palabra.id == palabraId && p.imagen.id == imagenId));
+
+        // 2. Verifica si quedan pares correctos en el grupo actual
+        const paresCorrectosRestantes = paresActivos.filter(p => p.esCorrecto).length;
+
+        if (paresCorrectosRestantes === 0) {
+            // 3. Si no quedan, pasa al siguiente grupo
+            grupoActual++;
+            console.log("🔁 Rotando al grupo:", grupoActual % gruposDePares.length);
             
-            // 2. Eliminar elementos visualmente
-            const palabraElement = document.querySelector(`.fila.palabras .item[data-id="${palabraId}"]`);
-            const imagenElement = document.querySelector(`.fila.imagenes .item[data-id="${imagenId}"]`);
-            
-            if (palabraElement) {
-                palabraElement.style.transition = 'all 0.3s';
-                palabraElement.style.opacity = '0';
-                palabraElement.style.transform = 'scale(0)';
-            }
-            
-            if (imagenElement) {
-                imagenElement.style.transition = 'all 0.3s';
-                imagenElement.style.opacity = '0';
-                imagenElement.style.transform = 'scale(0)';
-            }
-    
-            // 3. Eliminar de pares activos
-            paresActivos = paresActivos.filter(p => 
-                !(p.palabra.id.toString() === palabraId && 
-                  p.imagen.id.toString() === imagenId)
-            );
-    
-            // 4. Verificar si debemos rotar al siguiente grupo
-            const paresCorrectosRestantes = paresActivos.filter(p => p.esCorrecto).length;
-            if (paresCorrectosRestantes === 0) {
-                grupoActual++;
-                console.log('Rotando al siguiente grupo:', grupoActual % gruposDePares.length);
-            }
-    
-            // 5. Reponer pares después de la animación
+            // 4. Carga el nuevo grupo después de 0.5s (para que termine la animación)
             setTimeout(() => {
-                // Eliminar físicamente los elementos
-                if (palabraElement && palabraElement.parentNode) palabraElement.remove();
-                if (imagenElement && imagenElement.parentNode) imagenElement.remove();
-                
-                // Calcular cuántos pares necesitamos reponer
-                const totalPares = document.querySelectorAll('.fila.palabras .item').length;
-                const paresNecesarios = 5 - totalPares;
-                
-                if (paresNecesarios > 0) {
-                    reponerPares(paresNecesarios);
-                }
-                
-                verificarBalance();
-            }, 300);
-            
-        } catch (error) {
-            console.error('Error en reemplazarParCorrecto:', error);
-            setTimeout(() => mostrarParesIniciales(), 500);
+                mostrarParesIniciales();
+            }, 500);
+            return; // ¡Importante! Salir para no reponer pares innecesarios
         }
+
+        // 5. Si aún hay pares, repone los faltantes
+        setTimeout(() => {
+            const totalParesVisibles = document.querySelectorAll('.fila.palabras .item').length;
+            const paresNecesarios = 5 - totalParesVisibles;
+            
+            if (paresNecesarios > 0) {
+                reponerPares(paresNecesarios);
+            }
+        }, 300);
     }
-    
-   
 
     
     function reponerPares(cantidad) {
@@ -330,10 +303,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
 
-    function finDelJuego() {
+     function finDelJuego() {
         clearInterval(temporizador);
-        // Puedes personalizar este mensaje o redirigir
-        alert(`¡Juego terminado!\nAciertos: ${aciertos}\nTiempo restante: 0 segundos`);
+        
+        // Redirigir a la página final con los resultados
+        const porcentajeExito = Math.round((aciertos / totalPares) * 100);
+        const tiempoUsado = CONFIG_JUEGO.tiempoPorRonda - tiempoRestante;
+        
+        window.location.href = `${window.location.pathname}?completado=1&puntaje=${aciertos}&tiempo=${tiempoUsado}`;
     }
 
     function verificarEstadoGrupos() {
@@ -367,8 +344,10 @@ document.addEventListener('DOMContentLoaded', function() {
     inicializarJuego();
     iniciarTemporizador();
     verificarEstadoGrupos();
-    console.log('Pares disponibles:', paresDisponibles.length);
-    console.log('Pares activos:', paresActivos.length);
-
+    console.log("=== INICIO ===");
+    console.log("Total pares disponibles:", paresDisponibles.length);
+    console.log("Número de grupos:", gruposDePares.length);
+    console.log("Grupos:", gruposDePares.map(g => g.map(p => p.palabra.palabra)));
+    console.log("=== FIN ===");
     
 }); 

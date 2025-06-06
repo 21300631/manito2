@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvasElement = document.getElementById('outputCanvas');
     const canvasCtx = canvasElement.getContext('2d');
     const countdownElement = document.getElementById('countdown');
-    const recordingTimerElement = document.getElementById('recordingTimer');
     const feedbackElement = document.getElementById('feedback');
     const relojElement = document.querySelector('.reloj span');
     const mensajeElement = document.querySelector('.mensaje span');
@@ -17,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isGestureCorrect = false;
     let correctPoseStartTime = null;
     let score = 0;
-    let tiempoRestante = 60; // 1 minuto en segundos
+    let tiempoRestante = 40; // 1 minuto en segundos
     let tiempoInicio = null;
     let ejercicioActual = 0;
     let totalEjercicios = 0;
@@ -146,11 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
             tiempoRestante--;
         }
     }
+    
     function startGame() {
         tiempoInicio = Date.now();
         temporizador = setInterval(updateTimer, 1000);
         countdownElement.style.display = 'none';
-        recordingTimerElement.style.display = 'block';
         
         // Verifica que los landmarks estén cargados
         if (!window.referenceLandmarks) {
@@ -163,15 +162,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Función para terminar el juego
-    function endGame() {
+   async function endGame() {
         // Detener la cámara
         if (videoElement.srcObject) {
             videoElement.srcObject.getTracks().forEach(track => track.stop());
         }
         
-        // Mostrar resultado final
+        // Mostrar mensaje temporal
         mensajeElement.textContent = `¡Tiempo terminado! Puntuación: ${score}`;
         
+        try {
+            const response = await fetch("/desafio/tiempo-terminado", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({ puntaje: score })
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'completed') {
+                window.location.href = data.redirect_url;
+            }
+        } catch (error) {
+            console.error('Error al finalizar el juego:', error);
+            // Redirigir igualmente como fallback
+            window.location.href = "/desafio/resultado/";
+        }
     }
     
     // Función para contar regresiva antes de iniciar
@@ -300,7 +319,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (tiempoInicio) {
                         const elapsed = Math.floor((Date.now() - tiempoInicio) / 1000);
                         const remaining = Math.max(0, tiempoRestante - elapsed);
-                        recordingTimerElement.textContent = `${Math.floor(remaining / 60)}:${(remaining % 60).toString().padStart(2, '0')}`;
                     }
                 },
                 width: 500,

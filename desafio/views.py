@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.urls import reverse
+from manito import settings
 from registro.models import Profile
 from ejercicio.models import PalabraUsuario, Palabra
 import random
@@ -10,18 +12,30 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-# Create your views here.
 
+# Create your views here.
 def generarMemorama(request):
     usuario = request.user
     perfil = Profile.objects.get(user=usuario)
+    
+    # Verificar si viene de completar el juego
+    if request.GET.get('completado') == '1':
+        puntaje = request.GET.get('puntaje', 0)
+        puntines = int(request.GET.get('puntuacion', 0))
 
-    # A veces da menos pares entonces tenemos que llamarlo despues de verificar si es video o imagen
-
+        perfil.puntos += puntines
+        perfil.save()
+        return render(request, 'final_memorama.html', {
+            'puntaje': puntaje,
+            'categoria': Palabra.objects.filter(
+                palabras_usuario__usuario=perfil
+            ).first().categoria if Palabra.objects.filter(
+                palabras_usuario__usuario=perfil
+            ).exists() else "General"
+        })
+    
     palabras_usuario = PalabraUsuario.objects.filter(usuario_id=perfil)[:6]
-
-    # random.shuffle(palabras_usuario)
-
+    
     pares = []
     for p in palabras_usuario:
         palabra = p.palabra
@@ -31,40 +45,65 @@ def generarMemorama(request):
         if not es_video:
             pares.append({
                 'tipo': 'imagen',
-                'contenido': f"{MANITO_BUCKET_DOMAIN}/{gesto}",
+                'contenido': f"{settings.MANITO_BUCKET_DOMAIN}/{gesto}",
                 'es_video': False,
                 'id': palabra.id,
-                'texto': palabra.palabra  # para el alt
+                'texto': palabra.palabra,
+                'palabra_texto': palabra.palabra  # Añadido para referencia
             })
 
             pares.append({
                 'tipo': 'palabra',
                 'contenido': palabra.palabra,
                 'es_video': False,
-                'id': palabra.id
+                'id': palabra.id,
+                'palabra_texto': palabra.palabra  # Añadido para referencia
             })
-
 
     random.shuffle(pares)
     
-    
-    for i in range(len(pares)):
-        print("Elemento {}: {}".format(i, pares[i]))
-
     return render(request, 'memorama.html', {
-        'cartas': pares
+        'cartas': pares,
+        'total_pares': len(pares) // 2,
+        'request_path': request.path  # Pasamos la ruta actual al template
     })
 
+def finalMemorama(request):
+    usuario = request.user
+    perfil = Profile.objects.get(user=usuario)
+    puntaje = request.GET.get('puntaje', 0)
+    categoria = Palabra.objects.filter(
+        palabras_usuario__usuario=perfil
+    ).first().categoria if Palabra.objects.filter(
+        palabras_usuario__usuario=perfil
+    ).exists() else "General"
 
+    return render(request, 'final_memorama.html', {
+        'puntaje': puntaje,
+        'categoria': categoria
+    })
 
 
 def generarRelacion(request):
     usuario = request.user
     perfil = Profile.objects.get(user=usuario)
+    
+    # Verificar si viene de completar el juego
+    if request.GET.get('completado') == '1':
+        puntaje = request.GET.get('puntaje', 0)
+        puntines = int(request.GET.get('puntuacion', 0))
 
+        perfil.puntos += puntines
+        perfil.save()
+        return render(request, 'final_relacion.html', {
+            'puntaje': puntaje
+        })
+    
     palabras_usuario_ids = PalabraUsuario.objects.filter(usuario_id=perfil).values_list('palabra_id', flat=True)
     palabras_originales = list(Palabra.objects.filter(id__in=palabras_usuario_ids))
 
+    print(f"Palabras originales del usuario: {[p.palabra for p in palabras_originales]}")  # Debug
+    
     random.shuffle(palabras_originales)
     
     # Filtrar palabras sin video y mezclar
@@ -74,24 +113,35 @@ def generarRelacion(request):
     ][:20]
     random.shuffle(palabras_filtradas)
     
-    # Tomar 10 palabras (5 pares correctos + 5 para mezclar)
+    print(f"Palabras filtradas (sin video): {[p.palabra for p in palabras_filtradas]}")  # Debug
+    
+    # Tomar 10 palabras (5 pares correctos)
     palabras_seleccionadas = palabras_filtradas[:10]
+    
+    print(f"Palabras seleccionadas para el juego: {[p.palabra for p in palabras_seleccionadas]}")  # Debug
     
     # Preparar datos
     pares_correctos = [{
         'palabra': {'id': p.id, 'palabra': p.palabra},
-        'imagen': {'id': p.id, 'url': p.gesto, 'palabra': p.palabra}
+        'imagen': {'id': p.id, 'url': f"{settings.MANITO_BUCKET_DOMAIN}/{p.gesto}", 'palabra': p.palabra}
     } for p in palabras_seleccionadas]
     
-    # Mezclar los pares pero manteniendo algunas relaciones correctas
+    print(f"Todos los pares correctos generados: {[p['palabra']['palabra'] for p in pares_correctos]}")  # Debug
+    
+    # Mezclar los pares
     random.shuffle(pares_correctos)
     
+    # El problema estaba aquí: estabas dividiendo en índices 15: cuando solo hay 10 elementos
     context = {
-        'pares_correctos': pares_correctos[:15],  # 5 pares para mostrar inicialmente
-        'pares_reserva': pares_correctos[15:]     # 5 pares de reserva
+        'pares_correctos': pares_correctos[:5],  # Primeros 5 pares
+        'pares_reserva': pares_correctos[5:],    # Resto de pares (otros 5)
+        'total_pares': 5
     }
+    
+    print(f"Pares enviados al template (pares_correctos): {[p['palabra']['palabra'] for p in context['pares_correctos']]}")  # Debug
+    print(f"Pares en reserva (pares_reserva): {[p['palabra']['palabra'] for p in context['pares_reserva']]}")  # Debug
+    
     return render(request, 'relacion.html', context)
-
 
 @login_required
 def generarContrarreloj(request):
@@ -109,6 +159,11 @@ def generarContrarreloj(request):
         return render(request, 'error.html', {'message': 'No tienes palabras disponibles para el desafío'})
     
     random.shuffle(palabras_filtradas)
+
+    print("Palabras filtradas para contrarreloj:")
+    for palabra in palabras_filtradas:
+        print(f"- {palabra.palabra}")  # Suponiendo que el campo de texto se llama 'texto'
+
     
     # Guardar la lista de palabras en la sesión
     request.session['palabras_contrarreloj'] = [p.id for p in palabras_filtradas]
@@ -163,7 +218,7 @@ def siguiente_ejercicio_contrarreloj(request):
             es_correcto = data.get('es_correcto', False)
             
             if es_correcto:
-                request.session['puntaje_contrarreloj'] = request.session.get('puntaje_contrarreloj', 0) + 1
+                request.session['puntaje_contrarreloj'] = request.session.get('puntaje_contrarreloj', 0) + 10
             
             request.session['indice_palabra_actual'] = request.session.get('indice_palabra_actual', 0) + 1
             
@@ -206,6 +261,10 @@ def resultado_contrarreloj(request):
     # Obtener resultados
     puntaje = request.session.get('puntaje_contrarreloj', 0)
     total_palabras = len(request.session.get('palabras_contrarreloj', []))
+
+    perfil = Profile.objects.get(user=request.user)
+    perfil.puntos += puntaje
+    perfil.save()
     
     # Limpiar la sesión
     for key in ['palabras_contrarreloj', 'indice_palabra_actual', 'puntaje_contrarreloj', 'tiempo_inicio']:
@@ -222,3 +281,16 @@ def resultado_contrarreloj(request):
     return render(request, 'resultado.html', context)
 
 
+@csrf_exempt
+def tiempo_terminado(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'No autenticado'}, status=401)
+    
+    if request.method == 'POST':
+        # Guardar el puntaje actual si es necesario
+        return JsonResponse({
+            'status': 'completed',
+            'redirect_url': reverse('resultado_contrarreloj')
+        })
+    
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)

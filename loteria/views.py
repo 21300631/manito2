@@ -5,11 +5,26 @@ import json
 import random
 
 from django.conf import settings
+from django.shortcuts import redirect
 
 def loteria(request):
     print("\n=== Vista de Lotería (Repaso) ===")
     usuario = request.user
     perfil = Profile.objects.get(user_id=usuario.id)
+    
+    # Verificar si viene de completar el juego (parámetro completado)
+    if request.GET.get('completado') == '1':
+        puntuacion = request.GET.get('puntuacion', 0)
+        puntines = int(request.GET.get('puntuacion', 0))
+
+        perfil.puntos += puntines
+        perfil.save()
+        return render(request, 'final_loteria.html', {
+            'puntuacion': puntuacion,
+            'categoria': Palabra.objects.filter(
+                leccion_id=perfil.leccion
+            ).first().categoria
+        })
     
     # Obtener la categoría actual
     categoria_actual = Palabra.objects.filter(
@@ -41,10 +56,9 @@ def loteria(request):
 
     context = {
         'palabras_repaso': palabras_repaso,
-        'gestos_json': json.dumps(gestos),  # Ahora funcionará correctamente
+        'gestos_json': json.dumps(gestos),
         'categoria_repaso': categoria_actual,
         'bucket_domain': settings.MANITO_BUCKET_DOMAIN
     }
-    print("Gestos JSON:", json.dumps(gestos))  # Verifica que se serializa correctamente
 
     return render(request, 'loteria.html', context)

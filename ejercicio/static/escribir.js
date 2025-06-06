@@ -5,15 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlSiguiente = document.body.dataset.urlSiguiente;
     const progressBar = document.getElementById('progressBar');
     
-    // Configurar mensaje de resultado mejorado
-    const mensajeResultado = document.createElement('div');
-    mensajeResultado.id = 'mensaje-resultado';
-    mensajeResultado.style.margin = '15px 0';
-    mensajeResultado.style.padding = '12px';
-    mensajeResultado.style.borderRadius = '5px';
-    mensajeResultado.style.display = 'none';
-    mensajeResultado.style.fontWeight = 'bold';
-    form.insertBefore(mensajeResultado, form.firstChild);
 
     // Inicializar barra de progreso
     const progresoInicial = parseInt(progressBar.dataset.progresoInicial) || 0;
@@ -51,8 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Limpiar loader
             resultadoDiv.innerHTML = '';
             
-            // Mostrar mensaje de resultado
-            mostrarMensaje(data.mensaje, data.correcto ? 'success' : 'error');
             
             if (data.correcto) {
                 actualizarBarraProgreso(10);
@@ -82,14 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.style.height = `${nuevoProgreso}%`;
     }
     
-    // Función para mostrar mensajes de feedback mejorado
-    function mostrarMensaje(texto, tipo) {
-        mensajeResultado.textContent = texto;
-        mensajeResultado.style.display = 'block';
-        mensajeResultado.style.backgroundColor = tipo === 'success' ? '#d4edda' : '#f8d7da';
-        mensajeResultado.style.color = tipo === 'success' ? '#155724' : '#721c24';
-        mensajeResultado.style.border = tipo === 'success' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
-    }
 
     // Función para obtener el token CSRF
     function getCookie(name) {

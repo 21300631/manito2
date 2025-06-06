@@ -64,31 +64,25 @@ class LoteriaGame {
         if (this.procesandoSeleccion || elemento.classList.contains('correcto')) return;
         this.procesandoSeleccion = true;
 
-        // Inicializar contador de intentos para ESTE GESTO si es la primera vez
         if (!this.intentosPorGesto[this.gestoActual]) {
             this.intentosPorGesto[this.gestoActual] = 0;
         }
         this.intentosPorGesto[this.gestoActual]++;
 
-        // Deshabilitar temporalmente todos los items
         this.itemsLoteria.forEach(item => {
             if (!item.classList.contains('correcto')) {
                 item.style.pointerEvents = 'none';
             }
         });
 
-        // Verificar si la palabra seleccionada coincide con el gesto actual
         if (palabraTexto === gestoActual.palabra) {
-            // Calcular puntuación basada en intentos para ESTE GESTO
             const puntos = this.intentosPorGesto[this.gestoActual] === 1 ? 10 : 5;
             this.puntuacion += puntos;
             
-            // Marcar como correcto
             elemento.classList.add('correcto-permanente');
             elemento.classList.add('correcto');
             elemento.style.pointerEvents = 'none';
             
-            // Feedback visual
             const feedbackMessage = document.getElementById('feedback-message');
             feedbackMessage.textContent = this.intentosPorGesto[this.gestoActual] === 1 
                 ? "¡Perfecto! +10 puntos" 
@@ -98,7 +92,6 @@ class LoteriaGame {
             document.getElementById('puntuacion-valor').textContent = this.puntuacion;
             document.getElementById('puntuacion').style.display = 'block';
 
-            // Avanzar al siguiente gesto
             this.gestoActual++;
             if (this.gestoActual < this.gestos.length) {
                 setTimeout(() => {
@@ -109,11 +102,12 @@ class LoteriaGame {
                     this.procesandoSeleccion = false;
                 }, 1500);
             } else {
-                feedbackMessage.textContent = `¡Juego completado! Puntuación final: ${this.puntuacion}`;
-                this.procesandoSeleccion = false;
+                // Juego completado - redirigir a la página finalizada
+                setTimeout(() => {
+                    window.location.href = `${window.location.pathname}?completado=1&puntuacion=${this.puntuacion}`;
+                }, 2000);
             }
         } else {
-            // Respuesta incorrecta
             elemento.classList.add('incorrecto');
             const feedbackMessage = document.getElementById('feedback-message');
             feedbackMessage.textContent = "Inténtalo de nuevo";

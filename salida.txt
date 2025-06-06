@@ -1,7 +1,50 @@
 Performing system checks...
 
 System check identified no issues (0 silenced).
-June 05, 2025 - 23:34:46
+June 06, 2025 - 01:51:11
+Django version 4.2.20, using settings 'manito.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+Palabras seleccionadas para repaso:
+- A (ID: 1)
+- P (ID: 17)
+- Q (ID: 18)
+- B (ID: 2)
+- D (ID: 4)
+- I (ID: 9)
+- J (ID: 10)
+- M (ID: 13)
+- N (ID: 14)
+- Ñ (ID: 15)
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 06, 2025 - 01:54:06
+Django version 4.2.20, using settings 'manito.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 06, 2025 - 01:54:13
+Django version 4.2.20, using settings 'manito.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 06, 2025 - 01:54:17
+Django version 4.2.20, using settings 'manito.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 06, 2025 - 01:56:02
 Django version 4.2.20, using settings 'manito.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
