@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     videoElement.autoplay = true;
     videoElement.style.transform = "scaleX(-1)"; 
+    videoElement.style.width = '80%';
     canvasElement.style.width = '100%';
     canvasElement.style.maxWidth = '400px';
     canvasElement.style.transform = "scaleX(-1)"; 

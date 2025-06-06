@@ -15,17 +15,50 @@
         </span>
     </div>
     <div class="contenido">
-        <div class="panel-referencia">         
+        <div class="panel-referencia"> 
+            <img src="{{ archivo }}" alt="Gesto {{ palabra_correcta }}" width="80%" style="padding: 10%; margin: 0;">        
         </div>
         <div class="panel-usuario gesto g-usuario" >
+            <div id="countdown" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; color: white; text-shadow: 2px 2px 4px black;"></div>
+            <div id="recordingTimer" style="display: none; position: absolute; top: 20px; right: 20px; font-size: 24px; color: white; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px;"></div>
+            <!-- Añade este div para el feedback -->
+            <div id="feedback" style="position: absolute; bottom: 20px; width: 100%; text-align: center; font-size: 24px; font-weight: bold; color: white; text-shadow: 1px 1px 2px black;"></div>
             
         </div>
     </div>
     <div class="extras">
-        <div class="reloj"><span>3:40</span></div>
+        <div class="reloj"><span>1:00</span></div>
         <div class="mensaje"><span>Genial</span></div>
         <a href="/inicio/">Cancelar</a>
     </div>
+
+    <script>
+        // Construye la URL correctamente usando static
+        const LANDMARKS_JSON_URL = "{% static 'landmarks/' %}" + "{{ palabra_correcta }}.json";
+        const PALABRA_ACTUAL = "{{ palabra_correcta }}";
+        
+        let referenceLandmarks = null;
+        
+        fetch(LANDMARKS_JSON_URL)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                referenceLandmarks = data;
+                console.log("Landmarks de referencia cargados:", referenceLandmarks);
+                // Aquí puedes iniciar el proceso de comparación una vez cargados
+            })
+            .catch(error => {
+                console.error("Error cargando landmarks de referencia:", error);
+                // Muestra feedback al usuario
+                const feedbackElement = document.getElementById('feedback');
+                if (feedbackElement) {
+                    feedbackElement.textContent = "Error cargando referencia del gesto";
+                    feedbackElement.style.color = "red";
+                }
+            });
+    </script>
     <script src="{% static 'contrarreloj.js' %}"></script>
 </body>
 </html>

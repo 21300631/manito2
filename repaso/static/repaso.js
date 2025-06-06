@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             console.log(`Similitud promedio: ${similarityPercentage.toFixed(1)}%`);
                             
                             // Determinar si aprobó o no
-                            const isApproved = similitudFinal >= 70;
+                            const isApproved = similitudFinal >= 80;
 
                             if (similitudFinal >= 100) {
                                 similitudFinal = 100; // Limitar al 100% máximo
