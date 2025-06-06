@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from registro.models import Profile
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from ejercicio.models import PalabraUsuario, Palabra
 
 # Create your views here.
 #Estas partes son para que se vea el progreso de las lecciones y se desbloqueen las siguientes
@@ -12,7 +13,6 @@ def etapa1(request):
     leccion_actual = profile.leccion  # Suponiendo que guardas la última lección alcanzada
 
     lecciones_etapa1 = list(range(1, 39)) + [501, 502, 503, 504]
-
     
     # Inicializa todas las lecciones como bloqueadas
     lecciones_estado = {i: 'bloqueada' for i in lecciones_etapa1 } # Ajusta el rango según tus lecciones
@@ -38,9 +38,15 @@ def etapa1(request):
     # Opcional: forzar desbloqueo de la primera si todas están bloqueadas
     if all(status == 'bloqueada' for status in lecciones_estado.values()):
         lecciones_estado[1] = 'en-progreso'
+
+    palabras_por_leccion = {}
+    for leccion_id in lecciones_etapa1:
+        palabras = Palabra.objects.filter(leccion_id=leccion_id).values_list('palabra', flat=True)
+        palabras_por_leccion[leccion_id] = list(palabras)
     
     return render(request, 'etapa1.html', {
         'lecciones_estado': lecciones_estado,
+        'palabras_por_leccion': palabras_por_leccion,
         'theme': profile.theme if hasattr(profile, 'theme') else 'light'
     })       
 

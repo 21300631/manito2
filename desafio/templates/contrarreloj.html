@@ -43,6 +43,90 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 
+   <script>
+        let esperandoCambio = false;
+
+        function enviarRespuesta(esCorrecto) {
+            if (esperandoCambio) return;
+            esperandoCambio = true;
+
+            fetch("{% url 'siguiente_ejercicio_contrarreloj' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({ es_correcto: esCorrecto })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    window.location.href = data.redirect_url;
+                } else if (data.status === 'success') {
+                    // Actualizar imagen
+                    const imgReferencia = document.querySelector('.panel-referencia img');
+                    imgReferencia.src = data.archivo_url;
+                    imgReferencia.alt = "Gesto " + data.palabra_correcta;
+
+                    // Actualizar palabra
+                    const mensaje = document.querySelector('.mensaje span');
+                    mensaje.textContent = data.palabra_correcta;
+
+                    // Actualizar reloj
+                    const reloj = document.querySelector('.reloj span');
+                    reloj.textContent = data.tiempo_restante || "1:00";
+
+                    // Actualizar puntaje
+                    const puntaje = document.querySelector('#puntaje');
+                    if (puntaje) {
+                        puntaje.textContent = `Puntaje: ${data.puntaje_actual}`;
+                    }
+
+                    // Recargar landmarks
+                    cargarLandmarks(data.palabra_correcta);
+
+                    setTimeout(() => {
+                        esperandoCambio = false;
+                    }, 1000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                esperandoCambio = false;
+            });
+        }
+    </script>
+
+    <script>
+
+        function cargarLandmarks(palabra) {
+            const LANDMARKS_JSON_URL = `{% static 'landmarks/' %}` + palabra + `.json`;
+
+            fetch(LANDMARKS_JSON_URL)
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    referenceLandmarks = data;
+                    console.log("Landmarks de referencia cargados:", referenceLandmarks);
+                })
+                .catch(error => {
+                    console.error("Error cargando landmarks de referencia:", error);
+                    const feedbackElement = document.getElementById('feedback');
+                    if (feedbackElement) {
+                        feedbackElement.textContent = "Error cargando referencia del gesto";
+                        feedbackElement.style.color = "red";
+                    }
+                });
+        }
+
+        // Cargar el primer gesto al inicio
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarLandmarks("{{ palabra_correcta }}");
+        });
+    </script>
+
     <script>
         // Construye la URL correctamente usando static
         const LANDMARKS_JSON_URL = "{% static 'landmarks/' %}" + "{{ palabra_correcta }}.json";

@@ -8,7 +8,7 @@ urlpatterns = [
     path('relacion/', generarRelacion, name='relacion'),
     # path('obtener-pares/', obtener_pares, name='obtener-pares'),
 
-    path('contrarreloj/ejercicio/', mostrar_ejercicio_contrarreloj, name='mostrar_ejercicio_contrarreloj'),
-    path('contrarreloj/siguiente/', siguiente_ejercicio_contrarreloj, name='siguiente_ejercicio_contrarreloj'),
-    path('contrarreloj/resultado/', resultado_contrarreloj, name='resultado_contrarreloj'),
+    path('ejercicio/', mostrar_ejercicio_contrarreloj, name='mostrar_ejercicio_contrarreloj'),
+    path('siguiente/', siguiente_ejercicio_contrarreloj, name='siguiente_ejercicio_contrarreloj'),
+    path('resultado/', resultado_contrarreloj, name='resultado_contrarreloj'),
 ]

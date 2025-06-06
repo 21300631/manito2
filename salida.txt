@@ -1,14 +1,8 @@
 Performing system checks...
 
 System check identified no issues (0 silenced).
-June 05, 2025 - 22:40:44
+June 05, 2025 - 23:34:46
 Django version 4.2.20, using settings 'manito.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 
-Ejercicio Contrarreloj - Índice: 1, Total Palabras: 15
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/R.png
-Ejercicio Contrarreloj - Índice: 1, Total Palabras: 15
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/R.png
-Ejercicio Contrarreloj - Índice: 1, Total Palabras: 15
-Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/R.png

@@ -119,57 +119,81 @@ def generarContrarreloj(request):
     # Redirigir al primer ejercicio
     return redirect('mostrar_ejercicio_contrarreloj')
 
-
 def mostrar_ejercicio_contrarreloj(request):
     if not request.user.is_authenticated:
         return redirect('login')
     
-    # Obtener datos de la sesión
-    palabras_ids = request.session.get('palabras_contrarreloj', []) #numero de ejercicios
-    indice_actual = request.session.get('indice_palabra_actual', 0) #ejercicio actual
+    palabras_ids = request.session.get('palabras_contrarreloj', [])
+    indice_actual = request.session.get('indice_palabra_actual', 0)
     
-    print(f"Ejercicio Contrarreloj - Índice: {indice_actual + 1}, Total Palabras: {len(palabras_ids)}")  # Debug
-
-
     if indice_actual >= len(palabras_ids):
         return redirect('resultado_contrarreloj')
     
     palabra_actual = Palabra.objects.get(id=palabras_ids[indice_actual])
-    
     archivo_url = f"{MANITO_BUCKET_DOMAIN}/{palabra_actual.gesto}"
-    
-    print("Gesto URL:", archivo_url)
     
     context = {
         'archivo': archivo_url,
-        'theme': request.session.get('theme', 'claro'),
-        'palabra_correcta': palabra_actual.palabra,  # Asegúrate de usar 'palabra_correcta' aquí
-        'tiempo_restante': 180,
+        'palabra_correcta': palabra_actual.palabra,
         'indice_actual': indice_actual,
         'total_palabras': len(palabras_ids),
-        # No necesitas pasar json_url si construyes la URL en el template
+        'puntaje_actual': request.session.get('puntaje_contrarreloj', 0),
     }
     
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # Si es una petición AJAX, devuelve solo los datos necesarios
+        return JsonResponse({
+            'archivo_url': archivo_url,
+            'palabra_correcta': palabra_actual.palabra,
+            'indice_actual': indice_actual,
+            'total_palabras': len(palabras_ids),
+            'puntaje_actual': request.session.get('puntaje_contrarreloj', 0),
+        })
+    
     return render(request, 'contrarreloj.html', context)
-
 
 @csrf_exempt
 def siguiente_ejercicio_contrarreloj(request):
     if not request.user.is_authenticated:
-        return JsonResponse({'status': 'error', 'message': 'No autenticado'})
+        return JsonResponse({'status': 'error', 'message': 'No autenticado'}, status=401)
     
     if request.method == 'POST':
-        # Actualizar puntaje si la respuesta fue correcta
-        es_correcto = request.POST.get('es_correcto', 'false') == 'true'
-        if es_correcto:
-            request.session['puntaje_contrarreloj'] = request.session.get('puntaje_contrarreloj', 0) + 1
+        try:
+            data = json.loads(request.body)
+            es_correcto = data.get('es_correcto', False)
+            
+            if es_correcto:
+                request.session['puntaje_contrarreloj'] = request.session.get('puntaje_contrarreloj', 0) + 1
+            
+            request.session['indice_palabra_actual'] = request.session.get('indice_palabra_actual', 0) + 1
+            
+            # Obtener los datos del siguiente ejercicio
+            palabras_ids = request.session.get('palabras_contrarreloj', [])
+            indice_actual = request.session.get('indice_palabra_actual', 0)
+            
+            if indice_actual >= len(palabras_ids):
+                return JsonResponse({
+                    'status': 'completed',
+                    'redirect_url': reverse('resultado_contrarreloj'),
+                })
+            
+            palabra_actual = Palabra.objects.get(id=palabras_ids[indice_actual])
+            archivo_url = f"{MANITO_BUCKET_DOMAIN}/{palabra_actual.gesto}"
+            
+            return JsonResponse({
+                'status': 'success',
+                'archivo_url': archivo_url,
+                'palabra_correcta': palabra_actual.palabra,
+                'indice_actual': indice_actual,
+                'total_palabras': len(palabras_ids),
+                'puntaje_actual': request.session.get('puntaje_contrarreloj', 0),
+            })
         
-        # Avanzar al siguiente ejercicio
-        request.session['indice_palabra_actual'] = request.session.get('indice_palabra_actual', 0) + 1
-        
-        return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     
-    return JsonResponse({'status': 'error', 'message': 'Método no permitido'})
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
 
 def resultado_contrarreloj(request):
     if not request.user.is_authenticated:
@@ -195,4 +219,6 @@ def resultado_contrarreloj(request):
         'porcentaje': round((puntaje / total_palabras) * 100, 2) if total_palabras > 0 else 0
     }
     
-    return render(request, 'resultado_contrarreloj.html', context)
+    return render(request, 'resultado.html', context)
+
+

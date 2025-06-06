@@ -260,9 +260,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             
                             // Actualizar mensaje
                             mensajeElement.textContent = "¡Correcto!";
-                            setTimeout(() => {
-                                mensajeElement.textContent = "Siguiente gesto...";
-                            }, 1000);
+                            enviarRespuesta(true);
+
+                            
                         }
                     }
                 } else {
@@ -277,6 +277,56 @@ document.addEventListener('DOMContentLoaded', () => {
         
         canvasCtx.restore();
     });
+
+
+    // Función para enviar al siguiente ejercicio
+    async function avanzarEjercicio() {
+        try {
+            const response = await fetch('/desafio/siguiente/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ es_correcto: true })
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                console.error('Error del servidor:', data.message);
+                mensajeElement.textContent = "Error al avanzar, intenta nuevamente";
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mensajeElement.textContent = "Error de conexión";
+        }
+    }
+
+    // Luego reemplaza el fetch original en tu código con:
+    // Función para obtener el token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
     
     // Iniciar cámara
     navigator.mediaDevices.getUserMedia({ video: true })
