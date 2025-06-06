@@ -8,6 +8,7 @@ import json
 from django.views.decorators.http import require_GET
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.templatetags.static import static  # Importar para manejar URLs estáticas
 
 
 @login_required
@@ -15,12 +16,11 @@ def iniciar_repaso(request):
     user = request.user
     perfil = Profile.objects.get(user=user)
 
-    keys = ['repaso_palabras', 'repaso_index', 'repaso_errores']
+    keys = ['repaso_palabras', 'repaso_index', 'repas_errores']
     for key in keys:
         if key in request.session:
             del request.session[key]
 
-    
     # Obtener palabras para repaso (optimizado)
     palabras_repaso = PalabraUsuario.objects.filter(usuario=perfil)\
                           .select_related('palabra')\
@@ -38,18 +38,19 @@ def iniciar_repaso(request):
     for palabra in palabras_seleccionadas:
         print(f"- {palabra.palabra} (ID: {palabra.id})")
     
-    # Guardar en sesión (asegurarse de usar .update() para evitar pisar la sesión)
+    # Guardar en sesión
     request.session.update({
         'repaso_palabras': palabras_ids,
         'repaso_index': 0,
         'repaso_errores': [],
-        'repaso_iniciado': True  # Bandera adicional para verificar
+        'repaso_iniciado': True
     })
     
-    # Forzar guardado de la sesión
     request.session.modified = True
     
     return redirect('mostrar_ejercicio_repaso')
+
+
 @csrf_exempt
 @login_required
 def siguiente_ejercicio_repaso(request):
@@ -70,7 +71,7 @@ def siguiente_ejercicio_repaso(request):
                 
                 errores = request.session.get('repaso_errores', [])
                 errores.append(current_index)
-                request.session['repaso_errores'] = errores  # Corregí el typo aquí (errores)
+                request.session['repaso_errores'] = errores
                 
             current_index = request.session.get('repaso_index', 0)
             request.session['repaso_index'] = current_index + 1
@@ -80,13 +81,12 @@ def siguiente_ejercicio_repaso(request):
             if request.session['repaso_index'] >= len(palabras_ids):
                 return JsonResponse({
                     'status': 'completed',
-                    'redirect_url': '/repaso/finalizar/'  # URL absoluta para evitar confusiones
+                    'redirect_url': '/repaso/finalizar/'
                 })
             
-            # Devuelve la URL correcta para redirección
             return JsonResponse({
                 'status': 'success',
-                'redirect_url': '/repaso/ejercicio/'  # URL absoluta
+                'redirect_url': '/repaso/ejercicio/'
             })
                 
         except Exception as e:
@@ -95,10 +95,10 @@ def siguiente_ejercicio_repaso(request):
     
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
 
+
 @login_required
 def mostrar_ejercicio_repaso(request):
     """Muestra el ejercicio actual del repaso"""
-    # Verificar si hay repaso en curso
     if not request.session.get('repaso_iniciado', False):
         print("Redirigiendo a iniciar_repaso desde mostrar_ejercicio_repaso - Sesión no iniciada")
         return redirect('iniciar_repaso')
@@ -108,21 +108,22 @@ def mostrar_ejercicio_repaso(request):
     
     print(f"Estado actual - Index: {index}, Palabras IDs: {palabras_ids}")
 
-    # Si es la primera vez que se carga o el índice es inválido
     if index >= len(palabras_ids):
         print("Redirigiendo a finalizar_repaso - Índice excedido")
         return redirect('finalizar_repaso')
     
-    # Obtener palabra actual
     try:
         palabra_actual = Palabra.objects.get(id=palabras_ids[index])
         print(f"Mostrando ejercicio {index + 1}/{len(palabras_ids)}: {palabra_actual.palabra}")
-        print(f"Ejercicio actual: {palabra_actual.palabra} (ID: {palabra_actual.id})")
     except Palabra.DoesNotExist:
         print(f"Palabra con ID {palabras_ids[index]} no existe, avanzando...")
         request.session['repaso_index'] += 1
         request.session.modified = True
         return redirect('mostrar_ejercicio_repaso')
+    
+    # Construir URL del JSON usando static
+    json_filename = f"{palabra_actual.palabra}.json"
+    json_url = static(f'landmarks/{json_filename}')
     
     # Preparar datos de la palabra
     palabra_data = {
@@ -130,7 +131,7 @@ def mostrar_ejercicio_repaso(request):
         'texto': palabra_actual.palabra,
         'gesto_url': f"{settings.MANITO_BUCKET_DOMAIN}/{palabra_actual.gesto}" if palabra_actual.gesto else None,
         'is_video': bool(palabra_actual.gesto and palabra_actual.gesto.lower().endswith('.mp4')),
-        'json_url': f'landmarks/{palabra_actual.palabra}.json'
+        'json_url': json_url  # Usamos la URL generada con static
     }
     
     contexto = {
@@ -141,7 +142,7 @@ def mostrar_ejercicio_repaso(request):
             'total': len(palabras_ids)
         },
         'tipo_ejercicio': 'repaso',
-        'es_ultimo_ejercicio': (index + 1) >= len(palabras_ids)  # Para habilitar/deshabilitar botón siguiente
+        'es_ultimo_ejercicio': (index + 1) >= len(palabras_ids)
     }
     
     return render(request, 'repaso.html', contexto)
@@ -187,6 +188,8 @@ def noRecuerdo(request):
         
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
 @login_required
 def finalizar_repaso(request):
     """Muestra las estadísticas finales del repaso"""
@@ -212,6 +215,7 @@ def finalizar_repaso(request):
     request.session.modified = True
     
     return render(request, 'estadisticas.html', contexto)
+
 
 @login_required
 def no_hay_palabras(request):

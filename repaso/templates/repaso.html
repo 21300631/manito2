@@ -46,6 +46,9 @@
                 <!-- Botones -->
                 <div class="btn-container">
                     <button id="noRecuerdoBtn" class="btn btn-no-recuerdo">No lo recuerdo</button>
+                    {% if palabra.is_video %}  <!-- Cambiado a is_video para coincidir con tu lógica -->
+                        <button id="recordBtn" class="btn-grabar">Grabar</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -61,7 +64,7 @@
     <!-- Variables JS -->
     <script>
         const IS_VIDEO_EXERCISE = {{ palabra.is_video|yesno:"true,false" }};
-        const LANDMARKS_JSON_URL = "{% static '' %}" + "{{ palabra.json_url }}";
+        const LANDMARKS_JSON_URL = "{{ palabra.json_url }}";
         const PALABRA_ACTUAL = "{{ palabra.texto }}";
         const CURRENT_WORD_ID = {{ palabra.id|safe }};
         const PROGRESS = {
