@@ -1,86 +1,117 @@
-
-*{
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
-
-body.light{
+body.light {
     background-color: #B07BA6;
     color: white;
     font-family: Arial, Helvetica, sans-serif;
-
 }
 
-body.dark{
+body.dark {
     background-color: #51384d;
     color: white;
     font-family: Arial, Helvetica, sans-serif;
 }
 
-
-.instruccion{
+.instruccion {
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: #945187;
     height: 20vh;
     width: 100%;
+    padding: 0 20px;
 }
 
-.instruccion span{
+.instruccion span {
     color: white;
     font-size: 2em;
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.contenido{
+.contenido {
     display: flex;
     justify-content: space-around;
     align-items: center;
     height: 60vh;
     width: 100%;
+    padding: 20px;
+    gap: 20px;
 }
 
-.panel-referencia{
-    height: 70%;
+.panel-referencia {
+    height: 100%;
     width: 40%;
     background-color: #945187;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
 }
 
-.panel-usuario{
-    height: 70%;
+.panel-referencia img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    padding: 10%;
+}
+
+.panel-usuario {
+    height: 100%;
     width: 40%;
     background-color: #945187;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#outputCanvas {
+    position: relative;
+    z-index: 1;
 }
 
-.extras{
+#inputVideo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+    z-index: 0;
+}
+
+.extras {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: center ;
+    justify-content: center;
     height: 20vh;
     width: 100%;
+    padding: 0 20px;
 }
 
-
-.reloj{
+.reloj {
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
-    left: 0;
-    margin: 5%;
+    left: 20px;
     font-size: 20px;
     color: white;
     background-color: #945187;
-    width: 10%;
-    height: 50%;
+    width: 120px;
+    height: 60px;
     border-radius: 1em;
 }
 
-.mensaje{
+.mensaje {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -88,37 +119,150 @@ body.dark{
     font-size: 2em;
     color: white;
     width: 50%;
-    height: 50%;
+    height: 60px;
 }
 
-.extras a{
+.extras a {
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
+    right: 20px;
     text-decoration: none;
     color: white;
     font-size: 20px;
     background-color: #945187;
-    width: 10%;
-    height: 50%;
-    right: 0;
-    margin-right: 5%;
+    width: 120px;
+    height: 60px;
     font-family: Arial, Helvetica, sans-serif;
     border-radius: 1em;
-
 }
 
+/* Elementos superpuestos */
+#countdown {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 72px;
+    color: white;
+    text-shadow: 2px 2px 4px black;
+    z-index: 10;
+}
 
+#recordingTimer {
+    display: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+    z-index: 10;
+}
 
+#feedback {
+    position: absolute;
+    bottom: 20px;
+    width: calc(100% - 40px);
+    left: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    z-index: 10;
+}
 
-/* memorama */
+/* Animaciones */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
 
-.m{
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .instruccion {
+        height: 15vh;
+    }
+    
+    .instruccion span {
+        font-size: 1.5em;
+    }
+
+    .contenido {
+        flex-direction: column;
+        height: 70vh;
+        padding: 10px;
+    }
+    
+    .panel-referencia, .panel-usuario {
+        height: 48%;
+        width: 90%;
+    }
+
+    .extras {
+        height: 15vh;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .reloj {
+        position: relative;
+        left: auto;
+        width: 80px;
+        height: 50px;
+        font-size: 16px;
+        margin: 0;
+    }
+    
+    .mensaje {
+        position: relative;
+        font-size: 1.5em;
+        width: auto;
+        height: auto;
+        padding: 0 10px;
+    }
+    
+    .extras a {
+        position: relative;
+        right: auto;
+        width: 80px;
+        height: 50px;
+        font-size: 16px;
+        margin: 0;
+    }
+    
+    #feedback {
+        font-size: 18px;
+        width: calc(100% - 20px);
+        left: 10px;
+        bottom: 10px;
+    }
+    
+    #countdown {
+        font-size: 48px;
+    }
+    
+    #recordingTimer {
+        font-size: 18px;
+        top: 10px;
+        right: 10px;
+    }
+}
+
+/* Estilos específicos para otros juegos (memorama, relación) */
+.m {
     margin-top: 2%;
 }
 
-.tarjetas{
+.tarjetas {
     padding: 5%;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -128,113 +272,43 @@ body.dark{
     height: 100%;
 }
 
-.item{
+.item {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #51384d;
-    
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.item:hover{
+.item:hover {
     background-color: #B07BA6;
-    transition: 0.3s;
-
 }
 
-/* relacion */
-
-
-
-
+/* Media queries para otros juegos */
 @media (max-width: 768px) {
-    
-    .instruccion span{
-        font-size: 1.5em;
-    }
-
-    .contenido{
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
-
-    }
-    
-    .panel-referencia{
-        height: 40%;
-        width: 80%;
-    }
-    .panel-usuario{
-        height: 40%;
-        width: 80%;
-    }
-
-    .extras{
-        position: relative;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        height: 20vh;
-        width: 100%;
-    }
-    .reloj{
-        position: relative;
-        width: 30%;
-        height: 10vh;
-        border-radius: 0.5em;
-    }
-    .mensaje{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        font-size: 1.5em;
-        width: 100%;
-        height: 10vh;
-        color: white;
-    }
-    .extras   a{
-        position: relative;
-        width: 40%;
-        height: 50%;
-        margin: 5%;
-        border-radius: 0.5em;
-        
-    }
-
-
-/* memorama  o relacion*/
-    .memo{
+    .memo {
         height: 70vh;
     }
 
-    .tarjetas{
-        padding: 5%;
-        display: grid;
+    .tarjetas {
         grid-template-columns: repeat(2, 1fr);
         grid-template-rows: repeat(6, 1fr);
         gap: 3% 13%;
-        width: 100%;
-        height: 100%;
     }
 
-    .mem{
+    .mem {
         height: 10vh;
         flex-direction: row;
     }
 
-    .relojM{
+    .relojM {
         height: 50%;
     }
 
-    .item{
-        justify-self: center;
+    .item {
         width: 80%;
-
+        justify-self: center;
     }
-
-  
-
-    
-    
 }

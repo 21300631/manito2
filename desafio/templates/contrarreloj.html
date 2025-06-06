@@ -16,9 +16,12 @@
     </div>
     <div class="contenido">
         <div class="panel-referencia"> 
-            <img src="{{ archivo }}" alt="Gesto {{ palabra_correcta }}" width="80%" style="padding: 10%; margin: 0;">        
+            <img src="{{ archivo }}" alt="Gesto {{ palabra_correcta }}" width="90%" style="padding: 10%; margin: 0;">        
         </div>
         <div class="panel-usuario gesto g-usuario" >
+            <video id="inputVideo" autoplay playsinline muted " ></video>
+
+            <canvas id="outputCanvas" width="600" height="500" style="width: 100%; height: auto;"></canvas>
             <div id="countdown" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 72px; color: white; text-shadow: 2px 2px 4px black;"></div>
             <div id="recordingTimer" style="display: none; position: absolute; top: 20px; right: 20px; font-size: 24px; color: white; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 5px;"></div>
             <!-- Añade este div para el feedback -->
@@ -31,6 +34,14 @@
         <div class="mensaje"><span>Genial</span></div>
         <a href="/inicio/">Cancelar</a>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 
     <script>
         // Construye la URL correctamente usando static
