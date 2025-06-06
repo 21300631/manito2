@@ -140,7 +140,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 }));
             }
 
-
+            function goToNextExercise() {
+                // Detener la cámara primero
+                if (mediaRecorder) {
+                    mediaRecorder.stop();
+                }
+                if (videoElement.srcObject) {
+                    videoElement.srcObject.getTracks().forEach(track => track.stop());
+                }
+                
+                // Enviar la petición para avanzar
+                fetch('/repaso/siguiente/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        error: false
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'completed') {
+                        window.location.href = data.redirect_url;
+                    } else {
+                        // Forzar recarga limpia de la página
+                        window.location.href = data.redirect_url;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Recargar de todas formas si hay error
+                    window.location.href = '/repaso/';
+                });
+            }
 
             
             function procrustesAlignment(userLandmarks, referenceLandmarks) {
@@ -366,7 +400,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }           
 
 
-            // Modificar la función stopRecording para mostrar los resultados
             function stopRecording() {
                 if (!isRecording) return;
                 
@@ -382,21 +415,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (referenceLandmarks && filteredLandmarks.length > 0) {
                             const similarityPercentage = processAllFrames(allHandLandmarks, referenceLandmarks);
                             let similitudFinal = similarityPercentage * 2;
-                            console.log("Primer frame usuario:", allHandLandmarks[0]);
-                            console.log("Primer frame referencia:", referenceLandmarks[0]);
                             console.log(`Similitud promedio: ${similarityPercentage.toFixed(1)}%`);
                             
                             // Determinar si aprobó o no
                             const isApproved = similitudFinal >= 70;
 
-                            if (similitudFinal >= 100)
+                            if (similitudFinal >= 100) {
                                 similitudFinal = 100; // Limitar al 100% máximo
+                            }
 
                             const resultMessage = isApproved 
                                 ? `¡Felicidades! Tu ejecución tuvo una similitud del <b>${similitudFinal.toFixed(1)}%</b> con el gesto de referencia. <span style="color:green;">✅ APROBADO</span>`
                                 : `Tu ejecución tuvo una similitud del <b>${similarityPercentage.toFixed(1)}%</b> con el gesto de referencia. <span style="color:red;">❌ NO APROBADO</span> (Se requiere 80% o más)`;
                             
-                            // Mostrar resultados al usuario con SweetAlert2
                             Swal.fire({
                                 title: isApproved ? '¡Aprobado!' : 'Intenta de nuevo',
                                 html: resultMessage,
@@ -407,15 +438,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                     title: isApproved ? 'approved-title' : 'not-approved-title'
                                 }
                             }).then((result) => {
-                                // Esta función se ejecuta cuando el usuario hace clic en "Entendido"
                                 if (isApproved) {
-                                    setTimeout(() => {
-                                        window.location.href = "/repaso/siguiente/";
-                                    }, 500);
+                                    goToNextExercise();
                                 }
                             });
 
-                            // También puedes mostrar resultados más detallados en la consola
                             console.log(`Similitud promedio: ${similarityPercentage.toFixed(1)}% - ${isApproved ? 'APROBADO' : 'NO APROBADO'}`);
                         } else {
                             Swal.fire({
@@ -424,8 +451,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                 icon: 'error'
                             });
                         }
-                        
-                        console.log("Todos los landmarks de mano recolectados:", JSON.stringify(allHandLandmarks, null, 2));
                     };
                     mediaRecorder.stop();
                 }
@@ -773,14 +798,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function goToNextExercise() {
+            // Detener la cámara primero
             if (camera) {
                 camera.stop();
             }
             if (videoElement.srcObject) {
                 videoElement.srcObject.getTracks().forEach(track => track.stop());
             }
-            window.location.href = "/repaso/siguiente/";
+            
+            // Enviar la petición para avanzar
+            fetch('/repaso/siguiente/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    error: false
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    window.location.href = data.redirect_url;
+                } else {
+                    // Forzar recarga limpia de la página
+                    window.location.href = data.redirect_url;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Recargar de todas formas si hay error
+                window.location.href = '/repaso/';
+            });
         }
+
 
         function handleGestureFeedback() {
             if (isGestureCorrect) {
@@ -794,21 +846,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         showFeedback(`✓ Mantén la pose (${Math.ceil(remainingTime/1000)}s)`, true);
                     } else {
                         showFeedback("✓ ¡Correcto!", true);
+                        goToNextExercise();
                         
                         // Usar CURRENT_WORD_ID en lugar de currentWordId
-                        fetch('/repaso/siguiente/', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                                'X-CSRFToken': getCookie('csrftoken')
-                            },
-                            body: `palabra_id=${CURRENT_WORD_ID}`
-                        }).then(() => {
-                            window.location.href = "/repaso/";
-                        }).catch(error => {
-                            console.error('Error:', error);
-                            window.location.href = "/repaso/";
-                        });
+                        // fetch('/repaso/siguiente/', {
+                        //     method: 'POST',
+                        //     headers: {
+                        //         'Content-Type': 'application/x-www-form-urlencoded',
+                        //         'X-CSRFToken': getCookie('csrftoken')
+                        //     },
+                        //     body: `palabra_id=${CURRENT_WORD_ID}`
+                        // }).then(() => {
+                        //     window.location.href = "/repaso/";
+                        // }).catch(error => {
+                        //     console.error('Error:', error);
+                        //     window.location.href = "/repaso/";
+                        // });
                     }
                 }
             } else {
@@ -904,12 +957,48 @@ document.addEventListener('DOMContentLoaded', () => {
             canvasElement.style.borderRadius = '10px';
 
             
-            
-            // Botón "No lo recuerdo"
+                        // Botón "No lo recuerdo"
             if (noRecuerdoBtn) {
                 noRecuerdoBtn.addEventListener('click', () => {
-                    // Aquí puedes agregar lógica para manejar cuando el usuario no recuerda
-                    window.location.href = "/repaso/siguiente/";
+                    Swal.fire({
+                        title: '¿No recuerdas este gesto?',
+                        text: 'Se registrará como error y pasaremos al siguiente ejercicio',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, no lo recuerdo',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Enviar petición al servidor
+                            fetch('/repaso/no-recuerdo/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'X-CSRFToken': getCookie('csrftoken')
+                                },
+                                body: `palabra_id=${CURRENT_WORD_ID}`
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Error en la respuesta del servidor');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.status === 'completed') {
+                                    window.location.href = FINISH_URL;
+                                } else {
+                                    window.location.href = "/repaso/"; // Redirigir a la misma URL que los otros casos
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire('Error', 'Hubo un problema al registrar tu respuesta', 'error');
+                            });
+                        }
+                    });
                 });
             }
             

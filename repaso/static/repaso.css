@@ -90,6 +90,10 @@
     font-size: 18px;
 }
 
+.btn-grabar{
+    margin-left: 10%;
+}
+
 body.light {
     background-color: white;
     color: black;

@@ -1,74 +1,19 @@
 Performing system checks...
 
 System check identified no issues (0 silenced).
-June 05, 2025 - 16:39:42
-Django version 4.2.20, using settings 'manito.settings'
-Starting development server at http://127.0.0.1:8000/
-Quit the server with CTRL-BREAK.
-
-Usuario: fersasmorales, Contraseña: GorillAZ2006_
-Performing system checks...
-
-System check identified no issues (0 silenced).
-June 05, 2025 - 16:40:43
+June 05, 2025 - 20:50:45
 Django version 4.2.20, using settings 'manito.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 
 Palabras seleccionadas para repaso:
-- B (ID: 2)
-- C (ID: 3)
-- D (ID: 4)
+- A (ID: 1)
+- R (ID: 19)
 - F (ID: 6)
 - G (ID: 7)
 - J (ID: 10)
+- K (ID: 11)
 - L (ID: 12)
-- M (ID: 13)
 - N (ID: 14)
 - Ñ (ID: 15)
-Estado actual - Index: 0, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 1/10: J
-Ejercicio actual: J (ID: 10)
-Estado actual - Index: 1, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 2/10: N
-Ejercicio actual: N (ID: 14)
-Solicitud recibida - Método: POST
-Datos recibidos: {'error': False}
-Estado actual - Index: 2, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 3/10: G
-Ejercicio actual: G (ID: 7)
-Solicitud recibida - Método: POST
-Datos recibidos: {'error': False}
-Estado actual - Index: 3, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 4/10: D
-Ejercicio actual: D (ID: 4)
-Solicitud recibida - Método: POST
-Datos recibidos: {'error': False}
-Estado actual - Index: 4, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 5/10: C
-Ejercicio actual: C (ID: 3)
-Solicitud recibida - Método: POST
-Datos recibidos: {'error': False}
-Estado actual - Index: 5, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 6/10: L
-Ejercicio actual: L (ID: 12)
-Solicitud recibida - Método: POST
-Datos recibidos: {'error': False}
-Estado actual - Index: 6, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 7/10: M
-Ejercicio actual: M (ID: 13)
-Solicitud recibida - Método: POST
-Datos recibidos: {'error': False}
-Estado actual - Index: 7, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 8/10: B
-Ejercicio actual: B (ID: 2)
-Solicitud recibida - Método: POST
-Datos recibidos: {'error': False}
-Estado actual - Index: 8, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 9/10: Ñ
-Ejercicio actual: Ñ (ID: 15)
-Estado actual - Index: 9, Palabras IDs: [10, 14, 7, 4, 3, 12, 13, 2, 15, 6]
-Mostrando ejercicio 10/10: F
-Ejercicio actual: F (ID: 6)
-Solicitud recibida - Método: POST
-Datos recibidos: {'error': False}
+- O (ID: 16)
