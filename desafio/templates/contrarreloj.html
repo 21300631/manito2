@@ -100,19 +100,29 @@
     <script>
 
         function cargarLandmarks(palabra) {
-            const LANDMARKS_JSON_URL = `{% static 'landmarks/' %}` + palabra + `.json`;
-
-            fetch(LANDMARKS_JSON_URL)
+            window.PALABRA_ACTUAL = palabra; // Actualiza la variable global
+            window.LANDMARKS_JSON_URL = `{% static 'landmarks/' %}${palabra}.json`; // Actualiza la URL
+            
+            fetch(window.LANDMARKS_JSON_URL)
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.json();
                 })
                 .then(data => {
-                    referenceLandmarks = data;
-                    console.log("Landmarks de referencia cargados:", referenceLandmarks);
+                    window.referenceLandmarks = data;
+                    console.log("Landmarks actualizados:", {
+                        palabra: window.PALABRA_ACTUAL,
+                        url: window.LANDMARKS_JSON_URL,
+                        data: window.referenceLandmarks
+                    });
+                    
+                    // Notificar a contrarreloj.js que los landmarks están listos
+                    if (window.onLandmarksUpdated) {
+                        window.onLandmarksUpdated();
+                    }
                 })
                 .catch(error => {
-                    console.error("Error cargando landmarks de referencia:", error);
+                    console.error("Error cargando landmarks:", error);
                     const feedbackElement = document.getElementById('feedback');
                     if (feedbackElement) {
                         feedbackElement.textContent = "Error cargando referencia del gesto";
@@ -127,32 +137,24 @@
         });
     </script>
 
-    <script>
-        // Construye la URL correctamente usando static
-        const LANDMARKS_JSON_URL = "{% static 'landmarks/' %}" + "{{ palabra_correcta }}.json";
-        const PALABRA_ACTUAL = "{{ palabra_correcta }}";
-        
-        let referenceLandmarks = null;
-        
-        fetch(LANDMARKS_JSON_URL)
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.json();
-            })
-            .then(data => {
-                referenceLandmarks = data;
-                console.log("Landmarks de referencia cargados:", referenceLandmarks);
-                // Aquí puedes iniciar el proceso de comparación una vez cargados
-            })
-            .catch(error => {
-                console.error("Error cargando landmarks de referencia:", error);
-                // Muestra feedback al usuario
-                const feedbackElement = document.getElementById('feedback');
-                if (feedbackElement) {
-                    feedbackElement.textContent = "Error cargando referencia del gesto";
-                    feedbackElement.style.color = "red";
-                }
+   <script>
+        // Verifica si las variables existen, si no las crea
+        window.LANDMARKS_JSON_URL = window.LANDMARKS_JSON_URL || "";
+        window.PALABRA_ACTUAL = window.PALABRA_ACTUAL || "";
+        window.referenceLandmarks = window.referenceLandmarks || null;
+
+        // Función para ser notificado cuando se actualicen los landmarks
+        window.onLandmarksUpdated = function() {
+            console.log("Nuevos landmarks recibidos en contrarreloj.js", {
+                palabra: window.PALABRA_ACTUAL,
+                landmarks: window.referenceLandmarks
             });
+            
+            // Reinicia cualquier proceso que dependa de los landmarks
+            if (window.resetComparisonSystem) {
+                window.resetComparisonSystem();
+            }
+        };
     </script>
     <script src="{% static 'contrarreloj.js' %}"></script>
 </body>

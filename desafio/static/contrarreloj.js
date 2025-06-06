@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mensajeElement = document.querySelector('.mensaje span');
     
     // Variables de estado
-    let referenceLandmarks = null;
+    window.referenceLandmarks = null;
     let currentSimilarity = 0;
     let isGestureCorrect = false;
     let correctPoseStartTime = null;
@@ -146,32 +146,20 @@ document.addEventListener('DOMContentLoaded', () => {
             tiempoRestante--;
         }
     }
-    
-    // Función para iniciar el juego
     function startGame() {
         tiempoInicio = Date.now();
         temporizador = setInterval(updateTimer, 1000);
         countdownElement.style.display = 'none';
         recordingTimerElement.style.display = 'block';
         
-        // Cargar los landmarks de referencia
-        fetch(LANDMARKS_JSON_URL)
-            .then(response => {
-                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-                return response.json();
-            })
-            .then(data => {
-                referenceLandmarks = data.map(point => ({
-                    x: point.x,
-                    y: point.y,
-                    z: point.z
-                }));
-                console.log("Referencia cargada:", referenceLandmarks);
-            })
-            .catch(error => {
-                console.error("Error cargando landmarks:", error);
-                showFeedback("Error cargando gesto de referencia", false);
-            });
+        // Verifica que los landmarks estén cargados
+        if (!window.referenceLandmarks) {
+            console.error("Error: Landmarks no cargados");
+            showFeedback("Error: Referencia no disponible", false);
+            return;
+        }
+        
+        console.log("Iniciando juego con:", window.PALABRA_ACTUAL, window.referenceLandmarks);
     }
     
     // Función para terminar el juego
@@ -184,8 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mostrar resultado final
         mensajeElement.textContent = `¡Tiempo terminado! Puntuación: ${score}`;
         
-        // Enviar resultados al servidor (opcional)
-        // fetch('/guardar-puntuacion/', { method: 'POST', body: JSON.stringify({ score }) });
     }
     
     // Función para contar regresiva antes de iniciar
@@ -223,8 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 z: point.z
             }));
             
-            if (referenceLandmarks) {
-                currentSimilarity = calculateSimilarity(referenceLandmarks, currentLandmarks);
+            if (window.referenceLandmarks) {
+                currentSimilarity = calculateSimilarity(window.referenceLandmarks, currentLandmarks);
                 isGestureCorrect = currentSimilarity > SIMILARITY_THRESHOLD;
                 
                 // Dibujar landmarks con colores según la precisión
@@ -279,37 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // Función para enviar al siguiente ejercicio
-    async function avanzarEjercicio() {
-        try {
-            const response = await fetch('/desafio/siguiente/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({ es_correcto: true })
-            });
-
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            } else {
-                console.error('Error del servidor:', data.message);
-                mensajeElement.textContent = "Error al avanzar, intenta nuevamente";
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            mensajeElement.textContent = "Error de conexión";
-        }
-    }
 
     // Luego reemplaza el fetch original en tu código con:
     // Función para obtener el token CSRF
@@ -371,3 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.head.appendChild(style);
 });
+
+window.landmarksCargados = function() {
+    // Reiniciar el proceso de comparación con los nuevos landmarks
+    console.log("Nuevos landmarks listos para usar:", referenceLandmarks);
+    // Aquí puedes reiniciar cualquier temporizador o estado de comparación
+};
