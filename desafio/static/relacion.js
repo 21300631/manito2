@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const CONFIG_JUEGO = {
         paresPorGrupo: 5,
         totalGrupos: 4,
-        tiempoPorRonda: 60,
+        tiempoPorRonda: 40,
         totalPares: elementos.totalParesInput ? 
                    parseInt(elementos.totalParesInput.value) : 
                    5 // Valor por defecto
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     function crearGruposDePares() {
-        // Mezcla los pares disponibles
+        // Mezcla todos los pares disponibles
         mezclarArray(paresDisponibles);
         
         // Divide en grupos de 5
@@ -65,31 +65,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 gruposDePares.push(grupo);
             }
         }
-
-        console.log("Grupos generados:", gruposDePares.map(g => g.map(p => p.palabra.palabra)));
     }
 
     function mostrarParesIniciales() {
-        // Obtén el grupo actual (usando módulo para ciclar)
+        // Obtén el grupo actual
         const grupo = gruposDePares[grupoActual % gruposDePares.length];
-        console.log("Mostrando grupo:", grupo.map(p => p.palabra.palabra));
-
+        
         // Limpia el tablero
         document.querySelector('.fila.palabras').innerHTML = '';
         document.querySelector('.fila.imagenes').innerHTML = '';
 
-        // Crea los elementos del grupo actual
-        grupo.forEach(par => {
-            document.querySelector('.fila.palabras').appendChild(crearElemento('palabra', par.palabra));
-            document.querySelector('.fila.imagenes').appendChild(crearElemento('imagen', par.imagen));
+        // Extrae palabras e imágenes por separado
+        const palabrasGrupo = grupo.map(par => par.palabra);
+        const imagenesGrupo = grupo.map(par => par.imagen);
+        
+        // Mezcla independientemente las palabras y las imágenes
+        mezclarArray(palabrasGrupo);
+        mezclarArray(imagenesGrupo);
+        
+        // Crea los elementos mezclados
+        palabrasGrupo.forEach(palabra => {
+            document.querySelector('.fila.palabras').appendChild(crearElemento('palabra', palabra));
+        });
+        
+        imagenesGrupo.forEach(imagen => {
+            document.querySelector('.fila.imagenes').appendChild(crearElemento('imagen', imagen));
         });
 
-        // Actualiza los pares activos
+        // Actualiza los pares activos (considerando la mezcla)
         paresActivos = grupo.map(par => ({
             palabra: par.palabra,
             imagen: par.imagen,
             esCorrecto: par.palabra.id === par.imagen.id
         }));
+        
+        // Verifica el balance después de cargar
+        verificarBalance();
     }
 
     function crearElemento(tipo, datos) {
@@ -194,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (paresCorrectosRestantes === 0) {
             // 3. Si no quedan, pasa al siguiente grupo
             grupoActual++;
-            console.log("🔁 Rotando al grupo:", grupoActual % gruposDePares.length);
+            console.log(" Rotando al grupo:", grupoActual % gruposDePares.length);
             
             // 4. Carga el nuevo grupo después de 0.5s (para que termine la animación)
             setTimeout(() => {
@@ -216,44 +227,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     
     function reponerPares(cantidad) {
-        // Obtener el grupo actual
-        const grupo = gruposDePares[grupoActual % gruposDePares.length];
+    const grupo = gruposDePares[grupoActual % gruposDePares.length];
+    
+    // Obtener palabras e imágenes no mostradas
+    const palabrasDisponibles = grupo.map(p => p.palabra).filter(p => 
+        !document.querySelector(`.fila.palabras .item[data-id="${p.id}"]`)
+    );
+    
+    const imagenesDisponibles = grupo.map(p => p.imagen).filter(i => 
+        !document.querySelector(`.fila.imagenes .item[data-id="${i.id}"]`)
+    );
+    
+    // Mezclar independientemente
+    mezclarArray(palabrasDisponibles);
+    mezclarArray(imagenesDisponibles);
+    
+    // Agregar nuevos pares manteniendo el balance
+    const maxReposicion = Math.min(cantidad, palabrasDisponibles.length, imagenesDisponibles.length);
+    
+    for (let i = 0; i < maxReposicion; i++) {
+        const palabra = palabrasDisponibles[i];
+        const imagen = imagenesDisponibles[i];
         
-        // Obtener elementos no mostrados del grupo actual
-        const palabrasDisponibles = grupo.map(p => p.palabra).filter(p => 
-            !document.querySelector(`.fila.palabras .item[data-id="${p.id}"]`)
-        );
+        document.querySelector('.fila.palabras').appendChild(crearElemento('palabra', palabra));
+        document.querySelector('.fila.imagenes').appendChild(crearElemento('imagen', imagen));
         
-        const imagenesDisponibles = grupo.map(p => p.imagen).filter(i => 
-            !document.querySelector(`.fila.imagenes .item[data-id="${i.id}"]`)
-        );
-        
-        // Mezclar los disponibles
-        mezclarArray(palabrasDisponibles);
-        mezclarArray(imagenesDisponibles);
-        
-        // Agregar nuevos pares
-        for (let i = 0; i < cantidad && i < palabrasDisponibles.length && i < imagenesDisponibles.length; i++) {
-            const palabra = palabrasDisponibles[i];
-            const imagen = imagenesDisponibles[i];
-            
-            document.querySelector('.fila.palabras').appendChild(crearElemento('palabra', palabra));
-            document.querySelector('.fila.imagenes').appendChild(crearElemento('imagen', imagen));
-            
-            // Registrar como par activo
-            paresActivos.push({
-                palabra: palabra,
-                imagen: imagen,
-                esCorrecto: palabra.id === imagen.id
-            });
-        }
-        
-        // Si no hay suficientes en el grupo actual, forzar rotación
-        if (document.querySelectorAll('.fila.palabras .item').length < 5) {
-            grupoActual++;
-            mostrarParesIniciales();
-        }
+        paresActivos.push({
+            palabra: palabra,
+            imagen: imagen,
+            esCorrecto: palabra.id === imagen.id
+        });
     }
+    
+    verificarBalance();
+    
+    // Si no hay suficientes para reponer, rotar al siguiente grupo
+    if (document.querySelectorAll('.fila.palabras .item').length < 5) {
+        grupoActual++;
+        setTimeout(() => mostrarParesIniciales(), 500);
+    }
+}
 
 
 
@@ -310,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const porcentajeExito = Math.round((aciertos / totalPares) * 100);
         const tiempoUsado = CONFIG_JUEGO.tiempoPorRonda - tiempoRestante;
         
-        window.location.href = `${window.location.pathname}?completado=1&puntaje=${aciertos}&tiempo=${tiempoUsado}`;
+        window.location.href = `${window.location.pathname}?completado=1&puntaje=${aciertos*10}&tiempo=${tiempoUsado}`;
     }
 
     function verificarEstadoGrupos() {
