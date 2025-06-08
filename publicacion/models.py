@@ -8,7 +8,7 @@ class Publicacion(models.Model):
     usuario = models.ForeignKey(Profile, on_delete=models.SET_DEFAULT, default=1)  # Usa Profile en lugar de User
     contenido = models.TextField()
     hashtags = models.CharField(max_length=100, blank=True, null=True)  # Añadido max_length
-    imagen = models.ImageField(
+    archivo_media = models.FileField(
         storage=ImageStorage(), 
         upload_to='posts/', 
         blank=True, 

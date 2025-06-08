@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from registro.models import Profile
 from django.http import JsonResponse
 from inicio.models import Notificacion
+from django.contrib import messages
 
 
 # Create your views here.
@@ -74,6 +75,17 @@ def agregar_comentario(request, publicacion_id):
     if request.method == "POST":
         contenido = request.POST.get("contenido")
         archivo = request.FILES.get("archivo")
+
+        # Validar tipos de archivo permitidos
+        if archivo:
+            ALLOWED_TYPES = [
+                'image/jpeg', 'image/png', 'image/gif',
+                'video/mp4', 'video/webm', 'video/ogg'
+            ]
+            
+            if archivo.content_type not in ALLOWED_TYPES:
+                messages.error(request, 'Tipo de archivo no permitido')
+                return redirect("foro")
 
         if contenido:  # Asegurar que no se envíe un comentario vacío
             Comentario.objects.create(

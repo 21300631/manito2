@@ -35,19 +35,37 @@ def nueva_publicacion(request):
             context['error'] = 'Faltan campos obligatorios'
             return render(request, 'publicacionNueva.html', context)
 
-     
-       
+        if media:
+            ALLOWED_TYPES = [
+                'image/jpeg', 'image/png', 'image/gif',  # Imágenes
+                'video/mp4', 'video/webm', 'video/ogg'   # Videos
+            ]
+            if media.content_type not in ALLOWED_TYPES:
+                context['error'] = 'Tipo de archivo no permitido. Solo imágenes (JPEG, PNG, GIF) y videos (MP4, WebM, Ogg)'
+                return render(request, 'publicacionNueva.html', context)
+            
+            # Validar tamaño máximo (ejemplo: 10MB)
+            if media.size > 10 * 1024 * 1024:  # 10MB
+                context['error'] = 'El archivo es demasiado grande (máximo 10MB)'
+                return render(request, 'publicacionNueva.html', context)
+            
         # Guardar la publicación
-        nueva_publicacion = Publicacion.objects.create(
-            titulo=titulo,
-            contenido=contenido,
-            imagen=media,  # en tu modelo sigue funcionando aunque el nombre sea imagen
-            hashtags=hashtags,
-            usuario=profile
-        )
-        return redirect('/publicacion/')
+        try:
+            nueva_publicacion = Publicacion.objects.create(
+                titulo=titulo,
+                contenido=contenido,
+                archivo_media=media,  # Cambiado a archivo_media
+                hashtags=hashtags,
+                usuario=profile
+            )
+            return redirect('/publicacion/')
+        
+        except Exception as e:
+            context['error'] = f'Error al crear la publicación: {str(e)}'
+            return render(request, 'publicacionNueva.html', context)
     
     return HttpResponse("Método no permitido", status=405)
+
 
 
 def vista_alguna(request):
