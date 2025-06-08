@@ -162,9 +162,9 @@ def verificar_completar(request):
         return JsonResponse({'error': str(e)}, status=400)
     
 
-@user_passes_test(check_auth)
-@require_POST
+
 @csrf_exempt
+@require_POST
 def verificar_escribir(request):
     try:
         respuesta = request.POST.get('respuesta_usuario', '').strip().lower()
@@ -205,11 +205,12 @@ def verificar_escribir(request):
         return JsonResponse({
             'correcto': es_correcto,
             'redirect_url': '/ejercicio/siguiente/',
-            'mensaje': '¡Correcto!' if es_correcto else f'Incorrecto. La respuesta era: "{palabra.palabra}" - Continuando...'
+            'mensaje': '¡Correcto!' if es_correcto else f'Incorrecto" - Continuando...'
         })
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+    
     
 @user_passes_test(check_auth)
 @require_POST

@@ -10,20 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnVerificar = document.getElementById('btn-verificar');
     const urlVerificacion = document.body.dataset.urlVerificacion;
     
-    // Crear elemento para feedback mejorado
-    const feedbackDiv = document.createElement('div');
-    feedbackDiv.id = 'feedback-message';
-    feedbackDiv.style.margin = '15px 0';
-    feedbackDiv.style.padding = '12px';
-    feedbackDiv.style.borderRadius = '5px';
-    feedbackDiv.style.display = 'none';
-    feedbackDiv.style.fontWeight = 'bold';
-    document.querySelector('.instruccion').appendChild(feedbackDiv);
 
     // Estado de la aplicación
     let seleccionActual = { palabra: null, gesto: null };
     let paresSeleccionados = [];
     let contadorPareado = 1;
+
+    const feedbackEl = document.getElementById('feedback');
 
     // Manejo de selecciones
     function manejarSeleccion(elementos, tipo) {
@@ -89,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Verificar emparejamientos con el servidor
     btnVerificar.addEventListener('click', () => {
         btnVerificar.disabled = true; // Deshabilitar botón durante la verificación
-        feedbackDiv.style.display = 'none';
         
         // Deshabilitar todas las interacciones durante la verificación
         palabras.forEach(p => p.style.pointerEvents = 'none');
@@ -108,8 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return res.json();
         })
         .then(data => {
-            // Mostrar feedback
-            mostrarFeedback(data.mensaje, data.todos_correctos ? 'success' : 'error');
+
+            feedbackEl.textContent = data.mensaje;  // Actualizar el mensaje
+            feedbackEl.className = data.todos_correctos ? 'correcto' : 'incorrecto';
             
             // Actualizar barra de progreso si es correcto
             if (data.todos_correctos) {
@@ -123,21 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             console.error('Error:', error);
-            mostrarFeedback('Ocurrió un error. Por favor intenta nuevamente.', 'error');
             btnVerificar.disabled = false;
             palabras.forEach(p => p.style.pointerEvents = 'auto');
             gestos.forEach(g => g.style.pointerEvents = 'auto');
         });
     });
 
-    // Función para mostrar feedback
-    function mostrarFeedback(mensaje, tipo) {
-        feedbackDiv.textContent = mensaje;
-        feedbackDiv.style.display = 'block';
-        feedbackDiv.style.backgroundColor = tipo === 'success' ? '#d4edda' : '#f8d7da';
-        feedbackDiv.style.color = tipo === 'success' ? '#155724' : '#721c24';
-        feedbackDiv.style.border = tipo === 'success' ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
-    }
 
     // Función para actualizar la barra de progreso
     function actualizarBarraProgreso(porcentaje) {

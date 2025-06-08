@@ -44,10 +44,12 @@
 
                 <!-- Botones -->
                 <div class="btn-container">
-                    <button id="noRecuerdoBtn" class="btn btn-no-recuerdo">No lo recuerdo</button>
+                    <a class="salir" href="/inicio/">Salir</a>
                     {% if palabra.is_video %}  <!-- Cambiado a is_video para coincidir con tu lógica -->
                         <button id="recordBtn" class="btn-grabar">Grabar</button>
                     {% endif %}
+                    <button id="noRecuerdoBtn" class="btn btn-no-recuerdo">No lo recuerdo</button>
+
                 </div>
             </div>
         </div>

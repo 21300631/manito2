@@ -168,7 +168,7 @@ body.dark {
 
 
 /* en duda */
-
+/* Loader */
 .loader {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #3498db;
@@ -184,20 +184,26 @@ body.dark {
     100% { transform: rotate(360deg); }
 }
 
-#mensaje-resultado {
-    transition: all 0.3s ease;
+/* Mensajes de resultado */
+.resultado {
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    display: none;
 }
 
-input[name="respuesta_usuario"] {
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
+.resultado.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    display: block;
 }
 
-input[name="respuesta_usuario"]:focus {
-    border-color: #3498db;
-    outline: none;
+.resultado.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    display: block;
 }

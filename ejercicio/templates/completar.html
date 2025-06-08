@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ejercicio1</title>
+    <title>Completar</title>
     <link rel="stylesheet" href="{% static 'e04.css'%}">
 </head>
 <body class="{{ theme }}" data-theme="{{ theme }}" data-url-verificacion="{% url 'verificar_completar' %}" data-url-siguiente="{% url 'siguiente_ejercicio' %}">
@@ -24,7 +24,7 @@
                     {% for opcion in opciones %}
                         <div class="gesto" data-id="{{ opcion.id }}">
                             {% if opcion.es_video %}
-                                <video src="{{ opcion.url }}" loop muted width="80%" padding="10%"></video>
+                                <video src="{{ opcion.url }}" loop autoplay muted width="80%" padding="10%"></video>
                             {% else %}
                                 <img src="{{ opcion.url }}" alt="Gesto de {{ opcion.palabra }}" width="80%" padding="10%" margin="0">
                             {% endif %}

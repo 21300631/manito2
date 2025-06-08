@@ -70,14 +70,13 @@ def cambiar_foto_perfil(request):
 
 def cambiar_nombre(request):
     if not request.user.is_authenticated:
-        return redirect('login')  # Asegúrate de que el usuario esté autenticado
+        return redirect('login')  
 
     usuario = request.user
     try:
         perfil = Profile.objects.get(user=usuario)
     except Profile.DoesNotExist:
-        # Maneja el caso en que el perfil no exista
-        return redirect('perfil')
+        return redirect('login')
 
     if request.method == 'POST' and 'nuevo_username' in request.POST:
         nuevo_username = request.POST.get('nuevo_username').strip()
@@ -88,7 +87,7 @@ def cambiar_nombre(request):
                 usuario.username = nuevo_username
                 usuario.save()
                 
-                # Importante: actualiza la instancia del usuario en la sesión
+                # Actualiza la instancia del usuario en la sesión
                 from django.contrib.auth import update_session_auth_hash
                 update_session_auth_hash(request, usuario)
                 
@@ -103,7 +102,7 @@ def cambiar_nombre(request):
     contexto = {
         'usuario': usuario,
         'imagen': perfil.imagen,
-        'medalla': perfil.medalla,  # Nota: en tu código original tenías 'medalla' aquí
+        'medalla': perfil.medalla, 
         'racha': perfil.racha,
         'puntos': perfil.puntos,
     }
@@ -124,11 +123,10 @@ def cambiar_tema(request):
     return JsonResponse({'status': 'error'}, status=400)
 
 
-# Ejemplo en Django (debes adaptarlo a tu backend)
 
 def obtener_tema(request):
     if request.user.is_authenticated:
-        theme = request.user.profile.theme  # Ajusta según tu modelo
+        theme = request.user.profile.theme 
         return JsonResponse({'theme': theme})
     return JsonResponse({'theme': 'light'})  # Default para usuarios no autenticados
 
@@ -136,4 +134,4 @@ def logout_view(request):
     if request.method == 'POST':
         logout(request)
         return redirect('login_usuario')  # Redirige a la página de inicio de sesión después de cerrar sesión
-    return render(request, 'login.html')  # Renderiza una plantilla de confirmación si es necesario
+    return render(request, 'login.html')  

@@ -51,3 +51,45 @@
     40%, 80% { transform: translateX(5px); }
 }
 
+
+/* Responsividad */
+@media screen and (max-width: 768px) {
+    .fila {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 0.5rem;
+    }
+
+    .item img {
+        max-width: 80px;
+        max-height: 80px;
+    }
+
+    .instruccion span {
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .juego-container {
+        gap: 2rem 5%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .fila {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    }
+
+    .item img {
+        max-width: 60px;
+        max-height: 60px;
+    }
+
+    .relojM, .puntaje, .cancelarM {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .instruccion span {
+        font-size: 0.9rem;
+    }
+}

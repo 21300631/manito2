@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const videoElement = document.getElementById('inputVideo');
         const canvasElement = document.getElementById('outputCanvas');
         const recordButton = document.getElementById('recordBtn');
-        const nextButton = document.getElementById('nextBtn');
+        // const nextButton = document.getElementById('nextBtn');
         const countdownElement = document.getElementById('countdown');
         const recordingTimerElement = document.getElementById('recordingTimer');
         const gestoVideo = document.getElementById('gestoVideo');
@@ -381,13 +381,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Calcular similitud con los landmarks de referencia
                         if (referenceLandmarks && filteredLandmarks.length > 0) {
                             const similarityPercentage = processAllFrames(allHandLandmarks, referenceLandmarks);
-                            let similitudFinal = similarityPercentage * 2;
+                            let similitudFinal = 0;
+                            if (similarityPercentage >= 80){
+                                similitudFinal = similarityPercentage;
+                            }
+                            else if (similarityPercentage <= 50){
+                                similitudFinal = similarityPercentage * 2;
+                            } else{
+                                similitudFinal = similarityPercentage * 1.8;
+                            }
                             console.log("Primer frame usuario:", allHandLandmarks[0]);
                             console.log("Primer frame referencia:", referenceLandmarks[0]);
                             console.log(`Similitud promedio: ${similarityPercentage.toFixed(1)}%`);
                             
                             // Determinar si aprobó o no
-                            const isApproved = similitudFinal >= 70;
+                            const isApproved = similitudFinal >= 80;
 
                             if (similitudFinal >= 100)
                                 similitudFinal = 100; // Limitar al 100% máximo
@@ -432,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
                     mediaRecorder.stop();
                 }
-                if (nextButton) nextButton.disabled = false;
+                // if (nextButton) nextButton.disabled = false;
                 if (recordButton) recordButton.disabled = false;
                 if (gestoVideo) gestoVideo.play();
             }
@@ -623,7 +631,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const videoElement = document.createElement('video');
         const canvasElement = document.createElement('canvas');
         const canvasCtx = canvasElement.getContext('2d');
-        const nextButton = document.querySelector('#nextBtn');
+        // const nextButton = document.querySelector('#nextBtn');
         const feedbackElement = document.createElement('div');
         
         // Configuración del feedback
@@ -846,7 +854,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         correctPoseStartTime = null; // Reiniciar si la pose no es correcta
 
                         showFeedback(`✗ Ajusta tu gesto (${currentSimilarity.toFixed(0)}%)`, false);
-                        nextButton.disabled = true;
+                        // nextButton.disabled = true;
                         
                         // Mostrar SweetAlert solo si la similitud es baja y no se ha mostrado recientemente
                         if (currentSimilarity < 50 && !document.getElementById('hand-help-shown')) {
@@ -857,7 +865,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 correctPoseStartTime = null; // Reiniciar si no hay manos detectadas
                 showFeedback("Muestra tu mano en el área", false);
-                nextButton.disabled = true;
+                // nextButton.disabled = true;
                 
                 // Mostrar SweetAlert si no se detecta la mano
                 if (!document.getElementById('hand-help-shown')) {
@@ -956,11 +964,11 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         document.head.appendChild(style);
 
-        if (nextButton) {
-            nextButton.addEventListener('click', () => {
-                actualizarBarraProgreso(10);
-            });
-        }
+        // if (nextButton) {
+        //     nextButton.addEventListener('click', () => {
+        //         actualizarBarraProgreso(10);
+        //     });
+        // }
     }
 
     async function actualizarBarraProgreso(porcentaje) {

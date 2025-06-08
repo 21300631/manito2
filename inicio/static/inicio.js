@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-// Actualiza el DOMContentLoaded para incluir la gráfica
+// Actualiza el coso ese DOM para incluir la gráfica
 document.addEventListener('DOMContentLoaded', function() {
     fetch(APP_URLS.puntosUsuario)
         .then(response => {
@@ -235,6 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+// Para los desafios
 
 document.addEventListener('DOMContentLoaded', function() {
     const nombreDesafio = document.getElementById('nombre-desafio');

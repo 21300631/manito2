@@ -58,7 +58,7 @@ def reportar(request, publicacion_id):
             )
 
 
-    if publicacion.reportes.count() >= 20:
+    if publicacion.reportes.count() >= 15:
         publicacion.delete()
         eliminada = True
 

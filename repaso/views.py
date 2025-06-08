@@ -198,4 +198,4 @@ def finalizar_repaso(request):
 
 @login_required
 def no_hay_palabras(request):
-    return render(request, 'estadisticas.html')
+    return render(request, 'noPalabras.html')

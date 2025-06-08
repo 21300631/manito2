@@ -448,77 +448,174 @@ p span{
     margin: 20px 0px 10px;
     text-align: center;
 }
-
-/* Estilos para móviles (ej: pantallas menores a 768px) */
+/* VERSIÓN MÓVIL MEJORADA */
 @media (max-width: 768px) {
-    
     .grid-container {
-        grid-template-columns: 1fr; /* Una sola columna */
-        grid-template-rows: 135px 300px 440px 200px 300px 300px; /* Filas automáticas */
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto auto auto;
+        height: auto;
+        min-height: 100vh;
+        padding: 15px;
+        gap: 25px;
     }
-    .item1, .item2, .item3, .item4 {
-        
+    
+    /* Espaciado entre secciones */
+    .item1, .item2, .item3, .item4, .item5, .item6 {
+        grid-area: auto;
+        height: auto;
+        margin-bottom: 20px;
+    }
+    
+    /* NAVEGACIÓN móvil - más compacta */
+    nav {
+        flex-direction: row;
         width: 100%;
-        height: auto; /* Altura según contenido */
-        overflow: hidden; /* Opcional: contiene elementos hijos */
+        height: 70px;
+        margin: 0;
+        justify-content: space-around;
+        padding: 10px 5px;
+        border-radius: 15px;
     }
-
-    .item1{
-        display: flex;
-        justify-content: center;
-        height: fit-content;
-    }
-
-    .item2{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-    }
-
     
     nav a {
-        justify-content: center; /* Centra el ícono */
-        width: auto;           /* Ancho automático */
+        flex-direction: column;
+        width: auto;
         margin-top: 0;
+        font-size: 0.65rem;
+        gap: 5px;
     }
-
-    nav a span {
-        display: none;         /* Oculta el texto */
+    
+    nav img {
+        width: 24px;
+        height: 24px;
+        margin-right: 0;
+        margin-bottom: 0;
+        padding: 5px;
     }
-
-    nav{
-        width: 60%;
-        height: 15%;
-        flex-direction: row;
-        padding: 10px;
+    
+    /* PERFIL móvil - mejor organizado */
+    .panel-perfil {
+        flex-direction: column;
         align-items: center;
-        justify-content: space-around;
-    }
-
-    .foto-perfil{
-        margin-top: 4%;
-        width: 20%;
         height: auto;
+        padding: 20px 15px;
+        background-color: rgba(245, 245, 245, 0.8);
+        border-radius: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .foto-perfil {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 10px;
+    }
+    
+    .nombre-usuario {
+        margin: 0 0 15px 0;
+        text-align: center;
+        font-size: 1.3rem;
+    }
+    
+    .medalla, .racha {
+        position: static;
+        margin: 8px 0;
+        justify-content: center;
+        width: 80%;
+        padding: 8px;
+        border-radius: 20px;
+    }
+    
+    /* LECCIONES móvil - scroll horizontal */
+    .panel-lecciones {
+        height: 220px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 10px;
+        justify-content: flex-start;
+    }
+    
+    .panel-lecciones::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .panel-lecciones::-webkit-scrollbar-thumb {
+        background: #EF767A;
+        border-radius: 3px;
+    }
+    
+    .cards {
+        display: flex;
+        width: auto;
+        height: 180px;
+        margin-left: 0;
+        padding: 0 15px;
+        gap: 15px;
     }
     
     .card {
-        width: 30%; 
+        position: relative;
+        min-width: 160px;
         height: 100%;
-        font-size: clamp(16px, 4vw, 18px); 
-        margin-left: 20%;
+        margin: 0;
+        left: auto !important;
+        float: none;
+        flex-shrink: 0;
     }
-
     
-
-    .cards{
-        height: 60%;
+    /* PUNTOS - gráfica más grande */
+    .panel-puntos {
+        width: 100%;
+        height: auto;
+        padding: 20px;
+        margin: 0;
     }
-    .medalla, .racha{
-        height: 4vh;
+    
+    .contenedor-grafica {
+        width: 80%;
+        height: 200px;
+        min-width: 200px;
+        min-height: 200px;
+        margin: 20px auto;
     }
-    .texto-lecciones{
-        display: none;
-        text-indent: -9999px; 
+    
+    /* CALENTAMIENTO */
+    .boton-calentamiento {
+        height: 80px;
+        font-size: 1.1rem;
+        border-radius: 15px;
+    }
+    
+    /* NOTIFICACIONES */
+    .panelNotificaciones {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        height: 250px;
+    }
+    
+    .panelNotificaciones div {
+        width: 100%;
+    }
+    
+    /* DESAFÍOS */
+    .panel-desafios {
+        width: 100%;
+        height: 220px;
+        padding: 20px;
+    }
+    
+    .panel-desafios span {
+        font-size: 1.1rem;
+        margin: 10px 0 20px;
+    }
+    
+    .panel-desafios a {
+        padding: 12px 25px;
+    }
+    
+    /* Espaciado adicional para evitar superposiciones */
+    .item3, .item5, .item6 {
+        margin-top: 10px;
     }
 }

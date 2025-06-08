@@ -54,3 +54,57 @@
   .contenido{
     height: 70vh;;
   }
+
+  
+/* Responsividad */
+@media screen and (max-width: 768px) {
+    .item {
+        width: 140px;
+        height: 110px;
+    }
+
+    .instruccion {
+        font-size: 1.2rem;
+        height: auto;
+        padding: 0.5rem;
+    }
+
+    .contenido {
+        height: auto;
+        padding: 1rem 0;
+    }
+
+    .tarjetas {
+        gap: 0.8rem;
+    }
+
+    .extras {
+        flex-direction: column;
+        height: auto;
+        padding: 0.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .item {
+        width: 100px;
+        height: 80px;
+    }
+
+    .instruccion {
+        font-size: 1rem;
+    }
+
+    .tarjetas {
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 0.5rem;
+    }
+
+    .extras {
+        font-size: 0.9rem;
+    }
+
+    .cancelarM {
+        margin-top: 0.5rem;
+    }
+}
