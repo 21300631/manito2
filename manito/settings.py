@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from dotenv import load_dotenv  # Si usas python-dotenv
 from pathlib import Path
-import os
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,15 +21,10 @@ STATIC_URL = '/static/'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-SESSION_COOKIE_AGE = 1209600  # 2 semanas en segundos
+SESSION_COOKIE_AGE = 1209600  # 2 semanas
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_SAVE_EVERY_REQUEST = TrueSESSION_COOKIE_AGE = 1209600  # 2 semanas (valor recomendado)
-
-# La sesión expira cuando el usuario cierra el navegador
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-
-# Renovar la sesión con cada request
 SESSION_SAVE_EVERY_REQUEST = True
+
 
 LOGIN_URL = '/login/'  # URL donde está el login
 LOGIN_REDIRECT_URL = 'inicio_global'  # Nombre de la URL a donde redirigir tras login
@@ -38,7 +34,7 @@ import os
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['manito.onrender.com']  # o el dominio que Render te dé
+ALLOWED_HOSTS = ['https://manito-exz5.onrender.com']  # o el dominio que Render te dé
 
 
 STATICFILES_DIRS = [
@@ -179,7 +175,6 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-load_dotenv()
 
 # Credenciales comunes AWS
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
