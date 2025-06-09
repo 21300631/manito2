@@ -199,3 +199,125 @@ nav a{
     font-size: 20px;
 }
 
+
+
+@media screen and (max-width: 1024px) {
+    .todo {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .panelIzquierdo {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .navegador {
+        width: auto;
+        margin: 0;
+    }
+
+    nav {
+        flex-direction: row;
+        height: auto;
+        margin: 20px;
+        width: auto;
+    }
+
+    nav a {
+        margin: 10px;
+        width: auto;
+        margin-left: 0;
+    }
+
+    nav img {
+        margin: 0;
+    }
+
+    .volver {
+        margin: 20px 0;
+    }
+
+    .panelDerecho {
+        width: 100%;
+        height: auto;
+        padding: 10px;
+    }
+
+    .panel-publicacion {
+        width: 95%;
+        height: auto;
+        padding: 20px;
+    }
+
+    .panel-publicacion p {
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .titulo input,
+    .contenido textarea,
+    .hashtags textarea {
+        width: 100%;
+    }
+
+    .contenido input {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .botones {
+        flex-direction: column;
+        width: 100%;
+        margin-left: 0;
+        height: auto;
+        gap: 10px;
+    }
+
+    .botones button {
+        width: 100%;
+        font-size: 18px;
+    }
+    .contenido textarea{
+        display: flex;
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .panel-publicacion {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+        width: 90%;
+
+    height: 700px;
+
+    border-radius: 20px;
+    background-color: #23F0C7;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+
+    .botones button {
+        font-size: 16px;
+    }
+
+    nav img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .volver {
+        width: 70px;
+        height: 35px;
+        font-size: 14px;
+    }
+
+    .contenido textarea{
+    margin-left: 0;
+}
+}

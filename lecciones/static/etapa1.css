@@ -226,3 +226,142 @@ a {
   100% { transform: scale(1); }
 }
 
+
+/* Responsividad */
+@media (max-width: 1200px) {
+  .todo{
+    display: inline;
+  }
+  
+  .panel-izquierdo{
+    height: 20vh;   
+    width: 100%;
+
+  }
+
+
+  nav{
+    height: 100%;
+    width: 100%;
+  }
+
+  nav a{
+    margin: 0;
+  }
+
+  .navegador{
+    width: 100%;
+    margin: 0;
+  }
+
+.lecciones {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+
+  [class^="item"] {
+    width: calc(50% - 20px);
+    height: auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    min-width: 200px;
+  }
+
+  .leccionA, .leccionB {
+    margin: 5px;
+  }
+
+  .item1 {order: 1;}
+  .item2 {order: 2;}
+  .item8 {order: 3;}
+  .item3 {order: 4;}
+  .item7 {order: 5;}
+  .item6 {order: 6;}
+  .item9 {order: 7;}
+  .item12 {order: 8;}
+  .item4 {order: 9;}
+  .item11 {order: 10;}
+  .item10 {order: 11;}
+  .item13 {order: 12;}
+  .item5 {order: 13;}
+  .item14 {order: 14;}
+  .item15 {order: 15;}
+  .item16 {order: 16;}
+  .item17 {order: 17;}
+
+
+
+
+
+  
+}
+
+@media (max-width: 768px) {
+
+  .todo{
+    display: inline;
+  }
+  
+  .panel-izquierdo{
+    height: 20vh;   
+    width: 100%;
+  }
+  
+
+  nav{
+    height: 100%;
+    width: 100%;
+    flex-direction: row;
+  }
+   nav a{
+    margin: 0;
+  }
+  
+  .navegador{
+    width: 100%;
+    margin: 0;
+
+  }
+  .panel-derecho {
+    padding: 0 10px;
+  }
+
+  .etapa {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .titulo {
+    font-size: 20px;
+    margin-left: 10px;
+  }
+
+  .descripcion {
+    font-size: 13px;
+    margin-left: 10px;
+  }
+
+  .lecciones {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 40px;
+  }
+
+  [class^="item"] {
+    width: 90%;
+  }
+
+  .leccionA, .leccionB {
+    width: 60px;
+    height: 60px;
+    font-size: 14px;
+  }
+}
