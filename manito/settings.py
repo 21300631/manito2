@@ -12,8 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from dotenv import load_dotenv  # Si usas python-dotenv
 from pathlib import Path
-load_dotenv()
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,32 +20,31 @@ STATIC_URL = '/static/'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-SESSION_COOKIE_AGE = 1209600  # 2 semanas
+SESSION_COOKIE_AGE = 1209600  # 2 semanas en segundos
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_SAVE_EVERY_REQUEST = TrueSESSION_COOKIE_AGE = 1209600  # 2 semanas (valor recomendado)
 
+# La sesión expira cuando el usuario cierra el navegador
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Renovar la sesión con cada request
+SESSION_SAVE_EVERY_REQUEST = True
 
 LOGIN_URL = '/login/'  # URL donde está el login
 LOGIN_REDIRECT_URL = 'inicio_global'  # Nombre de la URL a donde redirigir tras login
 LOGOUT_REDIRECT_URL = '/login/'  # Para redirigir después de logout
 
-import os
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-g3mr!rkd9s-9$(bstwm^5@r-^yq1g)=$jr*_hqwl3k(3r+(a7y'
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['manito-exz5.onrender.com']  # o el dominio que Render te dé
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
-STATIC_URL = '/static/'
+ALLOWED_HOSTS = []
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -74,7 +72,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     
     'django.middleware.common.CommonMiddleware',
@@ -110,30 +107,18 @@ WSGI_APPLICATION = 'manito.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-# DATABASES = {
-# 'default': {
-# 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-# # 'ENGINE': 'django.db.backends.postgresql_psycopg2',        
-# 'NAME': 'manito_db',  # Cambia esto por el nombre de tu base de datos
-# 'USER': 'postgres',  # Tu usuario de PostgreSQL 
-# 'PASSWORD': '140506',  # Tu contraseña de PostgreSQL
-# 'HOST': 'localhost',  # Servidor local
-# 'PORT': '5432',  # Puerto por defecto de PostgreSQL
-# }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'USER': os.environ.get('DATABASE_USER'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-        'HOST': os.environ.get('DATABASE_HOST'),
-        'PORT': os.environ.get('DATABASE_PORT'),
+
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',        
+        'NAME': 'manito_db',  # Cambia esto por el nombre de tu base de datos
+        'USER': 'postgres',  # Tu usuario de PostgreSQL 
+        'PASSWORD': '140506',  # Tu contraseña de PostgreSQL
+        'HOST': 'localhost',  # Servidor local
+        'PORT': '5432',  # Puerto por defecto de PostgreSQL
     }
 }
-
 
 
 
@@ -178,10 +163,12 @@ USE_TZ = True
 # settings.py
 MEDIA_URL = '/media/'  # URL pública para medios
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Ruta absoluta al directorio media/
+STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+load_dotenv()
 
 # Credenciales comunes AWS
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
