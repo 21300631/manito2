@@ -157,8 +157,15 @@ def inicioSesion(request):
             'puntos': perfil.puntos,
             'notificaciones': notificaciones
     }
+
+    try:
+        return render(request, 'inicio.html', contexto)
+    except Exception as e:
+        import traceback
+        print("Error en inicioSesion:", e)
+        traceback.print_exc()
+        return render(request, 'error_generico.html', {'mensaje': str(e)})
     
-    return render(request, 'inicio.html', contexto)
 
 @login_required
 def puntosUsuario(request):
