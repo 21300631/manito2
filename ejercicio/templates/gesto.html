@@ -72,7 +72,12 @@
 
     <script>
         const IS_VIDEO_EXERCISE = {{ is_video|yesno:"true,false" }};
-        const LANDMARKS_JSON_URL = "{% static '' %}" + "{{ json_url }}";
+        {% if json_url %}
+        const LANDMARKS_JSON_URL = "{% static '' %}{{ json_url }}";
+        {% else %}
+        console.error("json_url no definido");
+        {% endif %}
+
         const PALABRA_ACTUAL = "{{ palabra_correcta }}";
         const PALABRA_ACTUAL_JSON = {{ json_url }};
 

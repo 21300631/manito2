@@ -239,35 +239,45 @@ def ejercicio_escribir(request):
 
     print("Gesto URL:", archivo_url)
     return render(request, 'escribir.html', context)
-
+from django.core.exceptions import ObjectDoesNotExist
 
 def ejercicio_gesto(request):
     ejercicios = request.session.get('ejercicios', [])
     index = request.session.get('ejercicio_actual', 0)
     progreso = request.session.get('progreso', 0)
-    print(f"Ejercicio Gesto - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")  # Debug
+    print(f"Ejercicio Gesto - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")
 
-    
     if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
 
     ejercicio_actual = ejercicios[index]
-    palabra_id = ejercicio_actual['palabra']
-    palabra = Palabra.objects.get(id=palabra_id)
+    palabra_id = ejercicio_actual.get('palabra')  # más seguro con .get()
 
-    archivo_url = f"{MANITO_BUCKET_DOMAIN}/{palabra.gesto}"
+    try:
+        palabra = Palabra.objects.get(id=palabra_id)
+    except ObjectDoesNotExist:
+        print(f"❌ Palabra con ID {palabra_id} no encontrada.")
+        return render(request, 'error_generico.html', {'mensaje': f'Palabra con ID {palabra_id} no encontrada.'})
+
+    # Proteger contra gesto vacío o None
+    gesto = palabra.gesto if palabra.gesto else ''
+    archivo_url = f"{MANITO_BUCKET_DOMAIN}/{gesto}"
     
     print("Gesto URL:", archivo_url)
-    
-
 
     contexto = {
         'texto_instruccion': f"Realiza el gesto correspondiente a la palabra: {palabra.palabra}",
         'archivo': archivo_url,
-        'is_video': palabra.gesto.lower().endswith('.mp4'),  # Cambiado a is_video
+        'is_video': gesto.lower().endswith('.mp4') if gesto else False,
         'theme': request.session.get('theme', 'light'),
         'palabra_correcta': palabra.palabra,
-        'json_url': f'landmarks/{palabra.palabra}.json',  # Asegúrate que coincida con tus archivos
+        'json_url': f'landmarks/{palabra.palabra}.json',
     }
 
-    return render(request, 'gesto.html', contexto)
+    try:
+        return render(request, 'gesto.html', contexto)
+    except Exception as e:
+        import traceback
+        print("❌ ERROR EN TEMPLATE GESTO:", e)
+        traceback.print_exc()
+    return render(request, 'error_generico.html', {'mensaje': f'Error en template gesto: {str(e)}'})
