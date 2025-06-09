@@ -108,16 +108,15 @@ WSGI_APPLICATION = 'manito.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',        
-        'NAME': 'manito_db',  # Cambia esto por el nombre de tu base de datos
-        'USER': 'postgres',  # Tu usuario de PostgreSQL 
-        'PASSWORD': '140506',  # Tu contraseña de PostgreSQL
-        'HOST': 'localhost',  # Servidor local
-        'PORT': '5432',  # Puerto por defecto de PostgreSQL
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
     }
 }
 
