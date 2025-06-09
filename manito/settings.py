@@ -33,7 +33,7 @@ LOGOUT_REDIRECT_URL = '/login/'  # Para redirigir después de logout
 import os
 
 SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = False
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = ['manito-exz5.onrender.com']  # o el dominio que Render te dé
 
 STATIC_URL = '/static/'
