@@ -530,3 +530,232 @@ input:checked + .slider:before {
 .panelNotificaciones ul::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+
+/* Estilos base (mantén los que ya tienes) */
+
+/* Responsividad */
+@media (max-width: 1200px) {
+  .panelIzquierdo, .panelDerecho {
+    position: static;
+    width: 100%;
+    height: auto;
+  }
+  
+  .panelIzquierdo {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .arriba {
+    flex-direction: column;
+    height: auto;
+    margin-bottom: 30px;
+  }
+  
+  .fotoPerfil {
+    position: static;
+    margin: 20px auto;
+    left: 0;
+    top: 0;
+  }
+  
+  .divnotificaciones {
+    width: 100%;
+    max-width: 500px;
+  }
+  
+  .panelNotificaciones {
+    width: 100%;
+    margin: 20px 0;
+  }
+  
+  .panelNotificaciones div {
+    width: 100%;
+  }
+  
+  .divnavegador{
+    width: 100%;
+    height: 20vh;
+  }
+
+  nav{
+    width: 100%;
+    height: 100%;
+  }
+  .panelDerecho {
+    padding: 20px;
+  }
+  
+  .arribaD {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .panel-perfil {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .derecha {
+    width: 100%;
+    height: auto;
+  }
+  
+  .divpuntos {
+    width: 100%;
+    max-width: 444px;
+  }
+  
+  .panel-puntos {
+    position: relative;
+    height: 150px;
+  }
+  
+  .medalla {
+    position: static;
+    justify-content: center;
+    margin: 10px 0;
+  }
+  
+  .racha {
+    margin-left: 0;
+    justify-content: center;
+  }
+  
+  .medio {
+    flex-direction: column;
+    height: auto;
+    padding: 20px 0;
+  }
+  
+  .insigniasLabel, .claroOscLabel {
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+  }
+  
+  .panel-claroOscuro {
+    margin-top: 15px;
+  }
+  
+  .insignias {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  nav {
+    flex-direction: row;
+    width: 100%;
+    margin: 20px 0;
+  }
+  
+  nav a {
+    width: 100%;
+    margin: 15px 0;
+    justify-content: center;
+  }
+  
+  nav a span {
+    display: none; /* Ocultar el texto */
+  }
+  
+  .fotoPerfil {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .nombre-usuario {
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .btn-guardar-nombre {
+    margin-top: 10px;
+  }
+  
+  .panel-puntos {
+    width: 100%;
+  }
+  
+  .texto-puntos {
+    width: 100%;
+    flex-direction: column;
+    text-align: center;
+    height: auto;
+  }
+  
+  .texto-puntos p {
+    margin: 10px 0;
+  }
+  
+  .insignias {
+    grid-template-columns: repeat(2, minmax(80px, 1fr));
+  }
+  
+  .cerrar-sesion-btn {
+    margin: 20px auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .fotoPerfil {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .cambiar-foto-btn {
+    bottom: -25px;
+    padding: 5px;
+    font-size: 12px;
+  }
+  
+  .guardar-cambios-btn {
+    padding: 8px 15px;
+    font-size: 12px;
+  }
+  
+  .panelNotificaciones {
+    height: auto;
+    max-height: 300px;
+  }
+  
+  .notificacion-item {
+    margin: 10px 0;
+    padding: 8px;
+  }
+  
+  .insignias {
+    grid-template-columns: repeat(2, minmax(70px, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .insignia-item img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .tooltip {
+    font-size: 12px;
+  }
+  
+  .switch {
+    width: 50px;
+    height: 28px;
+  }
+  
+  .slider:before {
+    width: 20px;
+    height: 20px;
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(22px);
+  }
+}

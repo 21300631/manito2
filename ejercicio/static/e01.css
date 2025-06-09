@@ -148,3 +148,55 @@ body.dark {
 }
 
 
+@media (min-width: 768px) {
+    .contenido {
+        flex-direction: row;
+    }
+    
+    .panel-barra {
+        width: 150px;
+        height: 100%;
+        padding: 0;
+    }
+    
+    .progress-container {
+        height: 550px;
+        width: 50px;
+        margin: 20px 0;
+    }
+    
+    .progress-bar {
+        height: 0%;
+        width: 100%;
+        bottom: 0;
+        top: auto;
+    }
+    
+    .panel-btn {
+        height: 140px;
+    }
+    
+    .btn-salir {
+        margin-right: 100px;
+        width: 140px;
+        height: 70px;
+        font-size: 18px;
+    }
+    
+    .ejercicio {
+        grid-template-columns: repeat(3, 1fr);
+        height: calc(100% - 140px);
+        padding: 0;
+    }
+    
+    .card {
+        height: 50%;
+        max-width: 80%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .instruccion span {
+        font-size: 28px;
+    }
+}

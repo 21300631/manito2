@@ -1,10 +1,14 @@
-*{
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
-.todo{
+
+.todo {
     background-color: #BCDCFB;
+    min-height: 100vh;
 }
+
 body.light {
     background-color: #BCDCFB;
 }
@@ -14,29 +18,31 @@ body.dark {
     color: white;
 }
 
-.instruccion{
+.instruccion {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #3C91E6;
     height: 97px;
     width: 100%;
+    padding: 10px;
 }
-.instruccion span{
+
+.instruccion span {
     text-align: center;
     color: #fff;
-    font-family:  Arial;
+    font-family: Arial;
     font-weight: bold;
     font-size: 24px;
 }
 
-.contenido{
+.contenido {
     display: flex;
-    height: 641px;
+    height: calc(100vh - 97px);
     width: 100%;
 }
 
-.panel-barra{
+.panel-barra {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -45,8 +51,8 @@ body.dark {
 }
 
 .progress-container {
-    height: 550px; /* Altura del contenedor */
-    width: 50px; /* Ancho del contenedor */
+    height: 550px;
+    width: 50px;
     background-color: #61A8EC;
     border-radius: 40px;
     overflow: hidden;
@@ -54,38 +60,33 @@ body.dark {
     position: relative;
 }
 
-.progress-bar{
+.progress-bar {
     width: 100%;
-    height: 0%; /* La altura se ajustará dinámicamente */
+    height: 0%;
     background-color: #3C91E6;
     transition: height 0.5s ease-in-out;
     position: absolute;
-    bottom: 0; /* La barra crece desde abajo */
+    bottom: 0;
 }
 
-
-.panel2{
+.panel2 {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-.panel-btn{
+.panel-btn {
     display: flex;
     align-items: center;
     position: absolute;
     bottom: 0;
     height: 140px;
     width: 100%;
+    justify-content: space-between;
+    padding-right: 100px;
 }
 
-
-.btn-salir{
-    position: absolute;
-    right: 0;
-    top: 40px;
-
-    margin-right: 100px;
+.btn-salir {
     width: 140px;
     height: 70px;
     background-color: #61A8EC;
@@ -96,10 +97,8 @@ body.dark {
     font-size: 18px;
 }
 
-
-
-/* cosas individuales de cada ejercicio  */
-.palabras{
+/* Estilos del ejercicio */
+.palabras {
     margin-top: 20px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -109,7 +108,7 @@ body.dark {
     justify-items: center;
 }
 
-.palabra{
+.palabra {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -122,14 +121,15 @@ body.dark {
     color: #fff;
     border-radius: 10px;
     background-color: #3C91E6;
+    transition: all 0.3s ease;
 }
 
-.palabra:hover{
+.palabra:hover {
     background-color: #61A8EC;
     cursor: pointer;
 }
 
-.gestos{
+.gestos {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     width: 100%;
@@ -138,7 +138,7 @@ body.dark {
     justify-items: center;
 }
 
-.gesto{
+.gesto {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -146,36 +146,27 @@ body.dark {
     border-radius: 10px;
     width: 80%;
     height: 50%;
+    transition: all 0.3s ease;
 }
 
-.gesto:hover{
+.gesto:hover {
     background-color: #61A8EC;
     cursor: pointer;
 }
 
-.palabra.seleccionada, .gesto.seleccionado {
-    border-color: #4CAF50;
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+/* Estilos de selección y emparejamiento */
+.palabra.seleccionada, 
+.gesto.seleccionado,
+.palabra.seleccionada, 
+.gesto.seleccionada {
+    background-color: #e2e3e5;
+    border: 2px solid #d3d6d8;
 }
 
-
-
-#btn-verificar {
-    background-color: #007BFF;
-    color: white;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-#btn-verificar:disabled {
-    background-color: #cccccc;
+.palabra.emparejada, 
+.gesto.emparejada {
+    opacity: 0.7;
     cursor: not-allowed;
-}
-#btn-verificar:hover:not(:disabled) {
-    background-color: #0056b3;
 }
 
 .correcto {
@@ -192,74 +183,37 @@ body.dark {
     font-weight: bold;
 }
 
-.pareado-1 {
-    background-color: #a0d8f1; /* azul suave */
-    border: 2px solid #4ca3dd;
-    transition: background-color 0.3s, border 0.3s;
-}
+/* Estilos para pares emparejados */
+.pareado-1 { background-color: #a0d8f1; border: 2px solid #4ca3dd; }
+.pareado-2 { background-color: #a2a8e0; border: 2px solid #272797; }
+.pareado-3 { background-color: #ffe0b2; border: 2px solid #ffb74d; }
+.pareado-4 { background-color: #a0d8f1; border: 2px solid #4ca3dd; }
+.pareado-5 { background-color: #c1a2e0; border: 2px solid #5b2797; }
+.pareado-6 { background-color: #ffe0b2; border: 2px solid #ffb74d; }
 
-.pareado-2 {
-    background-color: #a2a8e0; /* verde suave */
-    border: 2px solid #272797;
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.pareado-3 {
-    background-color: #ffe0b2; /* naranja suave */
-    border: 2px solid #ffb74d;
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.pareado-4 {
-    background-color: #a0d8f1; /* azul suave */
-    border: 2px solid #4ca3dd;
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.pareado-5 {
-    background-color: #c1a2e0; /* verde suave */
-    border: 2px solid #5b2797;
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.pareado-6 {
-    background-color: #ffe0b2; /* naranja suave */
-    border: 2px solid #ffb74d;
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.emparejada {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-
-#resultadoEmparejamiento {
-    margin: 15px 0;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.btn-verificar {
-    background-color: #4CAF50;
-    color: white;
+/* Botón de verificación */
+#btn-verificar {
+    margin-top: 20px;
     padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
     font-size: 16px;
 }
 
-.btn-verificar:hover {
-    background-color: #45a049;
+#btn-verificar:hover {
+    background-color: #0069d9;
 }
 
-.palabra.seleccionada, .gesto.seleccionada {
-    background-color: #d0e7f1; /* Fondo azul claro */
-    border: 2px solid #007bff; /* Borde azul */
+#btn-verificar:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
 }
 
+/* Feedback */
 #feedback {
     display: flex;
     align-self: center;
@@ -270,9 +224,9 @@ body.dark {
     border-radius: 5px;
     text-align: center;
     font-weight: bold;
+    font-size: 18px;
 }
 
-/* Estilos condicionales según si es correcto/incorrecto */
 #feedback.correcto {
     background-color: #d4edda;
     color: #155724;
@@ -283,41 +237,119 @@ body.dark {
     color: #721c24;
 }
 
+/* Media Queries para pantallas pequeñas */
+@media (max-width: 1024px) {
+    .palabra, .gesto {
+        font-size: 20px;
+    }
+    
+    .btn-salir {
+        width: 120px;
+        height: 60px;
+        font-size: 16px;
+    }
 
-
-
-.palabra.seleccionada, .gesto.seleccionada {
-    background-color: #e2e3e5;
-    border-color: #d3d6d8;
+    img{
+        width: 50%;
+    }
+    video{
+        width: 50%;
+    }
 }
 
-.palabra.emparejada, .gesto.emparejada {
-    opacity: 0.7;
-    cursor: not-allowed;
+@media (max-width: 768px) {
+    .contenido {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .panel-barra {
+        width: 100%;
+        height: auto;
+        padding: 20px 0;
+    }
+    
+    .progress-container {
+        height: 50px;
+        width: 80%;
+        max-width: 400px;
+    }
+    
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+        bottom: auto;
+        transition: width 0.5s ease-in-out;
+    }
+    
+    .panel2 {
+        height: auto;
+        padding-bottom: 140px;
+    }
+    
+    .palabras, .gestos {
+        grid-template-columns: repeat(2, 1fr);
+        height: auto;
+        gap: 15px;
+        padding: 20px;
+    }
+    
+    .palabra, .gesto {
+        width: 90%;
+        height: 80px;
+        font-size: 18px;
+    }
+    
+    .gesto {
+        height: 150px;
+    }
+    
+    .panel-btn {
+        position: relative;
+        height: auto;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        gap: 15px;
+    }
+    
+    .btn-salir {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-right: 0;
+    }
+    
+    #feedback {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
 }
 
-/* Estilos para pares emparejados */
-.pareado-1 { background-color: #fade83; border-color: #ffd862; }
-.pareado-2 { background-color: #5bd9f0; border-color: #34d0e8; }
-.pareado-3 { background-color: #68b2e3; border-color: #2f44e2; }
-.pareado-4 { background-color: #f33caa; border-color: #e62291; }
-
-#btn-verificar {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#btn-verificar:hover {
-    background-color: #0069d9;
-}
-
-#btn-verificar:disabled {
-    background-color: #6c757d;
-    cursor: not-allowed;
+@media (max-width: 480px) {
+    .instruccion span {
+        font-size: 20px;
+    }
+    
+    .palabras, .gestos {
+        grid-template-columns: 1fr;
+    }
+    
+    .palabra {
+        height: 60px;
+        font-size: 16px;
+    }
+    
+    .gesto {
+        height: 120px;
+    }
+    
+    #btn-verificar {
+        width: 100%;
+    }
+    
+    #feedback {
+        font-size: 16px;
+    }
 }

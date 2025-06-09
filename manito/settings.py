@@ -34,13 +34,12 @@ LOGIN_URL = '/login/'  # URL donde está el login
 LOGIN_REDIRECT_URL = 'inicio_global'  # Nombre de la URL a donde redirigir tras login
 LOGOUT_REDIRECT_URL = '/login/'  # Para redirigir después de logout
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-g3mr!rkd9s-9$(bstwm^5@r-^yq1g)=$jr*_hqwl3k(3r+(a7y'
+import os
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = ['manito.onrender.com']  # o el dominio que Render te dé
 
-ALLOWED_HOSTS = []
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),

@@ -165,3 +165,106 @@ body.dark {
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
+
+
+/* Media Queries para pantallas pequeñas */
+@media (max-width: 767px) {
+    .todo {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .contenido {
+        flex-direction: column;
+        height: auto;
+        flex: 1;
+    }
+    
+    .panel-barra {
+        width: 100%;
+        height: auto;
+        padding: 10px 0;
+    }
+    
+    .progress-container {
+        height: 50px;
+        width: 80%;
+        max-width: 550px;
+        margin: 10px 0;
+    }
+    
+    .progress-bar {
+        width: 0%;
+        height: 100%;
+        top: 0;
+        bottom: auto;
+        transition: width 0.5s ease-in-out;
+    }
+    
+    .panel2 {
+        height: auto;
+        flex: 1;
+    }
+    
+    .panel-btn {
+        position: relative;
+        height: 100px;
+        justify-content: flex-end;
+        padding: 20px;
+    }
+    
+    .btn-salir {
+        position: static;
+        margin-right: 20px;
+        width: 120px;
+        height: 60px;
+        font-size: 16px;
+    }
+    
+    .ejemplos {
+        grid-template-columns: 1fr;
+        height: auto;
+        padding: 15px;
+        gap: 15px;
+        font-size: 24px;
+    }
+    
+    .ejercicio {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        height: auto;
+        padding: 20px;
+        gap: 20px;
+    }
+    
+    .card {
+        width: 100%;
+        max-width: 300px;
+        height: 200px;
+        margin: 0 auto;
+    }
+}
+
+/* Ajustes para pantallas muy pequeñas (menos de 400px) */
+@media (max-width: 400px) {
+    .instruccion span {
+        font-size: 20px;
+    }
+    
+    .card {
+        height: 150px;
+    }
+    
+    .btn-salir {
+        width: 100px;
+        height: 50px;
+        font-size: 14px;
+    }
+
+    video{
+        width: 50%;
+    }
+    img{
+        width: 50%;
+    }
+}
