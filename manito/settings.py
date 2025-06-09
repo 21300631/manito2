@@ -34,7 +34,7 @@ import os
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['https://manito-exz5.onrender.com']  # o el dominio que Render te dé
+ALLOWED_HOSTS = ['manito-exz5.onrender.com']  # o el dominio que Render te dé
 
 
 STATICFILES_DIRS = [
