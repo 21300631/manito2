@@ -39,10 +39,8 @@ def inicioSesion(request):
     perfil.last_login = now
     perfil.save()
 
-    try:
-        medalla = perfil.medalla  # Obtiene la medalla del usuario
-    except Profile.DoesNotExist:
-        medalla = None  # Si el usuario no tiene perfil, medalla será None
+    medalla = getattr(perfil, "medalla", None)
+
 
     print(f'Racha Usuario {racha}')
     if racha == 7:
@@ -54,7 +52,7 @@ def inicioSesion(request):
             if not logro_existente:
                 Logro.objects.create(usuario=perfil, insignia=insignia_7dias)
                 print("Insignia semana")
-                messages.succcess(request, '¡Has ganado la insignia 7 días por completar una semana de racha! Sigue así 🏅')
+                messages.success(request, '¡Has ganado la insignia 7 días por completar una semana de racha! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
     if racha == 30:    
@@ -65,7 +63,7 @@ def inicioSesion(request):
             if not logro_existente:
                 Logro.objects.create(usuario=perfil, insignia=insignia_30dias)
                 print("Insignia mes")
-                messages.succcess(request, '¡Has ganado la insignia 30 días por completar una mes de racha! Sigue así 🏅')
+                messages.success(request, '¡Has ganado la insignia 30 días por completar una mes de racha! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
     if racha == 90:    
@@ -76,7 +74,7 @@ def inicioSesion(request):
             if not logro_existente:
                 Logro.objects.create(usuario=perfil, insignia=insignia_90dias)
                 print("Insignia trimestre")
-                messages.succcess(request, '¡Has ganado la insignia 90 días por completar una tres meses de racha! Sigue así 🏅')
+                messages.success(request, '¡Has ganado la insignia 90 días por completar una tres meses de racha! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
     if racha == 365:    
@@ -87,7 +85,7 @@ def inicioSesion(request):
             if not logro_existente:
                 Logro.objects.create(usuario=perfil, insignia=insignia_anio)
                 print("Insignia year")
-                messages.succcess(request, '¡Has ganado la insignia un año por completar una año de racha! Sigue así 🏅')
+                messages.success(request, '¡Has ganado la insignia un año por completar una año de racha! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
     
@@ -99,7 +97,7 @@ def inicioSesion(request):
             if not logro_existente:
                 Logro.objects.create(usuario=perfil, insignia=insignia_10P)
                 print("Insignia 10")
-                messages.succcess(request, '¡Has ganado la insignia 10 palabras por completar 10 palabras! Sigue así 🏅')
+                messages.success(request, '¡Has ganado la insignia 10 palabras por completar 10 palabras! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
 
@@ -111,19 +109,19 @@ def inicioSesion(request):
             if not logro_existente:
                 Logro.objects.create(usuario=perfil, insignia=insignia_50P)
                 print("Insignia 50")
-                messages.succcess(request, '¡Has ganado la insignia 50 palabras por completar 50 palabras! Sigue así 🏅')
+                messages.success(request, '¡Has ganado la insignia 50 palabras por completar 50 palabras! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
 
     if cantidadPalabras == 100:    
         try:
             insignia_100P= Insignia.objects.get(imagen="insignias/feliz100.png")
-            logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_50P).exists()
+            logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_100P).exists()
 
             if not logro_existente:
-                Logro.objects.create(usuario=perfil, insignia=insignia_50P)
+                Logro.objects.create(usuario=perfil, insignia=insignia_100P)
                 print("Insignia 100")
-                messages.succcess(request, '¡Has ganado la insignia 50 palabras por completar 50 palabras! Sigue así 🏅')
+                messages.success(request, '¡Has ganado la insignia 50 palabras por completar 50 palabras! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
 
@@ -135,7 +133,7 @@ def inicioSesion(request):
             if not logro_existente:
                 Logro.objects.create(usuario=perfil, insignia=insignia_250P)
                 print("Insignia 250")
-                messages.succcess(request, '¡Has ganado la insignia 250 palabras por completar 250 palabras! Sigue así 🏅')
+                messages.success(request, '¡Has ganado la insignia 250 palabras por completar 250 palabras! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
     
@@ -147,7 +145,7 @@ def inicioSesion(request):
             if not logro_existente:
                 Logro.objects.create(usuario=perfil, insignia=insignia_510P)
                 print("Insignia 510")
-                messages.succcess(request, '¡Has ganado la insignia todas las palabras por completar 510 palabras! Sigue así 🏅')
+                messages.success(request, '¡Has ganado la insignia todas las palabras por completar 510 palabras! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
 
