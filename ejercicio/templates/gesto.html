@@ -19,7 +19,7 @@
                     
                     <div class="progress-bar" id="progressBar" 
                         style="height: {{ request.session.progreso|default_if_none:0 }}%;" 
-                        data-progreso-inicial="{{ request.session.progreso|default_if_none:0 }}"
+                        data-progreso-inicial="{{ request.session.progreso|default_if_none:0 }}">
                  </div>
                 </div>
             </div>
@@ -74,7 +74,8 @@
     <script>
         const IS_VIDEO_EXERCISE = {{ is_video|yesno:"true,false" }};
         {% if json_url %}
-        const LANDMARKS_JSON_URL = "{% static '' %}{{ json_url }}";
+        const LANDMARKS_JSON_URL = "{{ json_url }}";
+
         {% else %}
         console.error("json_url no definido");
         {% endif %}
