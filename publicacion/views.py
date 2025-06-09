@@ -3,7 +3,7 @@ from .models import Publicacion
 from django.views.decorators.csrf import csrf_exempt
 from registro.models import Profile
 from django.http import HttpResponse
-
+from django.contrib import messages
 MAX_IMAGE_SIZE = 500 * 1024  # 500 KB
 MAX_VIDEO_SIZE = 10 * 1024 * 1024  # 10 MB
 
@@ -58,6 +58,8 @@ def nueva_publicacion(request):
                 hashtags=hashtags,
                 usuario=profile
             )
+            messages.success(request, '¡Publicación creada exitosamente!')
+
             return redirect('/publicacion/')
         
         except Exception as e:

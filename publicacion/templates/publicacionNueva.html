@@ -61,6 +61,17 @@
     </script>
     {% endif %}
     <script src="{% static 'publicacion.js' %}"></script>
-
+    {% if messages %}
+    <script>
+        {% for message in messages %}
+        Swal.fire({
+            title: 'Genial!',
+            text: '{{ message }}',
+            icon: '{{ message.tags }}',
+            confirmButtonText: 'OK'
+        });
+        {% endfor %}
+    </script>
+    {% endif %}
 </body>
 </html>
