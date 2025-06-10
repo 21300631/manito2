@@ -18,16 +18,15 @@
                 <div class="progress-container">
                     
                     <div class="progress-bar" id="progressBar" 
-                        style="height: {{ request.session.progreso|default_if_none:0 }}%;" 
-                        data-progreso-inicial="{{ request.session.progreso|default_if_none:0 }}">
-                 </div>
+                        style="height: {{ request.session.progreso|default:0 }}%;" 
+                        data-progreso-inicial="{{ request.session.progreso|default:0 }}"></div>
                 </div>
             </div>
             <div class="panel2">
                 <div class="ejercicio">
                     <div class="gesto">
                         {% if is_video %}
-                            <video id="gestoVideo" src="{{ archivo }}" autoplay loop muted width="80%" data-palabra="{{ palabra_correcta }}" data-palabra-json="{{ json_url }}"></video>
+                            <video id="gestoVideo" src="{{ archivo }}" autoplay loop muted width="80%" data-palabra="{{ palabra_correcta }}" data-palabra-json="{% static '' %}{{ json_url }}"></video>
                         {% else %}
                             <img src="{{ archivo }}" alt="Gesto {{ palabra_correcta }}" width="80%" style="padding: 10%; margin: 0;">
                         {% endif %}
@@ -66,22 +65,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <!-- Añade en tu HTML -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 
     <script>
         const IS_VIDEO_EXERCISE = {{ is_video|yesno:"true,false" }};
-        {% if json_url %}
-        const LANDMARKS_JSON_URL = "{{ json_url }}";
-
-        {% else %}
-        console.error("json_url no definido");
-        {% endif %}
-
+        const LANDMARKS_JSON_URL = "{% static '' %}" + "{{ json_url }}";
         const PALABRA_ACTUAL = "{{ palabra_correcta }}";
-        const PALABRA_ACTUAL_JSON = "{{ json_url }}";
-
+        const PALABRA_ACTUAL_JSON = {{ json_url }};
 
         
         // Solo cargamos landmarks si NO es un video
