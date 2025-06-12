@@ -183,6 +183,19 @@ def puntosUsuario(request):
     etapa3_completa = usuario.puntos >= 10200 and usuario.leccion >= sum(etapas_lecciones[e] for e in ['etapa1', 'etapa2'])
     etapa4_completa = usuario.puntos >= 16200 and usuario.leccion >= sum(etapas_lecciones[e] for e in ['etapa1', 'etapa2', 'etapa3'])
     
+    if etapa4_completa == True and usuario.puntos >= 34400:
+        try:
+            insignia_maestro = Insignia.objects.get(imagen="insignias/estudioso.png")
+            logro_existente = Logro.objects.filter(usuario=usuario, insignia=insignia_maestro).exist()
+
+            if not logro_existente:
+                messages.success(request, "¡Wow, nivel maestro! Sigue asi")
+        except Insignia.DoesNotExist:
+            messages.error(request, 'La insignia no existe')
+
+
+
+
     return JsonResponse({
         'puntos': usuario.puntos,
         'leccion_actual': usuario.leccion,

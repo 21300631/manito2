@@ -7,13 +7,37 @@ from registro.models import Profile
 from django.http import JsonResponse
 from inicio.models import Notificacion
 from django.contrib import messages
-
+from perfil.models import Insignia, Logro
 
 # Create your views here.
 def foro(request):
     publicaciones = Publicacion.objects.all().order_by("-fecha")  # Ordenar por fecha
+
+
+    if request.user.is_authenticated:
+        profile = request.user.profile
+
+        
+
+        # si alguna de las publicaciones del usuario tiene mas de 50 likes enotnces
+        publicaciones_usuario = Publicacion.objects.filter(usuario=profile)
+
+        if publicaciones_usuario.filter(likes__count__gte=5).exists():
+            try:
+                insignia_popular = Insignia.objects.get(imagen="insignias/popular.png")
+                logro_existente = Logro.objects.filter(usuario=profile, insignia=insignia_popular).exist()
+
+                if not logro_existente:
+                    messages.success(request, "¡Vaya que popular!")
+            except Insignia.DoesNotExist:
+                messages.error(request, 'La insignia no existe')
+
+
+    return render(request, "foro.html", {
+        "publicaciones": publicaciones,
+    })
+
     
-    return render(request, "foro.html", {"publicaciones": publicaciones})
 
 
 @login_required
@@ -104,6 +128,8 @@ def agregar_comentario(request, publicacion_id):
 
 
     return redirect("foro")  # Redirigir al foro después de comentar
+
+
 
 def vista_alguna(request):
     perfil = Profile.objects.get(user=request.user)
