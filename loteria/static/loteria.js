@@ -4,7 +4,7 @@ class LoteriaGame {
         this.gestoActual = 0;
         this.puntuacion = 0;
         this.procesandoSeleccion = false;
-        this.intentosPorGesto = {}; // Ahora rastreamos intentos por GESTO, no por palabra
+        this.intentosPorGesto = {}; 
         this.initElements();
         this.setupEventListeners();
         
@@ -40,7 +40,6 @@ class LoteriaGame {
     mostrarGesto() {
         const gesto = this.gestos[this.gestoActual];
         
-        // Resetear elementos multimedia
         this.gestoVideo.pause();
         this.gestoVideo.currentTime = 0;
         
@@ -102,7 +101,6 @@ class LoteriaGame {
                     this.procesandoSeleccion = false;
                 }, 1500);
             } else {
-                // Juego completado - redirigir a la página finalizada
                 setTimeout(() => {
                     window.location.href = `${window.location.pathname}?completado=1&puntuacion=${this.puntuacion}`;
                 }, 2000);

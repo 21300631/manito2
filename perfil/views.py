@@ -13,18 +13,20 @@ from django.shortcuts import get_object_or_404
 from login.views import login_usuario
 from inicio.models import Notificacion
 # Create your views here.
+
+
 @login_required
 def perfil(request):
     usuario = request.user
-    perfil = Profile.objects.get(user=usuario)  # Obtiene el perfil del usuario
+    perfil = Profile.objects.get(user=usuario)  
     logros = Logro.objects.filter(usuario=perfil)
-    insignias = [logro.insignia for logro in logros]  # Extrae las insignias
+    insignias = [logro.insignia for logro in logros]  
     notificaciones = Notificacion.objects.filter(receptor=request.user).order_by('-fecha')[:10]
 
     try:
-        medalla = perfil.medalla  # Obtiene la medalla del usuario
+        medalla = perfil.medalla  
     except Profile.DoesNotExist:
-        medalla = None  # Si el usuario no tiene perfil, medalla será None
+        medalla = None  
     contexto = {
             'usuario': usuario,
             'imagen': perfil.imagen,
@@ -45,7 +47,7 @@ def cambiar_foto_perfil(request):
         nueva_imagen = request.FILES.get('nueva_imagen')
         if nueva_imagen:
             perfil = Profile.objects.get(user=request.user)
-            primer_cambio = perfil.imagen.name.endswith('default.jpg') # Ajusta si tienes imagen por defecto
+            primer_cambio = perfil.imagen.name.endswith('default.jpg')
             perfil.imagen = nueva_imagen
             perfil.save()
             messages.success(request, 'Foto de perfil actualizada correctamente')
@@ -82,12 +84,10 @@ def cambiar_nombre(request):
         nuevo_username = request.POST.get('nuevo_username').strip()
         
         if nuevo_username and nuevo_username != usuario.username:
-            # Verifica si el nombre ya existe
             if not User.objects.filter(username=nuevo_username).exclude(pk=usuario.pk).exists():
                 usuario.username = nuevo_username
                 usuario.save()
                 
-                # Actualiza la instancia del usuario en la sesión
                 from django.contrib.auth import update_session_auth_hash
                 update_session_auth_hash(request, usuario)
                 
@@ -128,10 +128,10 @@ def obtener_tema(request):
     if request.user.is_authenticated:
         theme = request.user.profile.theme 
         return JsonResponse({'theme': theme})
-    return JsonResponse({'theme': 'light'})  # Default para usuarios no autenticados
+    return JsonResponse({'theme': 'light'})  
 
 def logout_view(request):
     if request.method == 'POST':
         logout(request)
-        return redirect('login_usuario')  # Redirige a la página de inicio de sesión después de cerrar sesión
+        return redirect('login_usuario')
     return render(request, 'login.html')  

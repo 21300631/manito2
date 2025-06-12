@@ -44,8 +44,8 @@ def nueva_publicacion(request):
                 context['error'] = 'Tipo de archivo no permitido. Solo imágenes (JPEG, PNG, GIF) y videos (MP4, WebM, Ogg)'
                 return render(request, 'publicacionNueva.html', context)
             
-            # Validar tamaño máximo (ejemplo: 10MB)
-            if media.size > 10 * 1024 * 1024:  # 10MB
+            # Aqui valido el tamaño maximo
+            if media.size > 10 * 1024 * 1024:  
                 context['error'] = 'El archivo es demasiado grande (máximo 10MB)'
                 return render(request, 'publicacionNueva.html', context)
             
@@ -54,7 +54,7 @@ def nueva_publicacion(request):
             nueva_publicacion = Publicacion.objects.create(
                 titulo=titulo,
                 contenido=contenido,
-                archivo_media=media,  # Cambiado a archivo_media
+                archivo_media=media,  
                 hashtags=hashtags,
                 usuario=profile
             )

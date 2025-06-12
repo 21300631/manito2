@@ -35,7 +35,6 @@ def etapa1(request):
     if leccion_actual <= max(lecciones_estado.keys()):
         lecciones_estado[leccion_actual] = 'en-progreso'
     
-    # Opcional: forzar desbloqueo de la primera si todas están bloqueadas
     if all(status == 'bloqueada' for status in lecciones_estado.values()):
         lecciones_estado[1] = 'en-progreso'
 

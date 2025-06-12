@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     title: 'Acceso restringido',
                     text: 'Debes ser mayor de 18 años para subir contenido multimedia.',
                 });
-                return; // detener el envío
+                return; // detener el envío  y ps no enviar nada
             }
 
             // Validar tamaño de imagen

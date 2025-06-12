@@ -12,7 +12,7 @@ def loteria(request):
     usuario = request.user
     perfil = Profile.objects.get(user_id=usuario.id)
     
-    # Verificar si viene de completar el juego (parámetro completado)
+    #Aqui vemos si viene de completr el juego
     if request.GET.get('completado') == '1':
         puntuacion = request.GET.get('puntuacion', 0)
         puntines = int(request.GET.get('puntuacion', 0))
