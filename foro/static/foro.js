@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Función para obtener el token CSRF
     function getCSRFToken() {
         const cookie = document.cookie.match(/csrftoken=([^ ;]+)/);
         return cookie ? cookie[1] : null;
@@ -7,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const csrftoken = getCSRFToken();
 
-    // Delegación de eventos para los formularios de reporte
     document.body.addEventListener('submit', function (e) {
         if (e.target.classList.contains('form-report')) {
             e.preventDefault();
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Delegación de eventos para los formularios de like (similar al de reporte)
     document.body.addEventListener('submit', function (e) {
         if (e.target.classList.contains('form-like')) {
             e.preventDefault();
