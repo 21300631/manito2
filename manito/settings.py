@@ -29,7 +29,7 @@ LOGIN_REDIRECT_URL = 'inicio_global'  # Nombre de la URL a donde redirigir tras 
 LOGOUT_REDIRECT_URL = '/login/'  # Para redirigir después de logout
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.enviroment.get('SECRET_KEY', default="asdfkjaskdfjkasdjf")
+SECRET_KEY = os.environ.get('SECRET_KEY', default="$jr*_hqwl3k(3r+(a7y")
 #'django-insecure-g3mr!rkd9s-9$(bstwm^5@r-^yq1g)=$jr*_hqwl3k(3r+(a7y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -72,7 +72,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware'
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     
     'django.middleware.common.CommonMiddleware',
