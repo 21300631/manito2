@@ -9,26 +9,33 @@ from inicio.models import Notificacion
 from perfil.models import Insignia, Logro
 
 
+from django.http import HttpResponse
+
 def foro(request):
-    publicaciones = Publicacion.objects.all().order_by("-fecha")
+    try:
+        publicaciones = Publicacion.objects.all().order_by("-fecha")
 
-    if request.user.is_authenticated:
-        profile = getattr(request.user, "profile", None)
-        if profile:
-            publicaciones_usuario = Publicacion.objects.filter(usuario=profile)
-            if publicaciones_usuario.filter(likes__count__gte=5).exists():
-                try:
-                    insignia_popular = Insignia.objects.get(imagen="insignias/popular.png")
-                    logro_existente = Logro.objects.filter(usuario=profile, insignia=insignia_popular).exists()
-                    if not logro_existente:
-                        messages.success(request, "¡Vaya que popular!")
-                except Insignia.DoesNotExist:
-                    messages.error(request, "La insignia no existe")
+        if request.user.is_authenticated:
+            profile = getattr(request.user, "profile", None)
+            if profile:
+                publicaciones_usuario = Publicacion.objects.filter(usuario=profile)
+                if publicaciones_usuario.filter(likes__count__gte=5).exists():
+                    try:
+                        insignia_popular = Insignia.objects.get(imagen="insignias/popular.png")
+                        logro_existente = Logro.objects.filter(usuario=profile, insignia=insignia_popular).exists()
+                        if not logro_existente:
+                            messages.success(request, "¡Vaya que popular!")
+                    except Insignia.DoesNotExist:
+                        messages.error(request, "La insignia no existe")
 
-    return render(request, "foro.html", {
-        "publicaciones": publicaciones,
-        "theme": request.session.get("theme", "light"),
-    })
+        return render(request, "foro.html", {
+            "publicaciones": publicaciones,
+            "theme": request.session.get("theme", "light"),
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return HttpResponse(f"<h1>Error</h1><pre>{str(e)}</pre>")
 
 
 @login_required
