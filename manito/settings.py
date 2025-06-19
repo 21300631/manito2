@@ -15,6 +15,8 @@ from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv()
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -35,7 +37,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default="$jr*_hqwl3k(3r+(a7y")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
@@ -108,19 +110,14 @@ WSGI_APPLICATION = 'manito.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
+import dj_database_url
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',        
-        'NAME': 'manito_db',  # Cambia esto por el nombre de tu base de datos
-        'USER': 'postgres',  # Tu usuario de PostgreSQL 
-        'PASSWORD': '140506',  # Tu contraseña de PostgreSQL
-        'HOST': 'localhost',  # Servidor local
-        'PORT': '5432',  # Puerto por defecto de PostgreSQL
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),  # Usa la variable de Render
+        conn_max_age=600  # Conexiones persistentes
+    )
 }
-
 
 
 # Password validation
@@ -176,7 +173,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Ruta absoluta al directorio medi
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-load_dotenv()
 
 # Credenciales comunes AWS
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
