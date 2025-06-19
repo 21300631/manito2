@@ -65,21 +65,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <!-- Añade en tu HTML -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 
     <script>
         const IS_VIDEO_EXERCISE = {{ is_video|yesno:"true,false" }};
-        const LANDMARKS_JSON_URL = "{% static '' %}" + "{{ json_url }}";
+        const LANDMARKS_JSON_URL = "{{ json_url }}";
         const PALABRA_ACTUAL = "{{ palabra_correcta }}";
         const PALABRA_ACTUAL_JSON = {{ json_url }};
 
         
-        // Solo cargamos landmarks si NO es un video
         if (!IS_VIDEO_EXERCISE) {
-            // const LANDMARKS_JSON_URL = "{% static '' %}" + "landmarks/{{ palabra_correcta }}.json";
             let referenceLandmarks = null;
             
             fetch(LANDMARKS_JSON_URL)
