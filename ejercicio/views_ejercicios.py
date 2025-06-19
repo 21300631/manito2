@@ -1,6 +1,7 @@
 from manito.settings import MANITO_BUCKET_DOMAIN
 from django.utils.safestring import mark_safe
 from django.templatetags.static import static
+
 from django.shortcuts import render, redirect
 from registro.models import Profile
 from .models import PalabraUsuario
@@ -263,8 +264,6 @@ def ejercicio_gesto(request):
     # Proteger contra gesto vacío o None
     gesto = palabra.gesto if palabra.gesto else ''
     archivo_url = f"{MANITO_BUCKET_DOMAIN}/{gesto}"
-
-    json_url = static(f'landmarks/{palabra.palabra}.json')
     
     
     print("Gesto URL:", archivo_url)
@@ -275,7 +274,8 @@ def ejercicio_gesto(request):
         'is_video': gesto.lower().endswith('.mp4') if gesto else False,
         'theme': request.session.get('theme', 'light'),
         'palabra_correcta': palabra.palabra,
-        'json_url': json_url
+        'json_url': static(f'landmarks/{palabra.palabra}.json'),
+
     }
 
     try:
