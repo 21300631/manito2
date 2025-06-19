@@ -25,7 +25,7 @@ def foro(request):
         if publicaciones_usuario.filter(likes__count__gte=5).exists():
             try:
                 insignia_popular = Insignia.objects.get(imagen="insignias/popular.png")
-                logro_existente = Logro.objects.filter(usuario=profile, insignia=insignia_popular).exist()
+                logro_existente = Logro.objects.filter(usuario=profile, insignia=insignia_popular).exists()
 
                 if not logro_existente:
                     messages.success(request, "¡Vaya que popular!")
