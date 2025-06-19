@@ -1,50 +1,44 @@
-from django.shortcuts import render
-from django.views.generic import ListView
-from publicacion.models import Publicacion, Comentario
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from registro.models import Profile
 from django.http import JsonResponse
-from inicio.models import Notificacion
 from django.contrib import messages
+
+from publicacion.models import Publicacion, Comentario
+from registro.models import Profile
+from inicio.models import Notificacion
 from perfil.models import Insignia, Logro
 
-# Create your views here.
-def foro(request):
-    publicaciones = Publicacion.objects.all().order_by("-fecha")  # Ordenar por fecha
 
+def foro(request):
+    publicaciones = Publicacion.objects.all().order_by("-fecha")
 
     if request.user.is_authenticated:
-        profile = request.user.profile
-
-        
-
-        # si alguna de las publicaciones del usuario tiene mas de 50 likes enotnces
-        publicaciones_usuario = Publicacion.objects.filter(usuario=profile)
-
-        if publicaciones_usuario.filter(likes__count__gte=5).exists():
-            try:
-                insignia_popular = Insignia.objects.get(imagen="insignias/popular.png")
-                logro_existente = Logro.objects.filter(usuario=profile, insignia=insignia_popular).exists()
-
-                if not logro_existente:
-                    messages.success(request, "¡Vaya que popular!")
-            except Insignia.DoesNotExist:
-                messages.error(request, 'La insignia no existe')
-
+        profile = getattr(request.user, "profile", None)
+        if profile:
+            publicaciones_usuario = Publicacion.objects.filter(usuario=profile)
+            if publicaciones_usuario.filter(likes__count__gte=5).exists():
+                try:
+                    insignia_popular = Insignia.objects.get(imagen="insignias/popular.png")
+                    logro_existente = Logro.objects.filter(usuario=profile, insignia=insignia_popular).exists()
+                    if not logro_existente:
+                        messages.success(request, "¡Vaya que popular!")
+                except Insignia.DoesNotExist:
+                    messages.error(request, "La insignia no existe")
 
     return render(request, "foro.html", {
         "publicaciones": publicaciones,
+        "theme": request.session.get("theme", "light"),
     })
-
-    
 
 
 @login_required
 def dar_like(request, publicacion_id):
     if request.method == "POST":
+        profile = getattr(request.user, "profile", None)
+        if not profile:
+            return JsonResponse({'error': 'Perfil no encontrado'}, status=400)
+
         publicacion = get_object_or_404(Publicacion, id=publicacion_id)
-        profile = request.user.profile
         liked = False
 
         if profile in publicacion.likes.all():
@@ -52,7 +46,8 @@ def dar_like(request, publicacion_id):
         else:
             publicacion.likes.add(profile)
             liked = True
-            if profile != publicacion.usuario.user:  # para no notificar si se da like a sí mismo
+
+            if profile != publicacion.usuario:  # comparar Profile vs Profile
                 Notificacion.objects.create(
                     emisor=request.user,
                     receptor=publicacion.usuario.user,
@@ -65,60 +60,74 @@ def dar_like(request, publicacion_id):
             'liked': liked
         })
 
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
 
 @login_required
 def reportar(request, publicacion_id):
-    publicacion = get_object_or_404(Publicacion, id=publicacion_id)
-    user_profile = request.user.profile
+    if request.method == "POST":
+        profile = getattr(request.user, "profile", None)
+        if not profile:
+            return JsonResponse({'error': 'Perfil no encontrado'}, status=400)
 
-    eliminada = False
-    if user_profile not in publicacion.reportes.all():
-        publicacion.reportes.add(user_profile)
-        if user_profile != publicacion.usuario.user:
-            Notificacion.objects.create(
-                emisor=request.user,
-                receptor=publicacion.usuario.user,
-                tipo='reporte',
-                publicacion=publicacion
-            )
+        publicacion = get_object_or_404(Publicacion, id=publicacion_id)
+        eliminada = False
 
+        if profile not in publicacion.reportes.all():
+            publicacion.reportes.add(profile)
 
-    if publicacion.reportes.count() >= 15:
-        publicacion.delete()
-        eliminada = True
+            if profile != publicacion.usuario:
+                Notificacion.objects.create(
+                    emisor=request.user,
+                    receptor=publicacion.usuario.user,
+                    tipo='reporte',
+                    publicacion=publicacion
+                )
 
-    return JsonResponse({
-        'total_reportes': publicacion.reportes.count() if not eliminada else 0,
-        'eliminada': eliminada
-    })
+        if publicacion.reportes.count() >= 15:
+            publicacion.delete()
+            eliminada = True
+
+        return JsonResponse({
+            'total_reportes': 0 if eliminada else publicacion.reportes.count(),
+            'eliminada': eliminada
+        })
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
 
 @login_required
 def agregar_comentario(request, publicacion_id):
     publicacion = get_object_or_404(Publicacion, id=publicacion_id)
+    profile = getattr(request.user, "profile", None)
+
+    if not profile:
+        messages.error(request, 'No se encontró tu perfil.')
+        return redirect("foro")
 
     if request.method == "POST":
         contenido = request.POST.get("contenido")
         archivo = request.FILES.get("archivo")
 
-        # Validar tipos de archivo permitidos
+        # Validar tipo de archivo
         if archivo:
             ALLOWED_TYPES = [
                 'image/jpeg', 'image/png', 'image/gif',
                 'video/mp4', 'video/webm', 'video/ogg'
             ]
-            
             if archivo.content_type not in ALLOWED_TYPES:
-                messages.error(request, 'Tipo de archivo no permitido')
+                messages.error(request, 'Tipo de archivo no permitido.')
                 return redirect("foro")
 
-        if contenido:  # Asegurar que no se envíe un comentario vacío
+        if contenido:
             Comentario.objects.create(
                 publicacion=publicacion,
-                usuario=request.user.profile,  # Asumiendo que tienes un `Profile` relacionado con `User`
+                usuario=profile,
                 contenido=contenido,
                 archivo=archivo
             )
-            if request.user.profile != publicacion.usuario.user:
+
+            if profile != publicacion.usuario:
                 Notificacion.objects.create(
                     emisor=request.user,
                     receptor=publicacion.usuario.user,
@@ -126,11 +135,10 @@ def agregar_comentario(request, publicacion_id):
                     publicacion=publicacion
                 )
 
-
-    return redirect("foro")  # Redirigir al foro después de comentar
-
+    return redirect("foro")
 
 
+@login_required
 def vista_alguna(request):
-    perfil = Profile.objects.get(user=request.user)
-    return render(request, 'foro.html', {'theme': perfil.theme})
+    perfil = getattr(request.user, "profile", None)
+    return render(request, 'foro.html', {'theme': perfil.theme if perfil else 'light'})
