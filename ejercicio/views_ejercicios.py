@@ -256,7 +256,7 @@ def ejercicio_gesto(request):
     try:
         palabra = Palabra.objects.get(id=palabra_id)
     except ObjectDoesNotExist:
-        print(f"❌ Palabra con ID {palabra_id} no encontrada.")
+        print(f" Palabra con ID {palabra_id} no encontrada.")
         return render(request, 'error_generico.html', {'mensaje': f'Palabra con ID {palabra_id} no encontrada.'})
 
     # Proteger contra gesto vacío o None
@@ -278,6 +278,6 @@ def ejercicio_gesto(request):
         return render(request, 'gesto.html', contexto)
     except Exception as e:
         import traceback
-        print("❌ ERROR EN TEMPLATE GESTO:", e)
+        print(" ERROR EN TEMPLATE GESTO:", e)
         traceback.print_exc()
     return render(request, 'error_generico.html', {'mensaje': f'Error en template gesto: {str(e)}'})
