@@ -264,6 +264,7 @@ def ejercicio_gesto(request):
     # Proteger contra gesto vacío o None
     gesto = palabra.gesto if palabra.gesto else ''
     archivo_url = f"{MANITO_BUCKET_DOMAIN}/{gesto}"
+    json_url = static(f'landmarks/{palabra.palabra}.json')
     
     
     print("Gesto URL:", archivo_url)
@@ -274,7 +275,7 @@ def ejercicio_gesto(request):
         'is_video': gesto.lower().endswith('.mp4') if gesto else False,
         'theme': request.session.get('theme', 'light'),
         'palabra_correcta': palabra.palabra,
-        'json_url': static(f'landmarks/{palabra.palabra}.json'),
+        'json_url': json_url,
 
     }
 

@@ -26,7 +26,7 @@
                 <div class="ejercicio">
                     <div class="gesto">
                         {% if is_video %}
-                            <video id="gestoVideo" src="{{ archivo }}" autoplay loop muted width="80%" data-palabra="{{ palabra_correcta }}" data-palabra-json="{% static '' %}{{ json_url }}"></video>
+                            <video id="gestoVideo" src="{{ archivo }}" autoplay loop muted width="80%" data-palabra="{{ palabra_correcta }}" data-palabra-json="{{ json_url }}"></video>
                         {% else %}
                             <img src="{{ archivo }}" alt="Gesto {{ palabra_correcta }}" width="80%" style="padding: 10%; margin: 0;">
                         {% endif %}
