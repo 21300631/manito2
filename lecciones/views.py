@@ -78,10 +78,16 @@ def etapa2(request):
     # Forzar primera lección si todas están bloqueadas
     if all(status == 'bloqueada' for status in lecciones_estado.values()):
         lecciones_estado[34] = 'en-progreso'
+
+    palabras_por_leccion = {}
+    for leccion_id in lecciones_etapa2:
+        palabras = Palabra.objects.filter(leccion_id=leccion_id).values_list('palabra', flat=True)
+        palabras_por_leccion[leccion_id] = list(palabras)
     
     return render(request, 'etapa2.html', {
         'lecciones_estado': lecciones_estado,
-        'theme': profile.theme if hasattr(profile, 'theme') else 'light'
+        'theme': profile.theme if hasattr(profile, 'theme') else 'light',
+        'palabras_por_leccion': palabras_por_leccion
     })
 
 @login_required
@@ -117,10 +123,16 @@ def etapa3(request):
     # Forzar primera lección si todas están bloqueadas
     if all(status == 'bloqueada' for status in lecciones_estado.values()):
         lecciones_estado[54] = 'en-progreso'
+
+    palabras_por_leccion = {}
+    for leccion_id in lecciones_etapa3:
+        palabras = Palabra.objects.filter(leccion_id=leccion_id).values_list('palabra', flat=True)
+        palabras_por_leccion[leccion_id] = list(palabras)
     
     return render(request, 'etapa3.html', {
         'lecciones_estado': lecciones_estado,
-        'theme': profile.theme if hasattr(profile, 'theme') else 'light'
+        'theme': profile.theme if hasattr(profile, 'theme') else 'light',
+        'palabras_por_leccion': palabras_por_leccion
     })
 
 
@@ -131,11 +143,10 @@ def etapa4(request):
     leccion_actual = profile.leccion
     
     # Rango de lecciones (116-164) y repasos (401-405)
-    rango_lecciones = list(range(116, 165))
-    repasos = [401, 402, 403, 404, 405]
+    lecciones_etapa4 = list(range(116, 165)) + [401, 402, 403, 404, 405]
     
     # Inicializar todas como bloqueadas
-    lecciones_estado = {leccion: 'bloqueada' for leccion in rango_lecciones + repasos}
+    lecciones_estado = {leccion: 'bloqueada' for leccion in lecciones_etapa4}
     
     # Si viene de etapa anterior, comenzar en 110
     if leccion_actual < 110:
@@ -144,9 +155,14 @@ def etapa4(request):
         profile.save()
     
     # Marcar completadas
-    for leccion in rango_lecciones:
+    for leccion in lecciones_etapa4:
         if leccion < leccion_actual:
             lecciones_estado[leccion] = 'completada'
+
+    
+    # Marcar actual
+    if leccion_actual in lecciones_estado:
+        lecciones_estado[leccion_actual] = 'en-progreso'
 
     # Marcar repasos completados
     if leccion_actual == 129:
@@ -160,12 +176,16 @@ def etapa4(request):
     elif leccion_actual == 170:
         lecciones_estado[405] = 'completada'
 
-    
-    # Marcar actual
-    if leccion_actual in lecciones_estado:
-        lecciones_estado[leccion_actual] = 'en-progreso'
+    if all(status == 'bloqueada' for status in lecciones_estado.values()):
+        lecciones_estado[116] = 'en-progreso'
+
+    palabras_por_leccion = {}
+    for leccion_id in lecciones_etapa4:
+        palabras = Palabra.objects.filter(leccion_id=leccion_id).values_list('palabra', flat=True)
+        palabras_por_leccion[leccion_id] = list(palabras)
     
     return render(request, 'etapa4.html', {
         'lecciones_estado': lecciones_estado,
-        'theme': profile.theme if hasattr(profile, 'theme') else 'light'
+        'theme': profile.theme if hasattr(profile, 'theme') else 'light',
+        'palabras_por_leccion': palabras_por_leccion
     })
