@@ -36,8 +36,8 @@
                         <h3>Tema: {{ publicacion.titulo }}</h3>
                         <p>Iniciado por: {{ publicacion.usuario }}</p>
                         <p>Descripción: {{ publicacion.contenido }}</p>
-                        {% if publicacion.archivo_media %}
-                            {% with publicacion.archivo_media.url as media_url %}
+                        {% if publicacion.archivo_media and publicacion.archivo_media.url %}
+                            {% with media_url=publicacion.archivo_media.url %}
                                 {% if media_url|lower|slice:'-4:' == '.jpg' or media_url|lower|slice:'-5:' == '.jpeg' or media_url|lower|slice:'-4:' == '.png' or media_url|lower|slice:'-4:' == '.gif' %}
                                     <img src="{{ media_url }}" alt="Imagen de publicación" style="max-width: 100%; height: auto;">
                                 {% elif media_url|lower|slice:'-4:' == '.mp4' or media_url|lower|slice:'-4:' == '.webm' or media_url|lower|slice:'-4:' == '.ogg' %}
@@ -50,6 +50,7 @@
                                 {% endif %}
                             {% endwith %}
                         {% endif %}
+
                         <div class="like-reporte">
                             <button class="btn btn-like" onclick="darLike({{ publicacion.id }})" id="btn-like-{{ publicacion.id }}">
                                 Like
@@ -79,8 +80,8 @@
                         <div class="comentario">
                             <p><strong>{{ comentario.usuario }}</strong>: {{ comentario.contenido }}</p>
                             
-                            {% if comentario.archivo %}
-                                {% with comentario.archivo.url as media_url %}
+                            {% if comentario.archivo and comentario.archivo.url %}
+                                {% with media_url=comentario.archivo.url %}
                                     {% if media_url|lower|slice:'-4:' == '.jpg' or media_url|lower|slice:'-5:' == '.jpeg' or media_url|lower|slice:'-4:' == '.png' or media_url|lower|slice:'-4:' == '.gif' %}
                                         <div class="media-container">
                                             <img src="{{ media_url }}" alt="Imagen adjunta" style="max-width: 300px; max-height: 300px;">
@@ -97,6 +98,7 @@
                                     {% endif %}
                                 {% endwith %}
                             {% endif %}
+
                             
                             <p><small>{{ comentario.fecha_creacion }}</small></p>
                         </div>
@@ -123,7 +125,7 @@
         Swal.fire({
             title: 'Ojo!',
             text: 'No se garantizan la presición de las respuestas',
-            icon: 'Warning',
+            icon: 'warning',
             confirmButtonText: 'OK'
         });
     </script>
