@@ -69,10 +69,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 
     <script>
-        const IS_VIDEO_EXERCISE = {{ is_video|yesno:"true,false" }};
+        const IS_VIDEO_EXERCISE = {{ is_video|yesno:"true,false" | safe }};
+
         const LANDMARKS_JSON_URL = "{{ json_url }}";
         const PALABRA_ACTUAL = "{{ palabra_correcta }}";
-        const PALABRA_ACTUAL_JSON = {{ json_url }};
 
         
         if (!IS_VIDEO_EXERCISE) {
