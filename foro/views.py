@@ -1,15 +1,14 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
+from django.db.models import Count
 
 from publicacion.models import Publicacion, Comentario
 from registro.models import Profile
 from inicio.models import Notificacion
 from perfil.models import Insignia, Logro
 
-
-from django.http import HttpResponse
 
 def foro(request):
     try:
@@ -19,7 +18,9 @@ def foro(request):
             profile = getattr(request.user, "profile", None)
             if profile:
                 publicaciones_usuario = Publicacion.objects.filter(usuario=profile)
-                if publicaciones_usuario.filter(likes__count__gte=5).exists():
+                populares = publicaciones_usuario.annotate(num_likes=Count('likes')).filter(num_likes__gte=5)
+
+                if populares.exists():
                     try:
                         insignia_popular = Insignia.objects.get(imagen="insignias/popular.png")
                         logro_existente = Logro.objects.filter(usuario=profile, insignia=insignia_popular).exists()
@@ -32,10 +33,11 @@ def foro(request):
             "publicaciones": publicaciones,
             "theme": request.session.get("theme", "light"),
         })
+
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return HttpResponse(f"<h1>Error</h1><pre>{str(e)}</pre>")
+        return HttpResponse(f"<h1>Error</h1><pre>{str(e)}</pre>", status=500)
 
 
 @login_required
@@ -54,7 +56,7 @@ def dar_like(request, publicacion_id):
             publicacion.likes.add(profile)
             liked = True
 
-            if profile != publicacion.usuario:  # comparar Profile vs Profile
+            if profile != publicacion.usuario:
                 Notificacion.objects.create(
                     emisor=request.user,
                     receptor=publicacion.usuario.user,
@@ -116,7 +118,6 @@ def agregar_comentario(request, publicacion_id):
         contenido = request.POST.get("contenido")
         archivo = request.FILES.get("archivo")
 
-        # Validar tipo de archivo
         if archivo:
             ALLOWED_TYPES = [
                 'image/jpeg', 'image/png', 'image/gif',
