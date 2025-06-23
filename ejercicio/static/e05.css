@@ -207,3 +207,85 @@ body.dark {
     border: 1px solid #f5c6cb;
     display: block;
 }
+
+/* =========================
+   RESPONSIVE STYLES
+========================== */
+
+@media (max-width: 1024px) {
+    .contenido {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .panel-barra {
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+        height: auto;
+    }
+
+    .progress-container {
+        height: 30px;
+        width: 80%; 
+        margin: 10px 0;
+    }
+
+    .progress-bar {
+        height: 100%; 
+        width: 0%; 
+    }
+
+    .ejercicio {
+        grid-template-columns: 1fr;
+        grid-gap: 20px;
+        padding: 20px;
+        height: auto;
+    }
+
+    .gesto {
+        width: 100%;
+        height: auto;
+    }
+
+    .texto {
+        font-size: 20px;
+    }
+
+    .btn-salir {
+        position: static;
+        margin: 20px auto;
+        display: block;
+    }
+
+    .panel-btn {
+        position: relative;
+        flex-direction: column;
+        height: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    body{
+        background-color: #BCDCFB;
+    }
+
+    .instruccion span {
+        font-size: 18px;
+    }
+
+    .btn-verificar {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .input {
+        font-size: 14px;
+        padding: 10px;
+        width: 80%;
+    }
+
+    .gesto {
+        width: 100%;
+    }
+}

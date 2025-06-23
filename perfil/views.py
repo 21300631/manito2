@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from registro.models import Profile
 from django.contrib import messages
@@ -9,8 +8,6 @@ import json
 from .models import Logro, Insignia
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
-from login.views import login_usuario
 from inicio.models import Notificacion
 # Create your views here.
 

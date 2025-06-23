@@ -382,12 +382,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (referenceLandmarks && filteredLandmarks.length > 0) {
                             const similarityPercentage = processAllFrames(allHandLandmarks, referenceLandmarks);
                             let similitudFinal = 0;
-                            if (similarityPercentage >= 80){
+
+                            if (similarityPercentage >= 80){ //Si es mayor a 80 entonces queda igual
                                 similitudFinal = similarityPercentage;
                             }
-                            else if (similarityPercentage <= 50){
+                            else if (similarityPercentage <= 50){ // si es menora a 50 se multiplica por 2
                                 similitudFinal = similarityPercentage * 2;
-                            } else{
+                            } else{ // si es mayor a 50 pero menor a 80 se multiplica por 1.8
                                 similitudFinal = similarityPercentage * 1.8;
                             }
                             console.log("Primer frame usuario:", allHandLandmarks[0]);

@@ -547,7 +547,7 @@ p span{
     .cards {
         display: flex;
         width: auto;
-        height: 180px;
+        height: 205px;
         margin-left: 0;
         padding: 0 15px;
         gap: 15px;
