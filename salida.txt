@@ -1,8 +1,24 @@
 Performing system checks...
 
 System check identified no issues (0 silenced).
-June 08, 2025 - 00:56:24
+June 23, 2025 - 16:53:09
 Django version 4.2.20, using settings 'manito.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CTRL-BREAK.
 
+Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/G.png
+Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/G.png
+Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/G.png
+Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/G.png
+Ejercicio Gesto - Índice: 2, Total Ejercicios: 10, Progreso 10
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/H.png
+Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/G.png
+Ejercicio Gesto - Índice: 1, Total Ejercicios: 10, Progreso 0
+Gesto URL: https://manito-bucket1.s3.amazonaws.com/Abecedario/G.png
+# palabras: 22
+Racha Usuario 0
