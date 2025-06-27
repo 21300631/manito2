@@ -199,6 +199,7 @@ def preparar_repeticion_ejercicios(request):
     return redirect('mostrar_ejercicio')
 
 @login_required
+@csrf_exempt
 def reiniciar_progreso(request):
     if request.method == "POST":
         # 1. Preservar datos críticos de autenticación
@@ -339,4 +340,4 @@ def actualizar_progreso(request):
             return JsonResponse({'status': 'success'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    return JsonResponse({'status': 'error'}, status=405)
+    return JsonResponse({'status': 'error'}, status=405)    

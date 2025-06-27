@@ -16,8 +16,6 @@
     </div>
 
     <div class="juego-container">
-        <!-- Fila de palabras (arriba) -->
-        <!-- Columna de Palabras -->
         <div class="fila palabras">
             {% for palabra in palabras %}
                 <div data-id="{{ palabra.id }}" data-palabra="{{ palabra.palabra }}" class="item palabra">
@@ -26,7 +24,6 @@
             {% endfor %}
         </div>
 
-        <!-- Columna de Imágenes -->
         <div class="fila imagenes">
             {% for img in imagenes %}
                 <div data-id="{{ palabras.forloop.counter0 }}" data-palabra="{{ img.palabra }}" class="item imagen">
@@ -45,7 +42,6 @@
         <div id="juego-data" data-total-pares="{{ total_pares }}"></div>
     </div>
 
-    <!-- Añade esto ANTES de cargar el script relacion.js -->
 <script type="application/json" id="pares-data">
     {
         "pares_correctos": [
@@ -81,7 +77,6 @@
     }
     </script>
     
-    <!-- Luego carga tu JS -->
     <script src="{% static 'relacion.js' %}"></script>
 </body>
 </html>
