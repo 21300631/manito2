@@ -37,7 +37,11 @@ def perfil(request):
 
     return render(request, 'perfil.html', contexto)
 
-@login_required
+import logging
+import boto3
+from botocore.exceptions import NoCredentialsError, ClientError
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def cambiar_foto_perfil(request):
@@ -52,13 +56,11 @@ def cambiar_foto_perfil(request):
             perfil = Profile.objects.get(user=request.user)
             
             # Validaciones de la imagen
-            # 1. Tamaño máximo (5MB)
             max_size = 5 * 1024 * 1024  # 5MB
             if nueva_imagen.size > max_size:
                 messages.error(request, 'La imagen es demasiado grande. El tamaño máximo permitido es 5MB.')
                 return redirect('perfil')
             
-            # 2. Extensiones permitidas
             allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif']
             file_name = nueva_imagen.name.lower()
             if not any(file_name.endswith(ext) for ext in allowed_extensions):
@@ -68,47 +70,64 @@ def cambiar_foto_perfil(request):
             # Procesar el cambio de imagen
             primer_cambio = perfil.imagen.name.endswith('default.jpg')
             
-            # Eliminar la imagen anterior si no es la default
-            if not primer_cambio:
-                perfil.imagen.delete(save=False)
+            try:
+                # Eliminar la imagen anterior si no es la default
+                if not primer_cambio:
+                    perfil.imagen.delete(save=False)
+                
+                # Guardar la nueva imagen
+                perfil.imagen = nueva_imagen
+                perfil.save()
+                
+                logger.info(f"Imagen de perfil actualizada para usuario {request.user.username}")
+                
+            except NoCredentialsError:
+                logger.error("Error de credenciales AWS - Verificar variables de entorno en Render")
+                messages.error(request, 'Error de configuración del servidor. Contacta al administrador.')
+                return redirect('perfil')
+                
+            except ClientError as e:
+                error_code = e.response.get('Error', {}).get('Code')
+                logger.error(f"Error de AWS S3: {str(e)} - Código: {error_code}")
+                
+                if error_code == '403':
+                    messages.error(request, 'Problema de permisos con el almacenamiento')
+                elif error_code == '404':
+                    messages.error(request, 'Recurso no encontrado en el almacenamiento')
+                else:
+                    messages.error(request, 'Error al comunicarse con el servicio de almacenamiento')
+                
+                return redirect('perfil')
             
-            # Guardar la nueva imagen
-            perfil.imagen = nueva_imagen
-            perfil.save()
-            
-            # Otorgar insignia "Fotogénico" si es el primer cambio
+            # Otorgar insignia si es primer cambio
             if primer_cambio:
                 try:
                     insignia_fotogenico = Insignia.objects.get(imagen="insignias/fotogenico.png")
                     if not Logro.objects.filter(usuario=perfil, insignia=insignia_fotogenico).exists():
                         Logro.objects.create(usuario=perfil, insignia=insignia_fotogenico)
                         messages.success(request, '¡Has ganado la insignia Fotogénico! 🏅')
-                        # Crear notificación
                         Notificacion.objects.create(
                             receptor=request.user,
-                            mensaje='¡Has desbloqueado la insignia Fotogénico por cambiar tu foto de perfil!',
+                            mensaje='¡Has desbloqueado la insignia Fotogénico!',
                             tipo='logro'
                         )
                 except Insignia.DoesNotExist:
-                    # Loggear el error pero no interrumpir el flujo
-                    print("Error: Insignia Fotogénico no existe en la base de datos")
+                    logger.warning("Insignia Fotogénico no existe en la base de datos")
             
             messages.success(request, 'Foto de perfil actualizada correctamente')
             return redirect('perfil')
             
         except Profile.DoesNotExist:
-            messages.error(request, 'No se encontró el perfil del usuario')
+            logger.error(f"Perfil no encontrado para usuario {request.user.id}")
+            messages.error(request, 'No se encontró tu perfil de usuario')
             return redirect('perfil')
             
         except Exception as e:
-            # Loggear el error completo para debugging
-            print(f"Error al cambiar foto de perfil: {str(e)}")
-            messages.error(request, 'Ocurrió un error inesperado al actualizar la foto de perfil. Por favor, inténtalo nuevamente.')
+            logger.exception("Error inesperado al cambiar foto de perfil")
+            messages.error(request, 'Error interno del servidor. Por favor, inténtalo más tarde.')
             return redirect('perfil')
     
-    # Si no es POST, redirigir al perfil
     return redirect('perfil')
-
 
 def cambiar_nombre(request):
     if not request.user.is_authenticated:
