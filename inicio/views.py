@@ -10,6 +10,7 @@ from datetime import timedelta
 from django.contrib import messages
 from ejercicio.views import PalabraUsuario
 from perfil.views import Insignia, Logro
+from inicio.models import Medalla
 
 @login_required
 def inicioSesion(request):
@@ -40,6 +41,28 @@ def inicioSesion(request):
     perfil.save()
 
     medalla = getattr(perfil, "medalla", None)
+
+    ultimas_senias = PalabraUsuario.objects.filter(usuario=perfil, precision__gte=80).order_by('-fecha_completada')[:4]
+
+    cantidad_precisas = sum(1 for s in ultimas_senias if s.precision >= 80)
+
+    if cantidad_precisas >= 4:
+        nueva_medalla_img = "medallas/oro.png"
+    elif cantidad_precisas == 3:
+        nueva_medalla_img = "medallas/plata.png"
+    elif cantidad_precisas == 2:
+        nueva_medalla_img = "medallas/bronce.png"
+    else:
+        nueva_medalla_img = "medallas/circulo.png"
+
+    try:
+        nueva_medalla = Medalla.objects.get(imagen=nueva_medalla_img)
+        if perfil.medalla != nueva_medalla:
+            perfil.medalla = nueva_medalla
+            perfil.save()
+            print(f"Medalla actualizada a: {nueva_medalla.nombre}")
+    except Medalla.DoesNotExist:
+        print(f"⚠️ Medalla con imagen '{nueva_medalla_img}' no encontrada.")
 
 
     print(f'Racha Usuario {racha}')
@@ -157,6 +180,7 @@ def inicioSesion(request):
             'puntos': perfil.puntos,
             'notificaciones': notificaciones
     }
+    print(f"Medalla del usuario: {perfil.medalla}")
 
     try:
         return render(request, 'inicio.html', contexto)
@@ -172,6 +196,7 @@ def puntosUsuario(request):
     user = request.user
     usuario = get_object_or_404(Profile, user=user)
     
+    # Definir el número máximo de lecciones por etapa
     etapas_lecciones = {
         'etapa1': 38,
         'etapa2': 22,
@@ -179,32 +204,19 @@ def puntosUsuario(request):
         'etapa4': 55
     }
     
+    # Verificar si ha completado las lecciones de la etapa anterior
     etapa2_completa = usuario.puntos >= 6800 and usuario.leccion >= etapas_lecciones['etapa1']
     etapa3_completa = usuario.puntos >= 10200 and usuario.leccion >= sum(etapas_lecciones[e] for e in ['etapa1', 'etapa2'])
     etapa4_completa = usuario.puntos >= 16200 and usuario.leccion >= sum(etapas_lecciones[e] for e in ['etapa1', 'etapa2', 'etapa3'])
     
-    if etapa4_completa == True and usuario.puntos >= 34400:
-        try:
-            insignia_maestro = Insignia.objects.get(imagen="insignias/estudioso.png")
-            logro_existente = Logro.objects.filter(usuario=usuario, insignia=insignia_maestro).exist()
-
-            if not logro_existente:
-                messages.success(request, "¡Wow, nivel maestro! Sigue asi")
-        except Insignia.DoesNotExist:
-            messages.error(request, 'La insignia no existe')
-
-
-
-
     return JsonResponse({
         'puntos': usuario.puntos,
         'leccion_actual': usuario.leccion,
         'unlocked_stages': {
-            'etapa1': True,  # Siempre abierta al inicio
+            'etapa1': True,  # Siempre disponible
             'etapa2': etapa2_completa,
             'etapa3': etapa3_completa,
             'etapa4': etapa4_completa,
         },
         'etapas_lecciones': etapas_lecciones
     })
-
