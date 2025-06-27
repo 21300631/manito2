@@ -252,22 +252,21 @@ def ejercicio_gesto(request):
         return redirect('mostrar_ejercicio')
 
     ejercicio_actual = ejercicios[index]
-    palabra_id = ejercicio_actual.get('palabra')  
+    palabra_id = ejercicio_actual.get('palabra')  # más seguro con .get()
 
     try:
         palabra = Palabra.objects.get(id=palabra_id)
     except ObjectDoesNotExist:
-        print(f"❌ Palabra con ID {palabra_id} no encontrada.")
+        print(f" Palabra con ID {palabra_id} no encontrada.")
         return render(request, 'error_generico.html', {'mensaje': f'Palabra con ID {palabra_id} no encontrada.'})
 
     # Proteger contra gesto vacío o None
     gesto = palabra.gesto if palabra.gesto else ''
     archivo_url = f"{MANITO_BUCKET_DOMAIN}/{gesto}"
+    json_url = static(f'landmarks/{palabra.palabra}.json')
+    
     
     print("Gesto URL:", archivo_url)
-
-    json_url = static(f'landmarks/{palabra.palabra}.json')
-
 
     contexto = {
         'texto_instruccion': f"Realiza el gesto correspondiente a la palabra: {palabra.palabra}",
@@ -276,13 +275,13 @@ def ejercicio_gesto(request):
         'theme': request.session.get('theme', 'light'),
         'palabra_correcta': palabra.palabra,
         'json_url': json_url,
-        'palabra_id': palabra_id,  # Pasar el ID de la palabra al template
+
     }
 
     try:
         return render(request, 'gesto.html', contexto)
     except Exception as e:
         import traceback
-        print("❌ ERROR EN TEMPLATE GESTO:", e)
+        print(" ERROR EN TEMPLATE GESTO:", e)
         traceback.print_exc()
     return render(request, 'error_generico.html', {'mensaje': f'Error en template gesto: {str(e)}'})

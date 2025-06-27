@@ -22,12 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof LANDMARKS_JSON_URL !== 'undefined') {
             console.log("JSON de la palabra:", LANDMARKS_JSON_URL);
         }
-        // Obtener el JSON mediante fetch
+        // Opción 2: Obtener el JSON mediante fetch
         else if (palabraJsonUrl) {
             fetch(palabraJsonUrl)
                 .then(response => response.json())
                 .then(jsonData => {
                     console.log("JSON de la palabra obtenido:", jsonData);
+                    // Aquí puedes usar jsonData como necesites
                 })
                 .catch(error => {
                     console.error("Error obteniendo JSON de la palabra:", error);
@@ -55,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Botón de grabación no encontrado");
         }
         
-        // Configuración inicial de mi canvas y video
+        // Configuración inicial
         if (canvasElement) {
             canvasElement.width = 640;
             canvasElement.height = 480;
@@ -73,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             videoElement.playsInline = true;
             videoElement.muted = true;
 
-            // Configuracion mediapipe Hands
+            // Configurar MediaPipe Hands
             async function setupHandTracking() {
                 const hands = new Hands({
                     locateFile: (file) => {
@@ -93,11 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return hands;
             }
 
-            // Función para normalizar  los  landmarks
+            // Función para normalizar landmarks
             function normalizeLandmarks(landmarks) {
                 if (!landmarks || landmarks.length === 0) return null;
                 
-                // 1. Convertir a array de puntos x, y, z
+                // 1. Convertir a array de puntos {x, y, z}
                 const points = landmarks.map(p => ({x: p.x, y: p.y, z: p.z}));
                 
                 // 2. Calcular centroide
@@ -119,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     z: p.z - centroid.z
                 }));
                 
-                // 4. Calcular escala basada en la distancia muñeca ( uqe es punto 0) a dedo medio (o sea el 12)
+                // 4. Calcular escala basada en la distancia muñeca (punto 0) a dedo medio (punto 12)
                 const wrist = centered[0];
                 const middleFinger = centered[12];
                 const scale = Math.sqrt(
@@ -130,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (scale === 0) return null;
                 
-                // 5. Normalizar por si ps tiene la mano grade y asi
+                // 5. Normalizar y aplicar pesos a puntos clave
                 return centered.map((p, i) => ({
                     id: i,
                     x: p.x / scale,
@@ -140,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             function goToNextExercise() {
-                // Detener la cámara primero antes de cambiar el ejericico
+                // Detener la cámara primero
                 if (mediaRecorder) {
                     mediaRecorder.stop();
                 }
@@ -148,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     videoElement.srcObject.getTracks().forEach(track => track.stop());
                 }
                 
-                // Enviar la petición para avanzar con nuestra url
+                // Enviar la petición para avanzar
                 fetch('/repaso/siguiente/', {
                     method: 'POST',
                     headers: {
@@ -164,11 +165,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.status === 'completed') {
                         window.location.href = data.redirect_url;
                     } else {
+                        // Forzar recarga limpia de la página
                         window.location.href = data.redirect_url;
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    // Recargar de todas formas si hay error
                     window.location.href = '/repaso/';
                 });
             }
@@ -183,11 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const userCentered = centerPoints(userPoints);
                 const refCentered = centerPoints(refPoints);
                 
-                //   COVARIANZA  -->  Mide el grado de variación DE dos variables
                 // Calcular matriz de covarianza
                 const H = numeric.dot(numeric.transpose(userCentered), refCentered);
                 
-                // SVD  --> Descompone una matriz en tres matrices
+                // SVD
                 const svd = numeric.svd(H);
                 
                 // Calcular matriz de rotación
@@ -196,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Aplicar rotación y traslación
                 const aligned = numeric.dot(userPoints, R);
                 
-                // Conver de vuelta al formato de landmarks
+                // Convertir de vuelta al formato de landmarks
                 return aligned.map((point, i) => ({
                     id: userLandmarks[i].id,
                     x: point[0],
@@ -220,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ]);
             }
 
-            // Función para calcular la similitud entre los lmk originales y del ususairo
+            // Función para calcular la similitud entre dos conjuntos de landmarks
             function calculateSimilarity(userLandmarks, referenceLandmarks) {
                 if (!userLandmarks || !referenceLandmarks) return 0;
                 
@@ -232,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (!normalizedUser || !normalizedRef) return 0;
                 
-                // 2. Alinear usando procrustes 
+                // 2. Alinear usando Procrustes (opcional, puede ser costoso computacionalmente)
                 const alignedUser = procrustesAlignment(normalizedUser, normalizedRef);
                 
                 // 3. Pesos para diferentes partes de la mano
@@ -289,9 +291,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 1. Muestrear frames para igualar longitud
                 const sampledUserFrames = sampleFrames(userFrames, referenceFrames.length);
                 
-                // 2. Encontrar el mejor desplazamiento temporal 
+                // 2. Encontrar el mejor desplazamiento temporal (DTW básico)
                 let bestSimilarity = 0;
-                const maxOffset = Math.min(3, referenceFrames.length); // Pequeño margen para sincronizar
+                const maxOffset = Math.min(3, referenceFrames.length); // Pequeño margen para sincronización
                 
                 for (let offset = -maxOffset; offset <= maxOffset; offset++) {
                     let currentSimilarity = 0;
@@ -326,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 
-                return bestSimilarity * 100; // Aqui  lo convierto a porcentaje
+                return bestSimilarity * 100; // Convertir a porcentaje
             }
 
             function sampleFrames(frames, targetCount) {
@@ -360,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return totalMovement / minLandmarks; // Movimiento promedio por landmark
             }
 
-            // Función para quitar frames sin movimiento o sea los que estan de mas
+            // Función para filtrar frames sin movimiento
             function filterStaticFrames(frames, movementThreshold = 0.005) {
                 if (frames.length < 2) return frames;
                 
@@ -422,6 +424,23 @@ document.addEventListener('DOMContentLoaded', () => {
                                 similitudFinal = 100; // Limitar al 100% máximo
                             }
 
+                            fetch("{% url 'guardar_precision' %}", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRFToken": getCookie("csrftoken")  
+                                },
+                                body: JSON.stringify({
+                                    precision: similitudFinal,
+                                    palabra_id: palabraId  
+                                })
+                            }).then(response => {
+                                // manejar respuesta
+                            }).catch(error => {
+                                console.error("Error al enviar precisión:", error);
+                            });
+
+
                             const resultMessage = isApproved 
                                 ? `¡Felicidades! Tu ejecución tuvo una similitud del <b>${similitudFinal.toFixed(1)}%</b> con el gesto de referencia. <span style="color:green;">✅ APROBADO</span>`
                                 : `Tu ejecución tuvo una similitud del <b>${similarityPercentage.toFixed(1)}%</b> con el gesto de referencia. <span style="color:red;">❌ NO APROBADO</span> (Se requiere 80% o más)`;
@@ -481,13 +500,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         frameHandLandmarks.push({
                             handIndex: handIndex,
-                            handedness: results.multiHandedness[handIndex].label, 
+                            handedness: results.multiHandedness[handIndex].label, // 'Left' o 'Right'
                             landmarks: landmarks
                         });
                     });
                     
                     allHandLandmarks.push(frameHandLandmarks);
                     
+                    // Opcional: mostrar en consola (puede ser mucho output)
                     console.log(`Landmarks de manos frame ${allHandLandmarks.length}:`, frameHandLandmarks);
                 }
             }
@@ -632,7 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let currentSimilarity = 0;
         let isGestureCorrect = false;
         let correctPoseStartTime = null;
-        const REQUIRED_CORRECT_TIME = 2000; 
+        const REQUIRED_CORRECT_TIME = 2000; // 2 segundos para confirmar el gesto
         let hands = null;
         let camera = null;
 
@@ -649,7 +669,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const feedbackElement = document.getElementById('feedback');
         const noRecuerdoBtn = document.getElementById('noRecuerdoBtn');
 
-        videoElement.style.display = 'block';
+        videoElement.style.display = 'block'; // O 'none' si prefieres que no sea visible
         videoElement.style.position = 'absolute';
         videoElement.style.opacity = '0';
         videoElement.style.width = '1px';
@@ -675,20 +695,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Inicialización
         function init() {
-            // Configurar la retro
+            // Configurar feedback
             feedbackElement.style.display = "block";
             feedbackElement.textContent = "Inicializando cámara...";
             
-            // Primero cargar los landmarks de referencia
+            // Primero cargar los landmarks de referencia si es necesario
             if (!IS_VIDEO_EXERCISE && LANDMARKS_JSON_URL) {
                 loadReferenceLandmarks().then(() => {
                     // Luego iniciar la cámara
                     startCamera();
                 }).catch(error => {
                     console.error("Error cargando landmarks:", error);
-                    startCamera(); // Iniciar cámara igualmente porque ps si 
+                    startCamera(); // Iniciar cámara igualmente
                 });
             } else {
+                // Iniciar cámara directamente si no hay landmarks para cargar
                 startCamera();
             }
             
@@ -818,11 +839,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.status === 'completed') {
                     window.location.href = data.redirect_url;
                 } else {
+                    // Forzar recarga limpia de la página
                     window.location.href = data.redirect_url;
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+                // Recargar de todas formas si hay error
                 window.location.href = '/repaso/';
             });
         }
@@ -840,7 +863,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         showFeedback(`✓ Mantén la pose (${Math.ceil(remainingTime/1000)}s)`, true);
                     } else {
                         showFeedback("✓ ¡Correcto!", true);
-                        goToNextExercise();
+
+                        const precisionFinal = Math.min(100, currentSimilarity);  
+
+                        fetch('/repaso/guardar_precision/', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRFToken': getCookie('csrftoken')
+                                            },
+                                            body: JSON.stringify({
+                                                precision: precisionFinal,
+                                                palabra_id: CURRENT_WORD_ID  
+                                            })
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            console.log("Precisión guardada:", data);
+                                            goToNextExercise();
+                                        })
+                                        .catch(error => {
+                                            console.error("Error al guardar precisión:", error);
+                                            goToNextExercise();  // continuar aunque falle
+                                        });
                         
                     }
                 }
@@ -849,7 +894,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showFeedback(`✗ Ajusta tu gesto (${currentSimilarity.toFixed(0)}%)`, false);
             }
         }
-
 
         function calculateSimilarity(landmarks1, landmarks2) {
             if (!landmarks1 || !landmarks2 || landmarks1.length !== landmarks2.length) return 0;
@@ -880,9 +924,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const averageDistance = totalWeightedDistance / totalWeight;
             let similarity = Math.max(0, 100 - (averageDistance * 200));
             
-            // Bajar puntos si la mano está demasiado abierta
+            // Penalizar si la mano está demasiado abierta
             if (isHandTooOpen(landmarks2)) {
-                similarity *= 0.6; // muajaja
+                similarity *= 0.6; // Reducción más agresiva
             }
             
             return similarity;
@@ -908,7 +952,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
-        // Mostrar la retro 
+        // Mostrar feedback visual
         function showFeedback(message, isCorrect) {
             feedbackElement.textContent = message;
             feedbackElement.style.color = isCorrect ? '#00FF00' : '#FF0000';
@@ -928,8 +972,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             //Configuracion elementos del video
             videoElement.autoplay = true;
+            // videoElement.style.transform = "scaleX(-1)";
             canvasElement.style.width = '100%';
             canvasElement.style.maxWidth = '400px';
+            // canvasElement.style.transform = "scaleX(-1)";
             canvasElement.style.borderRadius = '10px';
 
             
@@ -1012,7 +1058,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     setupMediaPipe();
                 }
                 
-                // Iniciar el procesamiento de los frames
+                // Iniciar el procesamiento de frames
                 camera = new Camera(videoElement, {
                     onFrame: async () => {
                         try {
@@ -1039,7 +1085,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
-        // Animación del feedback
+        // Animación CSS para feedback
         const style = document.createElement('style');
         style.textContent = `
             @keyframes blink {
@@ -1054,6 +1100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    // Función auxiliar para obtener cookies
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
