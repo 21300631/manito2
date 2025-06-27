@@ -39,31 +39,74 @@ def perfil(request):
 
 @login_required
 
+@login_required
 def cambiar_foto_perfil(request):
     if request.method == 'POST':
-        nueva_imagen = request.FILES.get('nueva_imagen')
-        if nueva_imagen:
+        try:
+            # Verificar si se envió una imagen
+            if 'nueva_imagen' not in request.FILES:
+                messages.error(request, 'No se ha seleccionado ninguna imagen')
+                return redirect('perfil')
+            
+            nueva_imagen = request.FILES['nueva_imagen']
             perfil = Profile.objects.get(user=request.user)
+            
+            # Validaciones de la imagen
+            # 1. Tamaño máximo (5MB)
+            max_size = 5 * 1024 * 1024  # 5MB
+            if nueva_imagen.size > max_size:
+                messages.error(request, 'La imagen es demasiado grande. El tamaño máximo permitido es 5MB.')
+                return redirect('perfil')
+            
+            # 2. Extensiones permitidas
+            allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+            file_name = nueva_imagen.name.lower()
+            if not any(file_name.endswith(ext) for ext in allowed_extensions):
+                messages.error(request, 'Formato de imagen no soportado. Use JPG, JPEG, PNG o GIF.')
+                return redirect('perfil')
+            
+            # Procesar el cambio de imagen
             primer_cambio = perfil.imagen.name.endswith('default.jpg')
+            
+            # Eliminar la imagen anterior si no es la default
+            if not primer_cambio:
+                perfil.imagen.delete(save=False)
+            
+            # Guardar la nueva imagen
             perfil.imagen = nueva_imagen
             perfil.save()
-            messages.success(request, 'Foto de perfil actualizada correctamente')
-            print("Imagen subida:", perfil.imagen.url)
-
+            
+            # Otorgar insignia "Fotogénico" si es el primer cambio
             if primer_cambio:
-                print("Nombre actual de imagen:", perfil.imagen.name)
-
                 try:
                     insignia_fotogenico = Insignia.objects.get(imagen="insignias/fotogenico.png")
-                    logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_fotogenico).exists()
-
-                    if not logro_existente:
+                    if not Logro.objects.filter(usuario=perfil, insignia=insignia_fotogenico).exists():
                         Logro.objects.create(usuario=perfil, insignia=insignia_fotogenico)
                         messages.success(request, '¡Has ganado la insignia Fotogénico! 🏅')
+                        # Crear notificación
+                        Notificacion.objects.create(
+                            receptor=request.user,
+                            mensaje='¡Has desbloqueado la insignia Fotogénico por cambiar tu foto de perfil!',
+                            tipo='logro'
+                        )
                 except Insignia.DoesNotExist:
-                    messages.error(request, 'La insignia "Fotogénico" no existe en la base de datos.')
-        else:
-            messages.error(request, 'No se seleccionó ninguna imagen')
+                    # Loggear el error pero no interrumpir el flujo
+                    print("Error: Insignia Fotogénico no existe en la base de datos")
+            
+            messages.success(request, 'Foto de perfil actualizada correctamente')
+            return redirect('perfil')
+            
+        except Profile.DoesNotExist:
+            messages.error(request, 'No se encontró el perfil del usuario')
+            return redirect('perfil')
+            
+        except Exception as e:
+            # Loggear el error completo para debugging
+            print(f"Error al cambiar foto de perfil: {str(e)}")
+            messages.error(request, 'Ocurrió un error inesperado al actualizar la foto de perfil. Por favor, inténtalo nuevamente.')
+            return redirect('perfil')
+    
+    # Si no es POST, redirigir al perfil
     return redirect('perfil')
 
 
