@@ -102,8 +102,8 @@ function calcularPuntosFaltantes(puntosActuales) {
 
 
 function bringToFront(element) {
-    let cards = Array.from(document.querySelectorAll('.card')); //
-    let selectedIndex = cards.indexOf(element);
+    let cards = Array.from(document.querySelectorAll('.card')); 
+    let selectedIndex = cards.indexOf(element); 
 
     let newOrder = [
         ...cards.slice(selectedIndex + 1), 
@@ -113,7 +113,7 @@ function bringToFront(element) {
 
     newOrder.forEach((card, index) => {
         card.style.left = `${index * 80}px`; 
-        card.style.zIndex = index + 1; 
+        card.style.zIndex = index + 1;
     });
 }
 
@@ -221,8 +221,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// Para los desafios
-
 document.addEventListener('DOMContentLoaded', function() {
     const nombreDesafio = document.getElementById('nombre-desafio');
     const enalceDesafio = document.getElementById('enlace-desafio');
@@ -252,7 +250,6 @@ document.addEventListener('DOMContentLoaded', function() {
             break;
     }
 
-    // actualizar la pagina
     nombreDesafio.textContent = desafio;
     descripcionDesafio.textContent = descripcion;
 
