@@ -40,7 +40,7 @@ def generarLeccion(request):
     relaciones_repaso = PalabraUsuario.objects.filter(usuario=perfil)
     palabras_repaso = []
     
-    # Si hay suficientes palabras aprendidas, seleccionar 7 al azar
+    # Si hay suficientes palabras aprendidas, sele  ccionar 7 al azar
     if relaciones_repaso.count() >= 7:
         palabras_repaso = random.sample([rel.palabra for rel in relaciones_repaso], 7)
     else:
@@ -340,4 +340,4 @@ def actualizar_progreso(request):
             return JsonResponse({'status': 'success'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
-    return JsonResponse({'status': 'error'}, status=405)    
+    return JsonResponse({'status': 'error'}, status=405)
