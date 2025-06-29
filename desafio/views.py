@@ -12,13 +12,10 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-
-# Create your views here.
 def generarMemorama(request):
     usuario = request.user
     perfil = Profile.objects.get(user=usuario)
     
-    # Verificar si viene de completar el juego
     if request.GET.get('completado') == '1':
         puntaje = request.GET.get('puntaje', 0)
         puntines = int(request.GET.get('puntuacion', 0))
@@ -34,38 +31,40 @@ def generarMemorama(request):
             ).exists() else "General"
         })
     
-    palabras_usuario = PalabraUsuario.objects.filter(usuario_id=perfil)[:6]
+    palabras_imagenes = [
+        pu.palabra for pu in PalabraUsuario.objects.filter(usuario_id=perfil)
+        if not str(pu.palabra.gesto).lower().endswith('.mp4')
+    ]
+    
+    palabras_seleccionadas = random.sample(
+        palabras_imagenes, 
+        min(6, len(palabras_imagenes)) 
+    ) if palabras_imagenes else []
     
     pares = []
-    for p in palabras_usuario:
-        palabra = p.palabra
-        gesto = palabra.gesto
-        es_video = str(gesto).lower().endswith('.mp4')
-
-        if not es_video:
-            pares.append({
-                'tipo': 'imagen',
-                'contenido': f"{settings.MANITO_BUCKET_DOMAIN}/{gesto}",
-                'es_video': False,
-                'id': palabra.id,
-                'texto': palabra.palabra,
-                'palabra_texto': palabra.palabra  # Añadido para referencia
-            })
-
-            pares.append({
-                'tipo': 'palabra',
-                'contenido': palabra.palabra,
-                'es_video': False,
-                'id': palabra.id,
-                'palabra_texto': palabra.palabra  # Añadido para referencia
-            })
-
+    for palabra in palabras_seleccionadas:
+        pares.append({
+            'tipo': 'imagen',
+            'contenido': f"{settings.MANITO_BUCKET_DOMAIN}/{palabra.gesto}",
+            'es_video': False,
+            'id': palabra.id,
+            'texto': palabra.palabra,
+            'palabra_texto': palabra.palabra
+        })
+        pares.append({
+            'tipo': 'palabra',
+            'contenido': palabra.palabra,
+            'es_video': False,
+            'id': palabra.id,
+            'palabra_texto': palabra.palabra
+        })
+    
     random.shuffle(pares)
     
     return render(request, 'memorama.html', {
         'cartas': pares,
         'total_pares': len(pares) // 2,
-        'request_path': request.path  # Pasamos la ruta actual al template
+        'request_path': request.path
     })
 
 def finalMemorama(request):
@@ -77,6 +76,9 @@ def finalMemorama(request):
     ).first().categoria if Palabra.objects.filter(
         palabras_usuario__usuario=perfil
     ).exists() else "General"
+
+    perfil.puntos += puntaje
+    perfil.save()
 
     return render(request, 'final_memorama.html', {
         'puntaje': puntaje,
@@ -287,7 +289,6 @@ def tiempo_terminado(request):
         return JsonResponse({'status': 'error', 'message': 'No autenticado'}, status=401)
     
     if request.method == 'POST':
-        # Guardar el puntaje actual si es necesario
         return JsonResponse({
             'status': 'completed',
             'redirect_url': reverse('resultado_contrarreloj')
