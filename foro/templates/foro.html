@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foro</title>
     <link rel="stylesheet" href="{% static 'foro.css' %}">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="{{ theme }}" data-theme="{{ theme }}">
     <div class="todo">
@@ -36,8 +35,8 @@
                         <h3>Tema: {{ publicacion.titulo }}</h3>
                         <p>Iniciado por: {{ publicacion.usuario }}</p>
                         <p>Descripción: {{ publicacion.contenido }}</p>
-                        {% if publicacion.archivo_media and publicacion.archivo_media.url %}
-                            {% with media_url=publicacion.archivo_media.url %}
+                        {% if publicacion.archivo_media %}
+                            {% with publicacion.archivo_media.url as media_url %}
                                 {% if media_url|lower|slice:'-4:' == '.jpg' or media_url|lower|slice:'-5:' == '.jpeg' or media_url|lower|slice:'-4:' == '.png' or media_url|lower|slice:'-4:' == '.gif' %}
                                     <img src="{{ media_url }}" alt="Imagen de publicación" style="max-width: 100%; height: auto;">
                                 {% elif media_url|lower|slice:'-4:' == '.mp4' or media_url|lower|slice:'-4:' == '.webm' or media_url|lower|slice:'-4:' == '.ogg' %}
@@ -50,7 +49,6 @@
                                 {% endif %}
                             {% endwith %}
                         {% endif %}
-
                         <div class="like-reporte">
                             <button class="btn btn-like" onclick="darLike({{ publicacion.id }})" id="btn-like-{{ publicacion.id }}">
                                 Like
@@ -121,7 +119,7 @@
         </div>
         
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         Swal.fire({
             title: 'Ojo!',
