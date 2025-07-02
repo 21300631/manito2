@@ -65,7 +65,7 @@ def inicioSesion(request):
 
 
     print(f'Racha Usuario {racha}')
-    if racha == 1: #7
+    if racha == 7: 
     
         try:
             insignia_7dias= Insignia.objects.get(imagen="insignias/semana.png")
@@ -77,7 +77,7 @@ def inicioSesion(request):
                 messages.success(request, '¡Has ganado la insignia 7 días por completar una semana de racha! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
-    if racha == 2:    #30
+    if racha == 30:    #30
         try:
             insignia_30dias= Insignia.objects.get(imagen="insignias/mes.png")
             logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_30dias).exists()
@@ -88,7 +88,7 @@ def inicioSesion(request):
                 messages.success(request, '¡Has ganado la insignia 30 días por completar una mes de racha! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
-    if racha == 3:    #90
+    if racha == 90:    #90
         try:
             insignia_90dias= Insignia.objects.get(imagen="insignias/trimestre.png")
             logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_90dias).exists()
@@ -99,7 +99,7 @@ def inicioSesion(request):
                 messages.success(request, '¡Has ganado la insignia 90 días por completar una tres meses de racha! Sigue así 🏅')
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
-    if racha == 4: #360    
+    if racha == 360: #360    
         try:
             insignia_anio= Insignia.objects.get(imagen="insignias/year.png")
             logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_anio).exists()
@@ -111,7 +111,7 @@ def inicioSesion(request):
         except Insignia.DoesNotExist:
             messages.error(request, 'La insignia no existe')
     
-    if cantidadPalabras >= 1: #10    
+    if cantidadPalabras >= 3: #10    
         try:
             insignia_10P= Insignia.objects.get(imagen="insignias/calmado10.png")
             logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_10P).exists()
@@ -123,7 +123,7 @@ def inicioSesion(request):
         except Insignia.DoesNotExist:
             messages.success(request, 'No hay insignias nuevas')
 
-    if cantidadPalabras >= 2:    #50
+    if cantidadPalabras >= 6:    #50
         try:
             insignia_50P= Insignia.objects.get(imagen="insignias/algre50.png")
             logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_50P).exists()
@@ -135,7 +135,7 @@ def inicioSesion(request):
         except Insignia.DoesNotExist:
             messages.success(request, 'No hay insignias nuevas')
 
-    if cantidadPalabras >= 3: #100    
+    if cantidadPalabras >= 9: #100    
         try:
             insignia_100P= Insignia.objects.get(imagen="insignias/feliz100.png")
             logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_100P).exists()
@@ -147,7 +147,7 @@ def inicioSesion(request):
         except Insignia.DoesNotExist:
             messages.success(request, 'No hay insignias nuevas')
 
-    if cantidadPalabras >= 4:    #250
+    if cantidadPalabras >= 12:    #250
         try:
             insignia_250P= Insignia.objects.get(imagen="insignias/emocionado250.png")
             logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_250P).exists()
@@ -159,7 +159,7 @@ def inicioSesion(request):
         except Insignia.DoesNotExist:
             messages.success(request, 'No hay insignias nuevas')
     
-    if cantidadPalabras >= 5: #510    
+    if cantidadPalabras >= 15: #510    
         try:
             insignia_510P= Insignia.objects.get(imagen="insignias/todas.png")
             logro_existente = Logro.objects.filter(usuario=perfil, insignia=insignia_510P).exists()

@@ -27,7 +27,7 @@
                 <span class="nombre-usuario">{{ usuario.username }}</span>
                 {% if medalla %}
                 <div class="medalla">
-                    <img src="{{ medalla.imagen.url }}" alt="Medalla {{ medalla.nombre }}">
+                    <img src="{% static medalla.imagen %}" alt="Medalla {{ medalla.nombre }}">
                 </div>
                 {% endif %}
                 <div class="racha">

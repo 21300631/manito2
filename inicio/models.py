@@ -6,7 +6,7 @@ from publicacion.models import Publicacion
 
 class Medalla(models.Model):
     nombre = models.CharField(max_length=50)
-    imagen = models.ImageField(upload_to='medallas/')
+    imagen = models.CharField(max_length=200)
     
     class Meta:
         ordering = ['nombre']  # Orden: Bronce, Plata, Oro
