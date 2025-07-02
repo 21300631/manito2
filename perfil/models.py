@@ -2,7 +2,7 @@ from django.db import models
 
 class Insignia(models.Model):
     nombre = models.CharField(max_length=50)
-    imagen = models.ImageField(upload_to='insignias/')
+    imagen = models.CharField(max_length=50)
     
     def __str__(self):
         return self.nombre

@@ -139,7 +139,7 @@
             <div class="insignias">
                 {% for insignia in insignias %}
                     <div class="insignia-item">
-                        <img src="{{ insignia.imagen.url }}" alt="Insignia {{ insignia.nombre }}">
+                        <img src="{% static insignia.imagen %}" alt="Insignia {{ insignia.nombre }}">
                         <span class="tooltip">{{ insignia.nombre }}</span>
                     </div>
                 {% endfor %}
