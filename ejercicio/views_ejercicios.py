@@ -24,7 +24,6 @@ def ejercicio_emparejar(request):
     user = request.user
     perfil = Profile.objects.get(user=user)
 
-    # Obtener palabras para el ejercicio
     if PalabraUsuario.objects.filter(usuario=perfil).count() < 2:
         palabras_usuario = list(
             Palabra.objects.filter(leccion=1).exclude(id=palabra_obj.id).order_by('?')[:2]
@@ -34,9 +33,8 @@ def ejercicio_emparejar(request):
         palabras_usuario = [relacion.palabra for relacion in relaciones_usuario.order_by('?')[:2]]
 
     opciones = palabras_usuario + [palabra_obj]
-    random.shuffle(opciones)  # Mezclar palabras
+    random.shuffle(opciones)  
 
-    # Crear lista de gestos mezclada (no en el mismo orden que las palabras)
     gestos_mezclados = opciones.copy()
     random.shuffle(gestos_mezclados)
 
@@ -61,26 +59,23 @@ def ejercicio_seleccion(request):
     ejercicios = request.session.get('ejercicios', [])
     index = request.session.get('ejercicio_actual', 0)
     progreso = request.session.get('progreso', 0)
-    print(f"Ejercicio seleccion - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")  # Debug
+    print(f"Ejercicio seleccion - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}") 
 
     
     if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
 
     ejercicio_actual = ejercicios[index]
-    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
+    palabra_id = ejercicio_actual['palabra'] 
     palabra_obj = Palabra.objects.get(id=palabra_id)
 
-    # Distractores (otras palabras)
     gestos_distractores = list(
         Palabra.objects.exclude(id=palabra_obj.id).order_by('?')[:2]
     )
 
-    # Opciones mezcladas
     opciones = gestos_distractores + [palabra_obj]
     random.shuffle(opciones)
 
-    # Creamos una lista de opciones con URL completa y tipo (imagen o video)
     opciones_data = []
     for opcion in opciones:
         url = f"{MANITO_BUCKET_DOMAIN}/{opcion.gesto}"
@@ -93,7 +88,7 @@ def ejercicio_seleccion(request):
         })
 
     context = {
-        'theme': 'claro',  # o 'oscuro'
+        'theme': 'claro',  
         'texto_instruccion': f"Selecciona el gesto correcto para: {palabra_obj.palabra}",
         'opciones': opciones_data,
         'palabra_correcta_id': palabra_obj.id,
@@ -106,20 +101,18 @@ def ejercicio_seleccion2(request):
     ejercicios = request.session.get('ejercicios', [])
     index = request.session.get('ejercicio_actual', 0)
     progreso = request.session.get('progreso', 0)
-    print(f"Ejercicio seleccion2 - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}")  # Debug
+    print(f"Ejercicio seleccion2 - Índice: {index + 1}, Total Ejercicios: {len(ejercicios)}, Progreso {progreso}") 
 
     
     if index >= len(ejercicios):
         return redirect('mostrar_ejercicio')
 
     ejercicio_actual = ejercicios[index]
-    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
+    palabra_id = ejercicio_actual['palabra']  
     palabra_obj = Palabra.objects.get(id=palabra_id)
 
-    # Obtener ejemplos como lista
     ejemplos_raw = palabra_obj.ejemplos.split(" - ")
 
-    # Resaltar la palabra objetivo en los ejemplos
     palabra_resaltada = palabra_obj.palabra
     ejemplos_resaltados = []
     for ejemplo in ejemplos_raw:
@@ -129,16 +122,13 @@ def ejercicio_seleccion2(request):
             ejemplo,
             flags=re.IGNORECASE
         )
-        ejemplos_resaltados.append(mark_safe(resaltado))  # Mark safe para permitir HTML
+        ejemplos_resaltados.append(mark_safe(resaltado))  
 
-    # Distractores
     distractores = list(Palabra.objects.exclude(id=palabra_obj.id).order_by('?')[:2])
 
-    # Opciones mezcladas
     opciones = distractores + [palabra_obj]
     random.shuffle(opciones)
 
-    # Preparar URLs y tipo de archivo
     opciones_data = []
     for opcion in opciones:
         url = f"{MANITO_BUCKET_DOMAIN}/{opcion.gesto}"
@@ -222,7 +212,7 @@ def ejercicio_escribir(request):
         return redirect('mostrar_ejercicio')
 
     ejercicio_actual = ejercicios[index]
-    palabra_id = ejercicio_actual['palabra']  # Obtener el ID de la palabra del ejercicio actual
+    palabra_id = ejercicio_actual['palabra']  
     palabra_obj = Palabra.objects.get(id=palabra_id)
 
     
@@ -235,7 +225,7 @@ def ejercicio_escribir(request):
         'texto_instruccion': "Escribe la palabra que corresponde al gesto",
         'gesto_url': archivo_url,
         'es_video': es_video,
-        'palabra_correcta': palabra_obj.palabra,  # por si lo necesitas validar
+        'palabra_correcta': palabra_obj.palabra, 
     }
 
     print("Gesto URL:", archivo_url)
@@ -252,7 +242,7 @@ def ejercicio_gesto(request):
         return redirect('mostrar_ejercicio')
 
     ejercicio_actual = ejercicios[index]
-    palabra_id = ejercicio_actual.get('palabra')  # más seguro con .get()
+    palabra_id = ejercicio_actual.get('palabra')  
 
     try:
         palabra = Palabra.objects.get(id=palabra_id)
@@ -260,7 +250,6 @@ def ejercicio_gesto(request):
         print(f" Palabra con ID {palabra_id} no encontrada.")
         return render(request, 'error_generico.html', {'mensaje': f'Palabra con ID {palabra_id} no encontrada.'})
 
-    # Proteger contra gesto vacío o None
     gesto = palabra.gesto if palabra.gesto else ''
     archivo_url = f"{MANITO_BUCKET_DOMAIN}/{gesto}"
     json_url = static(f'landmarks/{palabra.palabra}.json')

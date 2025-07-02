@@ -42,11 +42,11 @@ class Palabra(models.Model):
     def __str__(self):
         return self.palabra
 
-class PalabraUsuario(models.Model):
-    usuario = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='palabras_usuario')
-    palabra = models.ForeignKey(Palabra, on_delete=models.CASCADE, related_name='palabras_usuario')
-    fecha_completada = models.DateTimeField(null=True, blank=True)  # Fecha de finalización de la palabra
-    precision = models.FloatField(default=0.0)  # Precisión del usuario al realizar el gesto
+    class PalabraUsuario(models.Model):
+        usuario = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='palabras_usuario')
+        palabra = models.ForeignKey(Palabra, on_delete=models.CASCADE, related_name='palabras_usuario')
+        fecha_completada = models.DateTimeField(null=True, blank=True)  # Fecha de finalización de la palabra
+        precision = models.FloatField(default=0.0)  # Precisión del usuario al realizar el gesto
 
 
 class Instruccion(models.Model): #ya en SQL

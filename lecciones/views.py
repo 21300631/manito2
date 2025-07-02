@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ejercicio.models import PalabraUsuario, Palabra
 
-# Create your views here.
 #Estas partes son para que se vea el progreso de las lecciones y se desbloqueen las siguientes
 @login_required
 def etapa1(request):

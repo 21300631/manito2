@@ -56,7 +56,6 @@ def siguiente_ejercicio_repaso(request):
     palabras_ids = request.session.get('repaso_palabras', [])
     current_index = request.session.get('repaso_index', 0)
     
-    # Verificar si ya hemos terminado antes de procesar
     if current_index >= len(palabras_ids):
         return JsonResponse({
             'status': 'completed',
@@ -64,7 +63,6 @@ def siguiente_ejercicio_repaso(request):
         })
     
     if request.method == 'POST':
-        # Procesar error si existe
         try:
             data = json.loads(request.body) if request.content_type == 'application/json' else request.POST.dict()
             
@@ -73,11 +71,9 @@ def siguiente_ejercicio_repaso(request):
                 errores.append(current_index)
                 request.session['repaso_errores'] = errores
             
-            # Avanzar al siguiente ejercicio
             request.session['repaso_index'] = current_index + 1
             request.session.modified = True
             
-            # Verificar si hemos terminado después de avanzar
             if request.session['repaso_index'] >= len(palabras_ids):
                 return JsonResponse({
                     'status': 'completed',

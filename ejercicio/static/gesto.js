@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const videoElement = document.getElementById('inputVideo');
         const canvasElement = document.getElementById('outputCanvas');
         const recordButton = document.getElementById('recordBtn');
-        // const nextButton = document.getElementById('nextBtn');
         const countdownElement = document.getElementById('countdown');
         const recordingTimerElement = document.getElementById('recordingTimer');
         const gestoVideo = document.getElementById('gestoVideo');
@@ -22,13 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof LANDMARKS_JSON_URL !== 'undefined') {
             console.log("JSON de la palabra:", LANDMARKS_JSON_URL);
         }
-        // Opción 2: Obtener el JSON mediante fetch
         else if (palabraJsonUrl) {
             fetch(palabraJsonUrl)
                 .then(response => response.json())
                 .then(jsonData => {
                     console.log("JSON de la palabra obtenido:", jsonData);
-                    // Aquí puedes usar jsonData como necesites
                 })
                 .catch(error => {
                     console.error("Error obteniendo JSON de la palabra:", error);
@@ -48,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
 
-        // Mostrar el botón de grabar
         if (recordButton) {
             recordButton.style.display = 'inline-block';
             recordButton.disabled = false;
@@ -56,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Botón de grabación no encontrado");
         }
         
-        // Configuración inicial
         if (canvasElement) {
             canvasElement.width = 640;
             canvasElement.height = 480;
@@ -244,9 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const similarity = Math.exp(-2.5 * avgError);
                 
                 return Math.max(0, Math.min(1, similarity));
-            }
-
-           
+            }         
 
             // Función para procesar todos los frames y calcular la similitud promedio
             function processAllFrames(userFrames, referenceFrames) {

@@ -6,7 +6,6 @@ urlpatterns = [
     path('contrarreloj/', generarContrarreloj, name='contrarreloj'),
     path('memorama/', generarMemorama, name='memorama'),
     path('relacion/', generarRelacion, name='relacion'),
-    # path('obtener-pares/', obtener_pares, name='obtener-pares'),
 
     path('ejercicio/', mostrar_ejercicio_contrarreloj, name='mostrar_ejercicio_contrarreloj'),
     path('siguiente/', siguiente_ejercicio_contrarreloj, name='siguiente_ejercicio_contrarreloj'),

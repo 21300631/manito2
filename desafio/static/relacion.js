@@ -54,10 +54,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     function crearGruposDePares() {
-        // Mezcla todos los pares disponibles
         mezclarArray(paresDisponibles);
         
-        // Divide en grupos de 5
         gruposDePares = [];
         for (let i = 0; i < paresDisponibles.length; i += 5) {
             const grupo = paresDisponibles.slice(i, i + 5);
@@ -68,22 +66,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function mostrarParesIniciales() {
-        // Obtén el grupo actual
         const grupo = gruposDePares[grupoActual % gruposDePares.length];
         
-        // Limpia el tablero
         document.querySelector('.fila.palabras').innerHTML = '';
         document.querySelector('.fila.imagenes').innerHTML = '';
 
-        // Extrae palabras e imágenes por separado
         const palabrasGrupo = grupo.map(par => par.palabra);
         const imagenesGrupo = grupo.map(par => par.imagen);
         
-        // Mezcla independientemente las palabras y las imágenes
         mezclarArray(palabrasGrupo);
         mezclarArray(imagenesGrupo);
         
-        // Crea los elementos mezclados
         palabrasGrupo.forEach(palabra => {
             document.querySelector('.fila.palabras').appendChild(crearElemento('palabra', palabra));
         });
@@ -92,14 +85,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.fila.imagenes').appendChild(crearElemento('imagen', imagen));
         });
 
-        // Actualiza los pares activos (considerando la mezcla)
         paresActivos = grupo.map(par => ({
             palabra: par.palabra,
             imagen: par.imagen,
             esCorrecto: par.palabra.id === par.imagen.id
         }));
         
-        // Verifica el balance después de cargar
         verificarBalance();
     }
 
@@ -128,25 +119,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function manejarSeleccion(elemento) {
-        // Evitar seleccionar elementos ya acertados
         if (elemento.classList.contains('acertado')) {
             return;
         }
     
-        // Si se hace clic en el mismo elemento
         if (elemento === seleccionado) {
             elemento.classList.remove('seleccionado');
             seleccionado = null;
             return;
         }
     
-        // Si hay un elemento seleccionado diferente
         if (seleccionado) {
-            // Determinar tipos
             const esPalabraPrimero = seleccionado.classList.contains('palabra');
             const esImagenPrimero = seleccionado.classList.contains('imagen');
             
-            // Validar combinación permitida (palabra-imagen o imagen-palabra)
             if ((esPalabraPrimero && elemento.classList.contains('imagen')) || 
                 (esImagenPrimero && elemento.classList.contains('palabra'))) {
                 
@@ -154,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const imagenId = esPalabraPrimero ? elemento.dataset.id : seleccionado.dataset.id;
     
                 if (esParCorrecto(palabraId, imagenId)) {
-                    // Par correcto
                     aciertos++;
                     contador.textContent = aciertos;
                     
@@ -165,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         reemplazarParCorrecto(palabraId, imagenId);
                     }, 300);
                 } else {
-                    // Par incorrecto
                     seleccionado.classList.add('error');
                     elemento.classList.add('error');
                     
@@ -176,13 +160,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 500);
                 }
             } else {
-                // Selección inválida (dos palabras o dos imágenes)
                 seleccionado.classList.remove('seleccionado');
                 seleccionado = elemento;
                 elemento.classList.add('seleccionado');
             }
         } else {
-            // Nueva selección
             seleccionado = elemento;
             elemento.classList.add('seleccionado');
         }
@@ -196,25 +178,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function reemplazarParCorrecto(palabraId, imagenId) {
-        // 1. Elimina el par acertado de los activos
         paresActivos = paresActivos.filter(p => !(p.palabra.id == palabraId && p.imagen.id == imagenId));
 
-        // 2. Verifica si quedan pares correctos en el grupo actual
         const paresCorrectosRestantes = paresActivos.filter(p => p.esCorrecto).length;
 
         if (paresCorrectosRestantes === 0) {
-            // 3. Si no quedan, pasa al siguiente grupo
             grupoActual++;
             console.log(" Rotando al grupo:", grupoActual % gruposDePares.length);
             
-            // 4. Carga el nuevo grupo después de 0.5s (para que termine la animación)
             setTimeout(() => {
                 mostrarParesIniciales();
             }, 500);
-            return; // ¡Importante! Salir para no reponer pares innecesarios
+            return; 
         }
 
-        // 5. Si aún hay pares, repone los faltantes
         setTimeout(() => {
             const totalParesVisibles = document.querySelectorAll('.fila.palabras .item').length;
             const paresNecesarios = 5 - totalParesVisibles;
@@ -227,46 +204,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     
     function reponerPares(cantidad) {
-    const grupo = gruposDePares[grupoActual % gruposDePares.length];
-    
-    // Obtener palabras e imágenes no mostradas
-    const palabrasDisponibles = grupo.map(p => p.palabra).filter(p => 
-        !document.querySelector(`.fila.palabras .item[data-id="${p.id}"]`)
-    );
-    
-    const imagenesDisponibles = grupo.map(p => p.imagen).filter(i => 
-        !document.querySelector(`.fila.imagenes .item[data-id="${i.id}"]`)
-    );
-    
-    // Mezclar independientemente
-    mezclarArray(palabrasDisponibles);
-    mezclarArray(imagenesDisponibles);
-    
-    // Agregar nuevos pares manteniendo el balance
-    const maxReposicion = Math.min(cantidad, palabrasDisponibles.length, imagenesDisponibles.length);
-    
-    for (let i = 0; i < maxReposicion; i++) {
-        const palabra = palabrasDisponibles[i];
-        const imagen = imagenesDisponibles[i];
+        const grupo = gruposDePares[grupoActual % gruposDePares.length];
         
-        document.querySelector('.fila.palabras').appendChild(crearElemento('palabra', palabra));
-        document.querySelector('.fila.imagenes').appendChild(crearElemento('imagen', imagen));
+        const palabrasDisponibles = grupo.map(p => p.palabra).filter(p => 
+            !document.querySelector(`.fila.palabras .item[data-id="${p.id}"]`)
+        );
         
-        paresActivos.push({
-            palabra: palabra,
-            imagen: imagen,
-            esCorrecto: palabra.id === imagen.id
-        });
+        const imagenesDisponibles = grupo.map(p => p.imagen).filter(i => 
+            !document.querySelector(`.fila.imagenes .item[data-id="${i.id}"]`)
+        );
+        
+        mezclarArray(palabrasDisponibles);
+        mezclarArray(imagenesDisponibles);
+        
+        const maxReposicion = Math.min(cantidad, palabrasDisponibles.length, imagenesDisponibles.length);
+        
+        for (let i = 0; i < maxReposicion; i++) {
+            const palabra = palabrasDisponibles[i];
+            const imagen = imagenesDisponibles[i];
+            
+            document.querySelector('.fila.palabras').appendChild(crearElemento('palabra', palabra));
+            document.querySelector('.fila.imagenes').appendChild(crearElemento('imagen', imagen));
+            
+            paresActivos.push({
+                palabra: palabra,
+                imagen: imagen,
+                esCorrecto: palabra.id === imagen.id
+            });
+        }
+        
+        verificarBalance();
+        if (document.querySelectorAll('.fila.palabras .item').length < 5) {
+            grupoActual++;
+            setTimeout(() => mostrarParesIniciales(), 500);
+        }
     }
-    
-    verificarBalance();
-    
-    // Si no hay suficientes para reponer, rotar al siguiente grupo
-    if (document.querySelectorAll('.fila.palabras .item').length < 5) {
-        grupoActual++;
-        setTimeout(() => mostrarParesIniciales(), 500);
-    }
-}
 
 
 
@@ -282,8 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 imagenes: imagenes.length
             });
             
-            // Corregir desbalance eliminando elementos extras
-            while (palabras.length > imagenes.length && palabras.length > 0) {
+                while (palabras.length > imagenes.length && palabras.length > 0) {
                 palabras[palabras.length - 1].remove();
             }
             
@@ -293,7 +264,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // 3. Funciones de Utilidad
     function mezclarArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -316,10 +286,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1000);
     }
 
-     function finDelJuego() {
+    function finDelJuego() {
         clearInterval(temporizador);
         
-        // Redirigir a la página final con los resultados
         const porcentajeExito = Math.round((aciertos / totalPares) * 100);
         const tiempoUsado = CONFIG_JUEGO.tiempoPorRonda - tiempoRestante;
         
@@ -351,16 +320,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Pares disponibles totales:', paresDisponibles.length);
     }
     
-    // Llámala después de crearGruposDePares()
-
-    // Inicializar el juego
     inicializarJuego();
     iniciarTemporizador();
     verificarEstadoGrupos();
-    console.log("=== INICIO ===");
-    console.log("Total pares disponibles:", paresDisponibles.length);
-    console.log("Número de grupos:", gruposDePares.length);
-    console.log("Grupos:", gruposDePares.map(g => g.map(p => p.palabra.palabra)));
-    console.log("=== FIN ===");
-    
 }); 

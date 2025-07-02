@@ -40,9 +40,8 @@ class Profile(models.Model):
                 print(f"Reiniciando racha para {self.user.username}")
             self.racha = 0
         else:
-            # Incrementar racha y otorgar puntos
             self.racha += 1
-            self.puntos += 10  # 10 puntos por mantener la racha
+            self.puntos += 10  
             print(f"Tiempo desde el último acceso: {diferencia}.")
             print(f"Racha incrementada: {self.racha} (10 puntos añadidos)")
         

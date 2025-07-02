@@ -55,14 +55,12 @@
         </div>
     </div>
 
-    <!-- MediaPipe y librerías -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/numeric/numeric.min.js"></script>
 
-    <!-- Variables JS -->
     <script>
         const IS_VIDEO_EXERCISE = {{ palabra.is_video|yesno:"true,false" }};
         const LANDMARKS_JSON_URL = "{{ palabra.json_url }}";
@@ -95,57 +93,54 @@
         }
     </script>
 
-    <!-- Script principal -->
     <script src="{% static 'repaso.js' %}"></script>
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const noRecuerdoBtn = document.getElementById('noRecuerdoBtn');
-    
-    noRecuerdoBtn.addEventListener('click', function() {
-        // Mostrar confirmación
-        Swal.fire({
-            title: '¿No recuerdas este gesto?',
-            text: 'Se registrará como error y pasaremos al siguiente ejercicio',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, no lo recuerdo',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Enviar petición al servidor
-                fetch('/repaso/no-recuerdo/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': CSRF_TOKEN
-                    },
-                    body: JSON.stringify({
-                        palabra_id: CURRENT_WORD_ID
+    document.addEventListener('DOMContentLoaded', function() {
+        const noRecuerdoBtn = document.getElementById('noRecuerdoBtn');
+        
+        noRecuerdoBtn.addEventListener('click', function() {
+            Swal.fire({
+                title: '¿No recuerdas este gesto?',
+                text: 'Se registrará como error y pasaremos al siguiente ejercicio',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, no lo recuerdo',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('/repaso/no-recuerdo/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': CSRF_TOKEN
+                        },
+                        body: JSON.stringify({
+                            palabra_id: CURRENT_WORD_ID
+                        })
                     })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error en la respuesta del servidor');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'completed') {
-                        window.location.href = FINISH_URL;
-                    } else {
-                        window.location.reload(); // Recargar para el siguiente ejercicio
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire('Error', 'Hubo un problema al registrar tu respuesta', 'error');
-                });
-            }
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error en la respuesta del servidor');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.status === 'completed') {
+                            window.location.href = FINISH_URL;
+                        } else {
+                            window.location.reload(); // Recargar para el siguiente ejercicio
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error', 'Hubo un problema al registrar tu respuesta', 'error');
+                    });
+                }
+            });
         });
     });
-});
-</script>
+    </script>
 </body>
 </html>

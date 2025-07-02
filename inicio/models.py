@@ -2,7 +2,8 @@ from django.db import models
 from registro.models import Profile
 from django.contrib.auth.models import User
 from publicacion.models import Publicacion
-# Create your models here.
+
+
 class Medalla(models.Model):
     nombre = models.CharField(max_length=50)
     imagen = models.ImageField(upload_to='medallas/')

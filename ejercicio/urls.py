@@ -4,18 +4,15 @@ from .views_ejercicios import ejercicio_emparejar, ejercicio_completar, ejercici
 from .views_validar import verificar_seleccion, verificar_completar, verificar_seleccion2,  verificar_escribir, verificar_emparejar, guardar_precision
 
 urlpatterns = [  
-    # generar lecciones
     path('generar/', generarLeccion, name='generar_leccion'), 
     path('siguiente/', siguiente_ejercicio, name='siguiente_ejercicio'),  
     path('mostrar/', mostrar_ejercicio, name='mostrar_ejercicio'),
-    # ejercicios
     path('emparejar/', ejercicio_emparejar, name='ejercicio_emparejar'),
     path('completar/', ejercicio_completar, name='ejercicio_completar'),
     path('escribir/', ejercicio_escribir, name='ejercicio_escribir'),
     path('gesto/', ejercicio_gesto, name='ejercicio_gesto'),
     path('seleccion/', ejercicio_seleccion, name='ejercicio_seleccion'),
     path('seleccion2/', ejercicio_seleccion2, name='ejercicio_seleccion2'),
-    # validaciones
     path('verificar_seleccion/', verificar_seleccion, name='verificar_seleccion'),
     path('verificar_completar/', verificar_completar, name='verificar_completar'),
     path('verificar_seleccion2/', verificar_seleccion2, name='verificar_seleccion2'),

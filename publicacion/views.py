@@ -37,14 +37,13 @@ def nueva_publicacion(request):
 
         if media:
             ALLOWED_TYPES = [
-                'image/jpeg', 'image/png', 'image/gif',  # Imágenes
-                'video/mp4', 'video/webm', 'video/ogg'   # Videos
+                'image/jpeg', 'image/png', 'image/gif', 
+                'video/mp4', 'video/webm', 'video/ogg'  
             ]
             if media.content_type not in ALLOWED_TYPES:
                 context['error'] = 'Tipo de archivo no permitido. Solo imágenes (JPEG, PNG, GIF) y videos (MP4, WebM, Ogg)'
                 return render(request, 'publicacionNueva.html', context)
             
-            # Validar tamaño máximo (ejemplo: 10MB)
             if media.size > 10 * 1024 * 1024:  # 10MB
                 context['error'] = 'El archivo es demasiado grande (máximo 10MB)'
                 return render(request, 'publicacionNueva.html', context)

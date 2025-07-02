@@ -11,7 +11,6 @@ from django.contrib.auth.decorators import login_required
 def check_auth(user):
     return user.is_authenticated
 
-
 @user_passes_test(check_auth)
 @require_POST
 @csrf_exempt
@@ -34,7 +33,6 @@ def verificar_seleccion(request):
                     100
                 )
         else:
-            # Agregar ejercicio actual a la lista de errores si no está ya
             if 'ejercicios_errores' not in request.session:
                 request.session['ejercicios_errores'] = []
             
@@ -46,7 +44,6 @@ def verificar_seleccion(request):
                     100
                 )
         
-        # Siempre avanzar al siguiente ejercicio
         request.session.modified = True
         
         
@@ -82,7 +79,6 @@ def verificar_seleccion2(request):
                     100
                 )
         else:
-            # Agregar ejercicio actual a la lista de errores si no está ya
             if 'ejercicios_errores' not in request.session:
                 request.session['ejercicios_errores'] = []
             
@@ -94,7 +90,6 @@ def verificar_seleccion2(request):
                     100
                 )
         
-        # Siempre avanzar al siguiente ejercicio
         request.session.modified = True
         
         
@@ -131,7 +126,6 @@ def verificar_completar(request):
                     100
                 )
         else:
-            # Agregar ejercicio actual a la lista de errores si no está ya
             if 'ejercicios_errores' not in request.session:
                 request.session['ejercicios_errores'] = []
             
@@ -143,12 +137,9 @@ def verificar_completar(request):
                     100
                 )
         
-        # Siempre avanzar al siguiente ejercicio
         request.session.modified = True
         
-        # Obtener la palabra correcta para el mensaje
         palabra_correcta = Palabra.objects.get(id=palabra_correcta_id)
-        
         
         return JsonResponse({
             'correcto': es_correcto,
@@ -183,7 +174,6 @@ def verificar_escribir(request):
                     100
                 )
         else:
-            # Agregar ejercicio actual a la lista de errores si no está ya
             if 'ejercicios_errores' not in request.session:
                 request.session['ejercicios_errores'] = []
             
@@ -195,7 +185,6 @@ def verificar_escribir(request):
                     100
                 )
         
-        # Siempre avanzar al siguiente ejercicio
         request.session.modified = True
         
         
@@ -243,7 +232,6 @@ def verificar_emparejar(request):
                     100
                 )
         else:
-            # Agregar ejercicio actual a la lista de errores si no está ya
             if 'ejercicios_errores' not in request.session:
                 request.session['ejercicios_errores'] = []
             
@@ -255,10 +243,7 @@ def verificar_emparejar(request):
                 100
             )
         
-        # Siempre avanzar al siguiente ejercicio
         request.session.modified = True
-        
-        
         
         return JsonResponse({
             'todos_correctos': todos_correctos,

@@ -12,7 +12,6 @@ def loteria(request):
     usuario = request.user
     perfil = Profile.objects.get(user_id=usuario.id)
     
-    # Verificar si viene de completar el juego (parámetro completado)
     if request.GET.get('completado') == '1':
         puntuacion = request.GET.get('puntuacion', 0)
         puntines = int(request.GET.get('puntuacion', 0))
@@ -26,19 +25,16 @@ def loteria(request):
             ).first().categoria
         })
     
-    # Obtener la categoría actual
     categoria_actual = Palabra.objects.filter(
         leccion_id=perfil.leccion-1
     ).first().categoria
     
-    # Obtener 12 palabras aleatorias practicadas
     palabras_repaso = Palabra.objects.filter(
         categoria=categoria_actual,
         palabras_usuario__usuario=perfil,
         leccion_id__lt=perfil.leccion
     ).distinct().order_by('?')[:12]
     
-    # Preparar datos de gestos con URLs completas
     gestos = []
     for palabra in palabras_repaso:
         gesto_url = palabra.gesto

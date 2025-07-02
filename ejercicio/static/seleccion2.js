@@ -14,7 +14,6 @@ function getCookie(name) {
     return cookieValue;
 }
 document.addEventListener("DOMContentLoaded", () => {
-    // Inicializar barra de progreso vertical
     const progressBar = document.getElementById("progressBar");
     const progresoInicial = parseInt(progressBar.dataset.progresoInicial) || 0;
     progressBar.style.height = `${progresoInicial}%`;
@@ -27,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
         card.addEventListener("click", () => {
             const opcion_id = card.getAttribute("data-id");
 
-            // Deshabilitar todas las tarjetas durante la verificación
             tarjetas.forEach(t => t.style.pointerEvents = 'none');
             
             fetch(urlVerificacion, {

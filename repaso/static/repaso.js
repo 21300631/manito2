@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof LANDMARKS_JSON_URL !== 'undefined') {
             console.log("JSON de la palabra:", LANDMARKS_JSON_URL);
         }
-        // Opción 2: Obtener el JSON mediante fetch
         else if (palabraJsonUrl) {
             fetch(palabraJsonUrl)
                 .then(response => response.json())
@@ -848,20 +847,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         showFeedback("✓ ¡Correcto!", true);
                         goToNextExercise();
                         
-                        // Usar CURRENT_WORD_ID en lugar de currentWordId
-                        // fetch('/repaso/siguiente/', {
-                        //     method: 'POST',
-                        //     headers: {
-                        //         'Content-Type': 'application/x-www-form-urlencoded',
-                        //         'X-CSRFToken': getCookie('csrftoken')
-                        //     },
-                        //     body: `palabra_id=${CURRENT_WORD_ID}`
-                        // }).then(() => {
-                        //     window.location.href = "/repaso/";
-                        // }).catch(error => {
-                        //     console.error('Error:', error);
-                        //     window.location.href = "/repaso/";
-                        // });
+                    
                     }
                 }
             } else {
@@ -869,10 +855,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 showFeedback(`✗ Ajusta tu gesto (${currentSimilarity.toFixed(0)}%)`, false);
             }
         }
-        // Función auxiliar para obtener cookies
 
 
-        // Modificar la función calculateSimilarity para usar landmarks normalizados
         function calculateSimilarity(landmarks1, landmarks2) {
             if (!landmarks1 || !landmarks2 || landmarks1.length !== landmarks2.length) return 0;
             
@@ -1093,6 +1077,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return cookieValue;
     }
-    
-
 });

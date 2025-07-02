@@ -155,11 +155,10 @@
                     customClass: {
                         title: 'custom-title-class',
                     },
-                    allowOutsideClick: false,  // Evita cerrar haciendo clic fuera
-                    allowEscapeKey: false,    // Evita cerrar con ESC
-                    allowEnterKey: false      // Evita cerrar con Enter
+                    allowOutsideClick: false,  
+                    allowEscapeKey: false,    
+                    allowEnterKey: false      
                 }).then((result) => {
-                    // Solo redirige si hace clic en "Entendido"
                     if (result.isConfirmed) {
                         window.location.href = "/repaso/";
                     }
@@ -192,9 +191,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script src="{% static 'inicio.js' %}"></script>
-    <style>
 
-    </style>
 
 </body>
 </html>

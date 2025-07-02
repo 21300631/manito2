@@ -15,7 +15,7 @@ from inicio.models import Medalla
 @login_required
 def inicioSesion(request):
     usuario = request.user
-    perfil = Profile.objects.get(user=usuario)  # Obtiene el perfil del usuario
+    perfil = Profile.objects.get(user=usuario)  
     notificaciones = Notificacion.objects.filter(receptor=request.user).order_by('-fecha')[:10]
     racha = perfil.racha
 
@@ -26,17 +26,16 @@ def inicioSesion(request):
     now = timezone.now()
     if hayPalabras.exists():
         if perfil.last_login:
-            minutes_since_last_login = (now - perfil.last_login).total_seconds() / 60
-            # days_since_last_login = (now - perfil.last_login).days
-            if minutes_since_last_login > 15:
+            # minutes_since_last_login = (now - perfil.last_login).total_seconds() / 60
+            days_since_last_login = (now - perfil.last_login).days
+            if days_since_last_login > 3:
                 messages.success(request, "¡Que bueno que has vuelto! No te habíamos visto en más de 3 días.", extra_tags='welcome_back success')
-            if minutes_since_last_login > 10:
+            if days_since_last_login > 1:
                 perfil.racha = 0
                 perfil.save()
     else:
         print("No hay repaso porque no hay que repasar")
 
-    # Actualizar la última fecha de login
     perfil.last_login = now
     perfil.save()
 
@@ -46,11 +45,11 @@ def inicioSesion(request):
 
     cantidad_precisas = sum(1 for s in ultimas_senias if s.precision >= 80)
 
-    if cantidad_precisas >= 4:
+    if cantidad_precisas >= 9:
         nueva_medalla_img = "medallas/oro.png"
-    elif cantidad_precisas == 3:
+    elif cantidad_precisas == 6:
         nueva_medalla_img = "medallas/plata.png"
-    elif cantidad_precisas == 2:
+    elif cantidad_precisas == 3:
         nueva_medalla_img = "medallas/bronce.png"
     else:
         nueva_medalla_img = "medallas/circulo.png"

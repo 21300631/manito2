@@ -19,7 +19,6 @@ def generarLeccion(request):
     if leccion_id > perfil.leccion:
         return HttpResponseForbidden("No tienes acceso a esta lección todavía.")
     
-    # Reiniciar completamente el estado de la lección
     request.session.update({
         'leccion_actual': leccion_id,
         'progreso': 0,
@@ -81,7 +80,7 @@ def generarLeccion(request):
     
     # Guardar en sesión
     request.session['ejercicios'] = ejercicios
-    request.session['ejercicios_originales'] = list(ejercicios)  # Guardar copia de los originales
+    request.session['ejercicios_originales'] = list(ejercicios)  
     request.session.modified = True
 
 

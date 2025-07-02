@@ -37,9 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     canvasElement.style.transform = "scaleX(-1)";
     canvasElement.style.borderRadius = '10px';
     
-    // Añadir elementos al DOM
-    
-    
+ 
     // Inicializar MediaPipe Hands
     const hands = new Hands({
         locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
@@ -284,8 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-
-    // Luego reemplaza el fetch original en tu código con:
     // Función para obtener el token CSRF
     function getCookie(name) {
         let cookieValue = null;
@@ -346,7 +342,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.landmarksCargados = function() {
-    // Reiniciar el proceso de comparación con los nuevos landmarks
     console.log("Nuevos landmarks listos para usar:", referenceLandmarks);
-    // Aquí puedes reiniciar cualquier temporizador o estado de comparación
 };
