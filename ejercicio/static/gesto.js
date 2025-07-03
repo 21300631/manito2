@@ -62,14 +62,13 @@ document.addEventListener('DOMContentLoaded', () => {
             let isRecording = false;
             let countdownInterval;
             let recordingTimerInterval;
-            let allHandLandmarks = []; // Almacenará landmarks de mano por frame
+            let allHandLandmarks = []; 
             let hands;
             
             ctx.imageSmoothingEnabled = true;
             videoElement.playsInline = true;
             videoElement.muted = true;
 
-            // Configurar MediaPipe Hands
             async function setupHandTracking() {
                 const hands = new Hands({
                     locateFile: (file) => {
@@ -89,14 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 return hands;
             }
 
-            // Función para normalizar landmarks
             function normalizeLandmarks(landmarks) {
                 if (!landmarks || landmarks.length === 0) return null;
                 
-                // Convertir a array de puntos {x, y, z}
+                // convierte a un arreglo 
                 const points = landmarks.map(p => ({x: p.x, y: p.y, z: p.z}));
                 
-                //  Calcular centroide
+                //  caculo del centro de los landmarks
                 const centroid = points.reduce((acc, p) => {
                     acc.x += p.x;
                     acc.y += p.y;
@@ -108,14 +106,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 centroid.y /= points.length;
                 centroid.z /= points.length;
                 
-                // 3. Centrar los puntos
+                // centra los puntos 
                 const centered = points.map(p => ({
                     x: p.x - centroid.x,
                     y: p.y - centroid.y,
                     z: p.z - centroid.z
                 }));
                 
-                //  Calcular escala basada en la distancia muñeca (punto 0) a dedo medio (punto 12)
+                //  calcular escala basado en la muñeca y el dedo medio
                 const wrist = centered[0];
                 const middleFinger = centered[12];
                 const scale = Math.sqrt(
@@ -126,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (scale === 0) return null;
                 
-                //  Normalizar y aplicar pesos a puntos clave
+                // normaliza los puntos para que el tamaño de la mano sea independiente del resultado
                 return centered.map((p, i) => ({
                     id: i,
                     x: p.x / scale,
@@ -139,24 +137,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
             
             function procrustesAlignment(userLandmarks, referenceLandmarks) {
-                // Convertir landmarks a matrices para numeric.js
+                // Convertir landmarks a matrices
                 const userPoints = userLandmarks.map(p => [p.x, p.y, p.z]);
                 const refPoints = referenceLandmarks.map(p => [p.x, p.y, p.z]);
                 
-                // Centrar los puntos
+                // Pone los puntos en la coordenada 0
                 const userCentered = centerPoints(userPoints);
                 const refCentered = centerPoints(refPoints);
                 
-                // Calcular matriz de covarianza
+                // relacion puntos usuario - referencia
                 const H = numeric.dot(numeric.transpose(userCentered), refCentered);
                 
-                // SVD
+                //analisis como girarlo y estirarlo
                 const svd = numeric.svd(H);
                 
-                // Calcular matriz de rotación
+                // resultado final 
                 const R = numeric.dot(svd.V, numeric.transpose(svd.U));
                 
-                // Aplicar rotación y traslación
+                // y ahora lo aplico
                 const aligned = numeric.dot(userPoints, R);
                 
                 // Convertir de vuelta al formato de landmarks
@@ -183,22 +181,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 ]);
             }
 
-            // Función para calcular la similitud entre dos conjuntos de landmarks
             function calculateSimilarity(userLandmarks, referenceLandmarks) {
                 if (!userLandmarks || !referenceLandmarks) return 0;
                 
-                // Normalizar ambos conjuntos o sea ps centrarlos
                 const normalizedUser = normalizeLandmarks(userLandmarks);
                 const normalizedRef = normalizeLandmarks(referenceLandmarks);
 
-                
-                
                 if (!normalizedUser || !normalizedRef) return 0;
                 
-                // Alinear usando Procrustes es decir que unimos las manitas
                 const alignedUser = procrustesAlignment(normalizedUser, normalizedRef);
                 
-                //  Que tan importante es cada parte de la mano
                 const weights = {
                     palm: [0, 1, 5, 9, 13, 17], // P untos de la palma
                     thumb: [1, 2, 3, 4],         // Pulgar
@@ -211,12 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 let totalError = 0;
                 let totalWeight = 0;
                 
-                //  Comparar punto por punto con pesos diferentes
                 for (let i = 0; i < alignedUser.length; i++) {
                     const userPoint = alignedUser[i];
                     const refPoint = normalizedRef[i];
                     
-                    // Determinar el peso según la parte de la mano
                     let weight = 1.0;
                     if (weights.thumb.includes(i)) weight = 1.3;
                     if (weights.index.includes(i)) weight = 1.5;
@@ -241,16 +231,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 return Math.max(0, Math.min(1, similarity));
             }         
 
-            // Función para procesar todos los frames y calcular la similitud promedio
             function processAllFrames(userFrames, referenceFrames) {
                 if (!userFrames || userFrames.length === 0 || !referenceFrames || referenceFrames.length === 0) return 0;
                 
-                // Muestrear frames para igualar longitud
                 const sampledUserFrames = sampleFrames(userFrames, referenceFrames.length);
                 
-                // Encontrar el mejor desplazamiento temporal (DTW básico)
                 let bestSimilarity = 0;
-                const maxOffset = Math.min(3, referenceFrames.length); // Pequeño margen para sincronización
+                const maxOffset = Math.min(3, referenceFrames.length); 
                 
                 for (let offset = -maxOffset; offset <= maxOffset; offset++) {
                     let currentSimilarity = 0;
@@ -302,7 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return sampled;
             }
 
-            // Función para calcular la distancia entre dos conjuntos de landmarks
             function calculateMovement(prevLandmarks, currentLandmarks) {
                 if (!prevLandmarks || !currentLandmarks) return 0;
                 
@@ -316,20 +302,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     totalMovement += Math.sqrt(dx*dx + dy*dy + dz*dz);
                 }
                 
-                return totalMovement / minLandmarks; // Movimiento promedio por landmark
+                return totalMovement / minLandmarks;
             }
 
-            // Función para filtrar frames sin movimiento
             function filterStaticFrames(frames, movementThreshold = 0.005) {
                 if (frames.length < 2) return frames;
                 
-                const filteredFrames = [frames[0]]; // Siempre incluir el primer frame
+                const filteredFrames = [frames[0]]; 
                 
                 for (let i = 1; i < frames.length; i++) {
                     const prevFrame = frames[i-1];
                     const currentFrame = frames[i];
                     
-                    // Calcular movimiento para cada mano en el frame
                     let maxMovement = 0;
                     
                     for (let handIndex = 0; handIndex < currentFrame.length; handIndex++) {
@@ -346,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
                     
-                    // Solo incluye los frames con movimiento que si importa
                     if (maxMovement > movementThreshold) {
                         filteredFrames.push(currentFrame);
                     }
@@ -357,7 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }           
 
 
-            // Fuincion para manejar y mostrar los reslutados
             function stopRecording() {
                 if (!isRecording) return;
                 
@@ -369,23 +351,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.log("Total frames usuario:", allHandLandmarks.length);
                         console.log("Total frames referencia:", referenceLandmarks.length);
 
-                        // Calcular similitud con los landmarks de referencia
                         if (referenceLandmarks && filteredLandmarks.length > 0) {
                             const similarityPercentage = processAllFrames(allHandLandmarks, referenceLandmarks);
                             let similitudFinal = 0;
-                            if (similarityPercentage >= 80){
-                                similitudFinal = similarityPercentage;
-                            }
-                            else if (similarityPercentage <= 50){
-                                similitudFinal = similarityPercentage * 2;
-                            } else{
-                                similitudFinal = similarityPercentage * 1.8;
-                            }
+                            similitudFinal = similarityPercentage * 1.8; 
+
                             console.log("Primer frame usuario:", allHandLandmarks[0]);
                             console.log("Primer frame referencia:", referenceLandmarks[0]);
                             console.log(`Similitud promedio: ${similarityPercentage.toFixed(1)}%`);
                             
-                            // Determinar si aprobó o no
                             const isApproved = similitudFinal >= 80;
 
                             if (similitudFinal >= 100)
@@ -442,25 +416,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
                     mediaRecorder.stop();
                 }
-                // if (nextButton) nextButton.disabled = false;
                 if (recordButton) recordButton.disabled = false;
                 if (gestoVideo) gestoVideo.play();
             }
 
-            // Procesar resultados de detección de manos
             function onHandsResults(results) {
-                // Dibujar video en canvas
                 ctx.save();
                 ctx.scale(-1, 1);
                 ctx.translate(-canvasElement.width, 0);
                 ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
                 ctx.restore();
                 
-                // Solo procesar landmarks si estamos grabando
                 if (isRecording && results.multiHandLandmarks) {
                     const frameHandLandmarks = [];
                     
-                    // Procesar cada mano detectada
                     results.multiHandLandmarks.forEach((handLandmarks, handIndex) => {
                         const landmarks = handLandmarks.map((landmark, id) => ({
                             id: id,
@@ -471,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         frameHandLandmarks.push({
                             handIndex: handIndex,
-                            handedness: results.multiHandedness[handIndex].label, // 'Left' o 'Right'
+                            handedness: results.multiHandedness[handIndex].label, 
                             landmarks: landmarks
                         });
                     });
@@ -482,7 +451,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Procesar cada frame del video
             async function processVideoFrame() {
                 if (videoElement.readyState >= 2) {
                     await hands.send({image: videoElement});
@@ -504,7 +472,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (gestoVideo) gestoVideo.pause();
                 
-                // Reiniciar almacenamiento de landmarks
                 allHandLandmarks = [];
                 
                 let count = 3;
@@ -577,7 +544,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 recordButton.addEventListener('click', startRecording);
             }
             
-            // Inicializar el tracker de manos y luego la cámara
             setupHandTracking().then((h) => {
                 hands = h;
                 
@@ -624,14 +590,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Elementos del DOM
         const videoElement = document.createElement('video');
         const canvasElement = document.createElement('canvas');
         const canvasCtx = canvasElement.getContext('2d');
-        // const nextButton = document.querySelector('#nextBtn');
         const feedbackElement = document.createElement('div');
         
-        // Configuración del feedback
         feedbackElement.style.position = 'absolute';
         feedbackElement.style.bottom = '20px';
         feedbackElement.style.width = '100%';
@@ -644,7 +607,6 @@ document.addEventListener('DOMContentLoaded', () => {
         feedbackElement.style.borderRadius = '5px';
         feedbackElement.style.transition = 'all 0.3s ease';
 
-        // Variables de estado
         let referenceLandmarks = null;
         let currentSimilarity = 0;
         let isGestureCorrect = false;
@@ -655,7 +617,6 @@ document.addEventListener('DOMContentLoaded', () => {
             similarityThreshold: 80
         };
 
-        // Cargar landmarks de referencia
         fetch(LANDMARKS_JSON_URL)
             .then(response => {
                 if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
@@ -688,7 +649,6 @@ document.addEventListener('DOMContentLoaded', () => {
         userGestoDiv.appendChild(feedbackElement);
         userGestoDiv.style.position = 'relative';
 
-        // Función para mostrar feedback
         function showFeedback(message, isCorrect) {
             feedbackElement.textContent = message;
             feedbackElement.style.color = isCorrect ? '#00FF00' : '#FF0000';
@@ -701,7 +661,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Funcion que calcula la similitud 
         function calculateSimilarity(landmarks1, landmarks2) {
             if (!landmarks1 || !landmarks2 || landmarks1.length !== landmarks2.length) return 0;
             
@@ -731,15 +690,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const averageDistance = totalWeightedDistance / totalWeight;
             let similarity = Math.max(0, 100 - (averageDistance * 200));
             
-            // Penalizar si la mano está demasiado abierta
             if (isHandTooOpen(landmarks2)) {
-                similarity *= 0.6; // Reducción más agresiva
+                similarity *= 0.6; 
             }
             
             return similarity;
         }
 
-        // Detectar mano abierta
         function isHandTooOpen(landmarks) {
             if (!landmarks || landmarks.length < 21) return false;
             
@@ -758,22 +715,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return averageDistance > calibrationValues.openHandThreshold;
         }
 
-        // Configuración de MediaPipe Hands
         const hands = new Hands({
             locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
         });
 
-        // Configuración para detección
         hands.setOptions({
             maxNumHands: 2,
             modelComplexity: 1,
-            minDetectionConfidence: 0.5,  // Reducir para mayor sensibilidad
-            minTrackingConfidence: 0.3    // Reducir para mantener el tracking
+            minDetectionConfidence: 0.5,  
+            minTrackingConfidence: 0.3    
         });
 
-        let isRedirecting = false; // Variable global para controlar redirecciones
+        let isRedirecting = false;
 
-        // En tu función de redirección
         function safeRedirect() {
             if (!isRedirecting) {
                 isRedirecting = true;
@@ -806,7 +760,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentSimilarity = calculateSimilarity(referenceLandmarks, currentLandmarks);
                     isGestureCorrect = currentSimilarity > calibrationValues.similarityThreshold;
                     
-                    // Dibujar landmarks
                     const landmarkColor = isGestureCorrect ? '#00FF00' : '#FF0000';
                     const connectionColor = isGestureCorrect ? '#00AA00' : '#AA0000';
                     
@@ -821,7 +774,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         radius: (idx) => [4, 8, 12, 16, 20, 0].includes(idx) ? 6 : 4
                     });
                     
-                    // Mostrar feedback
                     if (isGestureCorrect) {
                         if (correctPoseStartTime === null) {
                             correctPoseStartTime = Date.now();
@@ -928,7 +880,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
 
-        // Iniciar cámara
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 videoElement.srcObject = stream;
@@ -951,7 +902,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showFeedback("Error al acceder a la cámara", false);
             });
 
-        // Conexiones de la mano con más detalles
         const HAND_CONNECTIONS = [
             [0, 1], [1, 2], [2, 3], [3, 4],         // Pulgar
             [0, 5], [5, 6], [6, 7], [7, 8],         // Índice
@@ -1005,7 +955,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
     }
 
-    // Función auxiliar para obtener cookies
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {

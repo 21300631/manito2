@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(response => response.json())
                 .then(jsonData => {
                     console.log("JSON de la palabra obtenido:", jsonData);
-                    // Aquí puedes usar jsonData como necesites
                 })
                 .catch(error => {
                     console.error("Error obteniendo JSON de la palabra:", error);
@@ -47,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
 
-        // Mostrar el botón de grabar
         if (recordButton) {
             recordButton.style.display = 'inline-block';
             recordButton.disabled = false;
@@ -55,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Botón de grabación no encontrado");
         }
         
-        // Configuración inicial
         if (canvasElement) {
             canvasElement.width = 640;
             canvasElement.height = 480;
@@ -73,7 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
             videoElement.playsInline = true;
             videoElement.muted = true;
 
-            // Configurar MediaPipe Hands
             async function setupHandTracking() {
                 const hands = new Hands({
                     locateFile: (file) => {
@@ -93,14 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return hands;
             }
 
-            // Función para normalizar landmarks
             function normalizeLandmarks(landmarks) {
                 if (!landmarks || landmarks.length === 0) return null;
                 
-                // 1. Convertir a array de puntos {x, y, z}
                 const points = landmarks.map(p => ({x: p.x, y: p.y, z: p.z}));
                 
-                // 2. Calcular centroide
                 const centroid = points.reduce((acc, p) => {
                     acc.x += p.x;
                     acc.y += p.y;
@@ -112,14 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 centroid.y /= points.length;
                 centroid.z /= points.length;
                 
-                // 3. Centrar los puntos
                 const centered = points.map(p => ({
                     x: p.x - centroid.x,
                     y: p.y - centroid.y,
                     z: p.z - centroid.z
                 }));
                 
-                // 4. Calcular escala basada en la distancia muñeca (punto 0) a dedo medio (punto 12)
                 const wrist = centered[0];
                 const middleFinger = centered[12];
                 const scale = Math.sqrt(
@@ -130,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (scale === 0) return null;
                 
-                // 5. Normalizar y aplicar pesos a puntos clave
                 return centered.map((p, i) => ({
                     id: i,
                     x: p.x / scale,
@@ -140,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             function goToNextExercise() {
-                // Detener la cámara primero
                 if (mediaRecorder) {
                     mediaRecorder.stop();
                 }
@@ -148,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     videoElement.srcObject.getTracks().forEach(track => track.stop());
                 }
                 
-                // Enviar la petición para avanzar
                 fetch('/repaso/siguiente/', {
                     method: 'POST',
                     headers: {
@@ -177,27 +165,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             
             function procrustesAlignment(userLandmarks, referenceLandmarks) {
-                // Convertir landmarks a matrices para numeric.js
                 const userPoints = userLandmarks.map(p => [p.x, p.y, p.z]);
                 const refPoints = referenceLandmarks.map(p => [p.x, p.y, p.z]);
                 
-                // Centrar los puntos
                 const userCentered = centerPoints(userPoints);
                 const refCentered = centerPoints(refPoints);
                 
-                // Calcular matriz de covarianza
                 const H = numeric.dot(numeric.transpose(userCentered), refCentered);
                 
-                // SVD
                 const svd = numeric.svd(H);
                 
-                // Calcular matriz de rotación
                 const R = numeric.dot(svd.V, numeric.transpose(svd.U));
                 
-                // Aplicar rotación y traslación
                 const aligned = numeric.dot(userPoints, R);
                 
-                // Convertir de vuelta al formato de landmarks
                 return aligned.map((point, i) => ({
                     id: userLandmarks[i].id,
                     x: point[0],
@@ -287,10 +268,10 @@ document.addEventListener('DOMContentLoaded', () => {
             function processAllFrames(userFrames, referenceFrames) {
                 if (!userFrames || userFrames.length === 0 || !referenceFrames || referenceFrames.length === 0) return 0;
                 
-                // 1. Muestrear frames para igualar longitud
+                // Muestrear frames para igualar longitud
                 const sampledUserFrames = sampleFrames(userFrames, referenceFrames.length);
                 
-                // 2. Encontrar el mejor desplazamiento temporal (DTW básico)
+                // Encontrar el mejor desplazamiento temporal (DTW básico)
                 let bestSimilarity = 0;
                 const maxOffset = Math.min(3, referenceFrames.length); // Pequeño margen para sincronización
                 
@@ -675,31 +656,24 @@ document.addEventListener('DOMContentLoaded', () => {
             [0, 5], [0, 9], [0, 13], [0, 17]       // Conexiones adicionales
         ];
 
-        // Inicialización
         function init() {
-            // Configurar feedback
             feedbackElement.style.display = "block";
             feedbackElement.textContent = "Inicializando cámara...";
             
-            // Primero cargar los landmarks de referencia si es necesario
             if (!IS_VIDEO_EXERCISE && LANDMARKS_JSON_URL) {
                 loadReferenceLandmarks().then(() => {
-                    // Luego iniciar la cámara
                     startCamera();
                 }).catch(error => {
                     console.error("Error cargando landmarks:", error);
-                    startCamera(); // Iniciar cámara igualmente
+                    startCamera(); 
                 });
             } else {
-                // Iniciar cámara directamente si no hay landmarks para cargar
                 startCamera();
             }
             
-            // Configurar eventos
             setupEventListeners();
         }
 
-        // Cargar landmarks de referencia
         function loadReferenceLandmarks() {
             return new Promise((resolve, reject) => {
                 const correctedUrl = LANDMARKS_JSON_URL.replace('/static/static/', '/static/');
@@ -743,9 +717,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }   
 
 
-        // Manejar resultados de MediaPipe
         function onResults(results) {
-            // Dibujar el frame de la cámara en modo espejo
+            //dibujitos de la mano
             canvasCtx.save();
             canvasCtx.scale(-1, 1);
             canvasCtx.translate(-canvasElement.width, 0);
@@ -755,10 +728,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Procesar landmarks
             if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
                 const landmarks = results.multiHandLandmarks[0];
-                
-                // Ajustar landmarks para que coincidan con la imagen en modo espejo
+                //espejo landmakrs
                 const mirroredLandmarks = landmarks.map(point => ({
-                    x: 1 - point.x, // Invertir coordenada X
+                    x: 1 - point.x, 
                     y: point.y,
                     z: point.z
                 }));
@@ -773,7 +745,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentSimilarity = calculateSimilarity(referenceLandmarks, currentLandmarks);
                     isGestureCorrect = currentSimilarity > calibrationValues.similarityThreshold;
                     
-                    // Dibujar landmarks (ya ajustados para modo espejo)
+                    // Dibujar landmarks si son correctos o incorrecots
                     const landmarkColor = isGestureCorrect ? '#00FF00' : '#FF0000';
                     const connectionColor = isGestureCorrect ? '#00AA00' : '#AA0000';
                     
@@ -821,13 +793,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.status === 'completed') {
                     window.location.href = data.redirect_url;
                 } else {
-                    // Forzar recarga limpia de la página
                     window.location.href = data.redirect_url;
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                // Recargar de todas formas si hay error
                 window.location.href = '/repaso/';
             });
         }
@@ -886,7 +856,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const averageDistance = totalWeightedDistance / totalWeight;
             let similarity = Math.max(0, 100 - (averageDistance * 200));
             
-            // Penalizar si la mano está demasiado abierta
             if (isHandTooOpen(landmarks2)) {
                 similarity *= 0.6; // Reducción más agresiva
             }

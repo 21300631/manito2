@@ -4,7 +4,7 @@ from .storages import ImageStorage
 from django.utils import timezone
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # Conexión con User
+    user = models.OneToOneField(User, on_delete=models.CASCADE) 
     edad = models.IntegerField()
     racha = models.IntegerField(default=0)
     imagen = models.ImageField(
@@ -16,9 +16,9 @@ class Profile(models.Model):
         )
     puntos = models.IntegerField(default=0)
     medalla = models.ForeignKey('inicio.Medalla', on_delete=models.SET_NULL, null=True, blank=True)
-    theme = models.CharField(max_length=10, default="light")  # 'light' o 'dark'
-    leccion = models.IntegerField(default=1)  # ID de la lección actual
-    last_login = models.DateTimeField(default=timezone.now)  # Fecha y hora del último inicio de sesión
+    theme = models.CharField(max_length=10, default="light") 
+    leccion = models.IntegerField(default=1)  
+    last_login = models.DateTimeField(default=timezone.now) 
 
     @property
     def medalla_actual(self):
@@ -45,5 +45,5 @@ class Profile(models.Model):
             print(f"Tiempo desde el último acceso: {diferencia}.")
             print(f"Racha incrementada: {self.racha} (10 puntos añadidos)")
         
-        self.last_login = ahora  # Actualizamos el último acceso
+        self.last_login = ahora  
         self.save()
